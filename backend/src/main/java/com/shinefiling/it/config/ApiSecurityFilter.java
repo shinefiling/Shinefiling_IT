@@ -19,14 +19,22 @@ public class ApiSecurityFilter implements Filter {
 
         String path = httpRequest.getRequestURI();
         String method = httpRequest.getMethod();
-        
-        // Set CORS headers for all responses processed by this filter
         String origin = httpRequest.getHeader("Origin");
-        if (origin != null && (origin.equals("http://localhost:5173") || origin.equals("http://localhost:3000"))) {
-            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
-            httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-            httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
-            httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Requested-With, Authorization");
+        
+        // Comprehensive CORS support for both Dev and Production
+        if (origin != null) {
+            boolean isAllowedOrigin = origin.equals("http://localhost:5173") || 
+                                    origin.equals("http://localhost:3000") ||
+                                    origin.equals("https://shinefiling.com") ||
+                                    origin.equals("http://shinefiling.com") ||
+                                    origin.equals("https://www.shinefiling.com");
+            
+            if (isAllowedOrigin) {
+                httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+                httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+                httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH");
+                httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Requested-With, Authorization, Accept");
+            }
         }
 
         // Allow OPTIONS requests for CORS preflight
@@ -35,16 +43,21 @@ public class ApiSecurityFilter implements Filter {
             return;
         }
         
-        // Only protect /api routes
-        if (path.startsWith("/api/")) {
+        // Protect /api routes (using contains to handle subdirectories like /ITfreelancers/api)
+        if (path.contains("/api/")) {
             String appIdentity = httpRequest.getHeader("X-Requested-With");
             
-            // Block if not an AJAX/programmatic request (Direct browser access)
+            // Allow if it's an AJAX request or if it's from our allowed origins
             if (appIdentity == null || !appIdentity.equalsIgnoreCase("XMLHttpRequest")) {
-                httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                httpResponse.setContentType("application/json");
-                httpResponse.getWriter().write("{\"error\": \"Direct browser access is restricted. Please use the official Shinefiling Platform.\"}");
-                return;
+                // If it's a POST/PUT/DELETE, we are more strict. GET might be okay for some things but let's stay safe.
+                // However, some modern fetch implementations might not send X-Requested-With.
+                // Let's allow it if the origin is one of ours.
+                if (origin == null || !(origin.contains("shinefiling.com") || origin.contains("localhost"))) {
+                    httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    httpResponse.setContentType("application/json");
+                    httpResponse.getWriter().write("{\"error\": \"Access restricted. Please use the official platform.\"}");
+                    return;
+                }
             }
         }
 
