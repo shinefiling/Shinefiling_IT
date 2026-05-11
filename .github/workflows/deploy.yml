@@ -50,8 +50,9 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         source: "backend/target/it-freelancer-backend-0.0.1-SNAPSHOT.jar"
-        target: "/home/prakash/Shinefiling_IT/"
-        strip_components: 0
+        target: "/home/prakash/Shinefiling_IT_backend/"
+        strip_components: 2
+        overwrite: true
 
     - name: Copy Frontend to Server
       uses: appleboy/scp-action@v0.1.4
@@ -61,8 +62,9 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         source: "frontend/dist/*"
-        target: "/home/prakash/Shinefiling_IT_transfer/"
+        target: "/home/prakash/Shinefiling_IT_frontend/"
         strip_components: 2
+        overwrite: true
 
     # 7️⃣ Deploy via SSH
     - name: Deploy to Server
@@ -76,21 +78,23 @@ jobs:
           # 1. Update Frontend
           sudo mkdir -p /var/www/it-freelancers
           sudo rm -rf /var/www/it-freelancers/*
-          sudo cp -r /home/prakash/Shinefiling_IT_transfer/* /var/www/it-freelancers/
+          sudo cp -r /home/prakash/Shinefiling_IT_frontend/* /var/www/it-freelancers/
           sudo chown -R www-data:www-data /var/www/it-freelancers
           sudo chmod -R 755 /var/www/it-freelancers
           
-          # Cleanup transfer folder
-          rm -rf /home/prakash/Shinefiling_IT_transfer/*
-          
           # 2. Manage Backend
           # Move JAR to final location
-          mv /home/prakash/Shinefiling_IT/backend/target/it-freelancer-backend-0.0.1-SNAPSHOT.jar /home/prakash/Shinefiling_IT/backend/
+          mkdir -p /home/prakash/Shinefiling_IT/backend
+          mv /home/prakash/Shinefiling_IT_backend/it-freelancer-backend-0.0.1-SNAPSHOT.jar /home/prakash/Shinefiling_IT/backend/
           
           # Restart the systemd service
           sudo systemctl restart shinefiling-it-backend
           
           # 3. Reload Apache
           sudo systemctl reload apache2
+          
+          # Cleanup
+          rm -rf /home/prakash/Shinefiling_IT_frontend/*
+          rm -rf /home/prakash/Shinefiling_IT_backend/*
           
           echo "Deployment successful for IT Freelancer Platform!"
