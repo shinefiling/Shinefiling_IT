@@ -66,7 +66,7 @@ const Login: React.FC = () => {
     };
 
     const handleGoogleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
+        onSuccess: async (tokenResponse: any) => {
             setIsLoading(true);
             setError('');
             try {
@@ -109,7 +109,7 @@ const Login: React.FC = () => {
                 setIsLoading(false);
             }
         },
-        onError: error => {
+        onError: (error: any) => {
             console.error('Google Login Failed:', error);
             setError('Google login was cancelled or failed.');
         }

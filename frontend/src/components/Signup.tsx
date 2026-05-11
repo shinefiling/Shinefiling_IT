@@ -139,7 +139,7 @@ const Signup: React.FC = () => {
     };
 
     const handleGoogleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
+        onSuccess: async (tokenResponse: any) => {
             if (!signupData.userRole) {
                 setError('Please select your role (Freelancer or Client) first.');
                 return;
@@ -185,7 +185,7 @@ const Signup: React.FC = () => {
                 setIsLoading(false);
             }
         },
-        onError: error => {
+        onError: (error: any) => {
             console.error('Google Signup Failed:', error);
             setError('Google login was cancelled or failed.');
         }
