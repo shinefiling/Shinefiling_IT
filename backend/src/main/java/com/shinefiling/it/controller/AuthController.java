@@ -119,6 +119,7 @@ public class AuthController {
             }
             return ResponseEntity.ok(user);
         } catch (Exception e) {
+            e.printStackTrace(); // This will show the error in your terminal/logs
             return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
         }
     }

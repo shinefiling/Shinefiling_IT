@@ -206,34 +206,41 @@ public class AuthService {
         }
     }
     public User processGoogleLoginRaw(String email, String name, String googleId, String requestedRole, String profileImage) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        if (userOpt.isPresent()) {
-            return userOpt.get();
-        } else {
-            // Create new user
-            User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setFullName(name);
-            // Ensure unique username by appending last 4 chars of googleId
-            String usernamePrefix = email.split("@")[0];
-            String uniqueSuffix = googleId.length() > 4 ? googleId.substring(googleId.length() - 4) : googleId;
-            newUser.setUsername(usernamePrefix + "_" + uniqueSuffix);
-            
-            newUser.setPassword(passwordEncoder.encode(googleId)); 
-            newUser.setUserRole(requestedRole != null ? requestedRole : "FREELANCER");
-            newUser.setVerified(true);
-            User savedUser = userRepository.save(newUser);
+        try {
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            User user;
+            if (userOpt.isPresent()) {
+                user = userOpt.get();
+                // Update profile picture if it changed
+                if (profileImage != null) {
+                    user.setProfilePicture(profileImage);
+                    userRepository.save(user);
+                }
+            } else {
+                // Create new user
+                user = new User();
+                user.setEmail(email);
+                user.setFullName(name);
+                String usernamePrefix = email.split("@")[0];
+                String uniqueSuffix = googleId.length() > 4 ? googleId.substring(googleId.length() - 4) : googleId;
+                user.setUsername(usernamePrefix + "_" + uniqueSuffix);
+                user.setPassword(passwordEncoder.encode(googleId));
+                user.setUserRole(requestedRole != null ? requestedRole : "FREELANCER");
+                user.setVerified(true);
+                user = userRepository.save(user);
 
-            // Create Profile
-            Profile profile = new Profile();
-            profile.setEmail(email);
-            profile.setFullName(name);
-            profile.setUsername(newUser.getUsername());
-            profile.setProfilePicture(profileImage);
-            profile.setEmailVerified(true);
-            profileRepository.save(profile);
-
-            return savedUser;
+                // Create Profile
+                Profile profile = new Profile();
+                profile.setEmail(email);
+                profile.setFullName(name);
+                profile.setUsername(user.getUsername());
+                profile.setProfilePicture(profileImage);
+                profile.setEmailVerified(true);
+                profileRepository.save(profile);
+            }
+            return user;
+        } catch (Exception e) {
+            throw new RuntimeException("Database error during Google login: " + e.getMessage());
         }
     }
 }
