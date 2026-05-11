@@ -405,7 +405,7 @@ const Signup: React.FC = () => {
                             </div>
 
                             <p className="mt-4 text-center text-sm text-[#888]">
-                                Already have an account? <a href="/login" className="text-[#b5242c] font-bold hover:underline">Sign In</a>
+                                Already have an account? <Link to="/login" className="text-[#b5242c] font-bold hover:underline">Sign In</Link>
                             </p>
                         </>
                     )}

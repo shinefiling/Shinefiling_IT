@@ -304,7 +304,7 @@ const Login: React.FC = () => {
 
                     {step === 'login' && (
                         <p className="mt-4 text-center text-sm text-[#888]">
-                            Don't have an account? <a href="/signup" className="text-[#b5242c] font-bold hover:underline">Register Now</a>
+                            Don't have an account? <Link to="/signup" className="text-[#b5242c] font-bold hover:underline">Register Now</Link>
                         </p>
                     )}
                 </div>
