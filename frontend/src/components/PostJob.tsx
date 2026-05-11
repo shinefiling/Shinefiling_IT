@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 import { 
     Briefcase, Tag, FileText, ChevronRight, 
     Check, MapPin, Users, Plus, X, Clock, 
@@ -48,7 +49,7 @@ const PostJob: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch('http://localhost:8080/api/jobs', {
+            const response = await fetch('${API_BASE_URL}/api/jobs', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

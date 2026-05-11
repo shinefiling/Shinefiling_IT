@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Mail, ShieldCheck, ArrowRight, ArrowLeft, Lock, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 
 const ForgotPassword: React.FC = () => {
     const navigate = useNavigate();
@@ -20,7 +21,7 @@ const ForgotPassword: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('http://localhost:8080/api/auth/forgot-password', {
+            const response = await fetch('${API_BASE_URL}/api/auth/forgot-password', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -46,7 +47,7 @@ const ForgotPassword: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('http://localhost:8080/api/auth/verify-reset-otp', {
+            const response = await fetch('${API_BASE_URL}/api/auth/verify-reset-otp', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ const ForgotPassword: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('http://localhost:8080/api/auth/reset-password', {
+            const response = await fetch('${API_BASE_URL}/api/auth/reset-password', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 
 const ClientProfile: React.FC = () => {
     const location = useLocation();
@@ -35,7 +36,7 @@ const ClientProfile: React.FC = () => {
         if (queryTab) setActiveTab(queryTab as any);
     }, [queryTab]);
 
-    const API_BASE_URL = 'http://localhost:8080/api/profiles';
+    const API_BASE_URL_LOCAL = `${API_BASE_URL}/api/profiles`;
 
     useEffect(() => {
         const fetchProfile = async () => {

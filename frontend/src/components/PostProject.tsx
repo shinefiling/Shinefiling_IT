@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 import { 
     Upload, DollarSign, Briefcase, Tag, FileText, ChevronRight, 
     ChevronLeft, Check, MapPin, Users, Eye, Shield, CreditCard,
@@ -68,7 +69,7 @@ const PostProject: React.FC = () => {
                 client: { id: userId }
             };
 
-            const response = await fetch('http://localhost:8080/api/projects/post', {
+            const response = await fetch('${API_BASE_URL}/api/projects/post', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
