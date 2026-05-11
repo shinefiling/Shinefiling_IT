@@ -353,7 +353,7 @@ const Login: React.FC = () => {
             <div className="w-full lg:w-1/2 relative overflow-hidden order-1 lg:order-1 min-h-[500px]">
                 {/* Image as background */}
                 <img 
-                    src={`${import.meta.env.BASE_URL}loginimage.png`} 
+                    src="loginimage.png" 
                     alt="Login Visual" 
                     className="absolute inset-0 w-full h-full object-cover"
                 />

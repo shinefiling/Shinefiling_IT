@@ -34,7 +34,7 @@ const GlobalFreelancers: React.FC = () => {
                     className="relative mt-12 lg:mt-0"
                 >
                     <div className="relative z-10 rounded-2xl overflow-hidden mx-auto max-w-[500px] lg:max-w-none">
-                        <img src={`${import.meta.env.BASE_URL}connection.png`} alt="Service" className="w-full h-auto" />
+                        <img src="connection.png" alt="Service" className="w-full h-auto" />
                     </div>
                 </motion.div>
             </div>

@@ -60,7 +60,8 @@ const AppContent: React.FC = () => {
                         const response = await fetch(`${API_BASE_URL}/api/profiles/${parsed.email}`, {
                             headers: { 'X-Requested-With': 'XMLHttpRequest' }
                         });
-                        if (response.ok) {
+                        const contentType = response.headers.get("content-type");
+                        if (response.ok && contentType && contentType.includes("application/json")) {
                             const data = await response.json();
                             const updatedUser = { ...parsed, ...data, profileFetched: true };
                             localStorage.setItem('user', JSON.stringify(updatedUser));

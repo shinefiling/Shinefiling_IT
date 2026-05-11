@@ -236,7 +236,7 @@ const Navbar: React.FC = () => {
                 {/* Left: Logo */}
                 <div className="flex justify-start">
                     <Link to="/" className="flex items-center gap-2 cursor-pointer shrink-0">
-                        <img src={`${import.meta.env.BASE_URL}shine-logo.png`} alt="ShineFiling Logo" className="h-16 md:h-24 w-auto object-contain hover:opacity-90 transition-all" />
+                        <img src="shine-logo.png" alt="ShineFiling Logo" className="h-16 md:h-24 w-auto object-contain hover:opacity-90 transition-all" />
                     </Link>
                 </div>
                 

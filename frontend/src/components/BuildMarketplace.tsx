@@ -12,7 +12,7 @@ const BuildMarketplace: React.FC = () => {
                     className="relative"
                 >
                     <div className="relative z-10 mx-auto max-w-[500px] lg:max-w-none">
-                        <img src={`${import.meta.env.BASE_URL}communtiy.png`} alt="Marketplace" className="w-full h-auto" />
+                        <img src="communtiy.png" alt="Marketplace" className="w-full h-auto" />
                     </div>
 
                 </motion.div>

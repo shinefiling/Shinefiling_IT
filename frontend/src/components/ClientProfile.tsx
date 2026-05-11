@@ -65,12 +65,26 @@ const ClientProfile: React.FC = () => {
                 const response = await fetch(`${API_BASE_URL}/api/profiles/${targetEmail}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
-                if (response.ok) {
+                
+                const contentType = response.headers.get("content-type");
+                if (response.ok && contentType && contentType.includes("application/json")) {
                     const profileData = await response.json();
                     setUser(profileData);
+                } else {
+                    // Fallback to local storage data if profile fetch fails or returns HTML
+                    const stored = localStorage.getItem('user');
+                    if (stored) {
+                        const parsed = JSON.parse(stored);
+                        if (parsed.email === targetEmail) {
+                            setUser(parsed);
+                        }
+                    }
                 }
             } catch (err) {
                 console.error('Error fetching client profile:', err);
+                // Fallback on network error
+                const stored = localStorage.getItem('user');
+                if (stored) setUser(JSON.parse(stored));
             }
             setLoading(false);
         };

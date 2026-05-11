@@ -34,7 +34,7 @@ const SiteFooter: React.FC = () => {
                     {/* Left Brand Column */}
                     <div className="lg:col-span-1 space-y-8">
                         <div className="flex items-center gap-2">
-                            <img src={`${import.meta.env.BASE_URL}shine-logo.png`} alt="Shinefiling" className="h-12 w-auto" />
+                            <img src="shine-logo.png" alt="Shinefiling" className="h-12 w-auto" />
                         </div>
                         
                         <div className="space-y-4">
