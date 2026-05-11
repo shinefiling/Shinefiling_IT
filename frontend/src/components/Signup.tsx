@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Github, ShieldCheck, ArrowLeft } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 
 const Signup: React.FC = () => {
     const navigate = useNavigate();
@@ -73,7 +74,7 @@ const Signup: React.FC = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/verify-otp', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ const Signup: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('http://localhost:8080/api/auth/resend-otp', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/resend-otp`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
