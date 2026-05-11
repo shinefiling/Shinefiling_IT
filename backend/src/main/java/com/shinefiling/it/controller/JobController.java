@@ -16,8 +16,6 @@ public class JobController {
 
     @GetMapping
     public List<Job> getJobs() {
-        // Seed data if empty for demo purposes
-        jobService.seedJobs();
         return jobService.getAllJobs();
     }
 

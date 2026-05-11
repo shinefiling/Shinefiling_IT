@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
-import { 
-    Search, Filter, 
+import {
+    Search, Filter,
     Heart, ChevronDown, Bell, CheckCircle, MapPin, Briefcase, Clock
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,7 @@ const BrowseJobs: React.FC = () => {
     const [activeFilters, setActiveFilters] = useState<string[]>(['keyword', 'categories', 'type', 'location', 'experience', 'skills', 'date', 'price']);
 
     const toggleFilter = (filter: string) => {
-        setActiveFilters(prev => 
+        setActiveFilters(prev =>
             prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
         );
     };
@@ -82,13 +82,13 @@ const BrowseJobs: React.FC = () => {
     };
 
     const toggleCategory = (cat: string) => {
-        setSelectedCategories(prev => 
+        setSelectedCategories(prev =>
             prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
         );
     };
 
     const toggleLevel = (lvl: string) => {
-        setSelectedLevels(prev => 
+        setSelectedLevels(prev =>
             prev.includes(lvl) ? prev.filter(l => l !== lvl) : [...prev, lvl]
         );
     };
@@ -97,7 +97,7 @@ const BrowseJobs: React.FC = () => {
         <div className="min-h-screen bg-[#fdfaf0] pt-[150px] pb-20 font-['Poppins']">
             <div className="max-w-[1440px] mx-auto px-6 lg:px-16">
                 <div className="flex flex-col lg:grid lg:grid-cols-[300px_1fr] gap-8">
-                    
+
                     {/* Left Sidebar - Filters */}
                     <aside className="space-y-6 font-['Poppins']">
                         <div className="bg-white rounded-none p-0 shadow-sm border border-[#eee]">
@@ -106,7 +106,7 @@ const BrowseJobs: React.FC = () => {
                                     <Filter size={18} className="text-primary" />
                                     Search Filters
                                 </h3>
-                                <button 
+                                <button
                                     onClick={clearFilters}
                                     className="text-[11px] font-bold text-primary hover:underline uppercase font-['Poppins']"
                                 >
@@ -116,8 +116,8 @@ const BrowseJobs: React.FC = () => {
 
                             <FilterSection title="Search by Keyword" isOpen={activeFilters.includes('keyword')} onToggle={() => toggleFilter('keyword')}>
                                 <div className="relative">
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         placeholder="What are you looking for"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -169,11 +169,11 @@ const BrowseJobs: React.FC = () => {
                                 <div className="space-y-3">
                                     {["Fresher", "Intermediate", "Senior", "Lead"].map(lvl => (
                                         <label key={lvl} className="flex items-center gap-3 cursor-pointer group">
-                                            <input 
-                                                type="checkbox" 
-                                                className="hidden" 
-                                                checked={selectedLevels.includes(lvl)} 
-                                                onChange={() => toggleLevel(lvl)} 
+                                            <input
+                                                type="checkbox"
+                                                className="hidden"
+                                                checked={selectedLevels.includes(lvl)}
+                                                onChange={() => toggleLevel(lvl)}
                                             />
                                             <div className={`w-4 h-4 border flex items-center justify-center transition-all ${selectedLevels.includes(lvl) ? 'border-primary bg-primary' : 'border-gray-200 group-hover:border-primary'}`}>
                                                 {selectedLevels.includes(lvl) && <div className="w-1.5 h-1.5 bg-white"></div>}
@@ -264,7 +264,7 @@ const BrowseJobs: React.FC = () => {
                                 </div>
                             ) : (
                                 filteredJobs.map((job) => (
-                                    <motion.div 
+                                    <motion.div
                                         key={job.id}
                                         initial={{ opacity: 0, y: 10 }}
                                         whileInView={{ opacity: 1, y: 0 }}
@@ -302,7 +302,7 @@ const BrowseJobs: React.FC = () => {
                                                             <span>{job.experience || 'Fresher'}</span>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     {job.description && (
                                                         <p className="text-[13px] text-gray-500 line-clamp-2 mb-2 leading-snug">
                                                             {job.description}
@@ -340,7 +340,7 @@ const BrowseJobs: React.FC = () => {
                                                 <button className="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-none transition-all border border-gray-100">
                                                     <Heart size={18} />
                                                 </button>
-                                                <button 
+                                                <button
                                                     onClick={() => navigate(`/jobs/${job.id}`)}
                                                     className="bg-primary text-white px-8 py-2.5 rounded-none font-bold text-[13px] hover:bg-[#a11f27] transition-all font-['Poppins'] shadow-sm shadow-primary/20 uppercase tracking-wider"
                                                 >
@@ -355,9 +355,9 @@ const BrowseJobs: React.FC = () => {
 
                         {/* Bottom Banner */}
                         <div className="bg-[#242424] p-8 text-center relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-500 opacity-10"></div>
+                            <div className="absolute inset-0 bg-primary  transition-transform  opacity-10"></div>
                             <h3 className="text-white text-xl font-bold mb-4 relative z-10 font-['Poppins']">Hire expert & get your any job done</h3>
-                            <button 
+                            <button
                                 onClick={() => navigate('/post-job')}
                                 className="bg-primary text-white px-10 py-3 font-bold text-sm relative z-10 hover:scale-105 transition-transform font-['Poppins']"
                             >
@@ -373,7 +373,7 @@ const BrowseJobs: React.FC = () => {
 
 const FilterSection = ({ title, children, isOpen, onToggle }: any) => (
     <div className="border-t border-[#eee]">
-        <button 
+        <button
             onClick={onToggle}
             className="w-full px-6 py-4 flex items-center justify-between group bg-white hover:bg-gray-50/50 transition-colors"
         >
@@ -384,7 +384,7 @@ const FilterSection = ({ title, children, isOpen, onToggle }: any) => (
         </button>
         <AnimatePresence>
             {isOpen && (
-                <motion.div 
+                <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}

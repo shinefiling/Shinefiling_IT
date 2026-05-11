@@ -375,16 +375,7 @@ const ProjectDetails: React.FC = () => {
                             )}
                         </div>
 
-                        {/* Footer CTA Banner */}
-                        <div className="bg-[#1e2329] rounded-md p-6 flex items-center justify-between overflow-hidden relative">
-                            <div className="relative z-10">
-                                <h3 className="text-white text-lg font-bold mb-1">Hire expert & get your any job done</h3>
-                                <p className="text-gray-400 text-xs uppercase tracking-widest font-black">Marketplace Wordpress Theme</p>
-                            </div>
-                            <button className="bg-[#b5242c] text-white px-8 py-2.5 rounded-md text-sm font-bold relative z-10 hover:scale-105 transition-transform">
-                                Post A Project
-                            </button>
-                        </div>
+
                     </div>
 
                     {/* Sidebar Area */}

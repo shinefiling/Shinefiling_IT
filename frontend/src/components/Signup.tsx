@@ -88,13 +88,19 @@ const Signup: React.FC = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('user', JSON.stringify(data.user || {
+                const user = data.user || {
                     fullName: signupData.fullName,
                     username: signupData.username,
                     email: signupData.email,
                     userRole: signupData.userRole
-                }));
-                navigate('/profile');
+                };
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                if (user.userRole === 'CLIENT') {
+                    navigate('/client-profile');
+                } else {
+                    navigate('/profile');
+                }
             } else {
                 const data = await response.json();
                 setError(data.message || 'Invalid OTP. Please try again.');

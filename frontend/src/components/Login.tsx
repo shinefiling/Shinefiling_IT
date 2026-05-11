@@ -45,6 +45,8 @@ const Login: React.FC = () => {
                 // Redirect based on role
                 if (data.userRole === 'ADMIN') {
                     navigate('/admin-dashboard');
+                } else if (data.userRole === 'CLIENT') {
+                    navigate('/client-profile');
                 } else {
                     navigate('/profile');
                 }
@@ -82,8 +84,14 @@ const Login: React.FC = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                localStorage.setItem('user', JSON.stringify(data.user || data));
-                navigate('/profile');
+                const user = data.user || data;
+                localStorage.setItem('user', JSON.stringify(user));
+                
+                if (user.userRole === 'CLIENT') {
+                    navigate('/client-profile');
+                } else {
+                    navigate('/profile');
+                }
             } else {
                 const data = await response.json();
                 setError(data.message || 'Invalid OTP.');

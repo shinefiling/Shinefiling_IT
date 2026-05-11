@@ -51,6 +51,15 @@ const Profile: React.FC = () => {
     }, []);
 
     useEffect(() => {
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            const parsed = JSON.parse(storedUser);
+            if (parsed.userRole === 'CLIENT') {
+                navigate('/client-profile');
+                return;
+            }
+        }
+
         const fetchProfile = async () => {
             const storedUser = localStorage.getItem('user');
             if (!storedUser) {
@@ -359,7 +368,7 @@ const Profile: React.FC = () => {
         return (
             <div className="min-h-screen bg-surface pt-[120px] flex flex-col items-center justify-center">
                 <div className="w-10 h-10 border-4 border-[#b5242c] border-t-transparent rounded-full animate-spin mb-4"></div>
-                <p className="text-[13px] text-gray-500">Loading your profile...</p>
+                <p className="text-[13px] text-black/60">Loading your profile...</p>
             </div>
         );
     }
@@ -369,7 +378,7 @@ const Profile: React.FC = () => {
             <div className="min-h-screen bg-surface pt-[120px] flex flex-col items-center justify-center">
                 <AlertCircle size={40} className="text-primary mb-4" />
                 <h2 className="text-[18px] font-bold text-on-surface mb-2">Session expired</h2>
-                <p className="text-[13px] text-gray-400 mb-6">Please login to view and manage your profile.</p>
+                <p className="text-[13px] text-black/50 mb-6">Please login to view and manage your profile.</p>
                 <a href="/login" className="bg-primary text-white px-6 py-2.5 rounded-[4px] text-[14px] font-bold shadow hover:bg-[#a11f27] transition-all">Sign in now</a>
             </div>
         );
@@ -394,48 +403,48 @@ const Profile: React.FC = () => {
                         >
                             <div className="p-5 border-b border-outline-variant/30 flex items-center justify-between">
                                 <h3 className="text-[18px] font-bold text-on-surface">Edit profile details</h3>
-                                <button onClick={() => setIsEditModalOpen(false)} className="text-gray-400 hover:text-primary transition-colors"><X size={20}/></button>
+                                <button onClick={() => setIsEditModalOpen(false)} className="text-black/50 hover:text-primary transition-colors"><X size={20}/></button>
                             </div>
                             <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Full name</label>
+                                        <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Full name</label>
                                         <input type="text" value={editForm.fullName || ''} onChange={(e) => setEditForm({...editForm, fullName: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#b5242c] text-[13px]" placeholder="Full name" />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Professional headline</label>
+                                        <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Professional headline</label>
                                         <input type="text" value={editForm.professionalHeadline || ''} onChange={(e) => setEditForm({...editForm, professionalHeadline: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#b5242c] text-[13px]" placeholder="Headline" />
                                     </div>
                                 </div>
                                  <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Hourly rate (₹)</label>
+                                        <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Hourly rate (₹)</label>
                                         <input type="number" value={editForm.hourlyRate || ''} onChange={(e) => setEditForm({...editForm, hourlyRate: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#b5242c] text-[13px]" placeholder="1500" />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Location</label>
+                                        <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Location</label>
                                         <input type="text" value={editForm.location || ''} onChange={(e) => setEditForm({...editForm, location: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#b5242c] text-[13px]" placeholder="Location" />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Phone number</label>
+                                        <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Phone number</label>
                                         <input type="text" value={editForm.phone || ''} onChange={(e) => setEditForm({...editForm, phone: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#b5242c] text-[13px]" placeholder="+91 98765 43210" />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Username</label>
-                                        <input type="text" value={editForm.username || ''} disabled className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] bg-gray-50 text-gray-400 text-[13px]" />
+                                        <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Username</label>
+                                        <input type="text" value={editForm.username || ''} disabled className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] bg-gray-50 text-black/50 text-[13px]" />
                                     </div>
                                 </div>
                                 
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Skills</label>
+                                    <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Skills</label>
                                     <div className="flex flex-wrap gap-2 mb-1.5">
                                         {editForm.skills?.map((skill: string) => (
                                             <span key={skill} className="bg-gray-100 text-on-surface px-2.5 py-1 rounded-[4px] text-[11px] font-bold flex items-center gap-1.5">
                                                 {skill}
-                                                <button onClick={() => removeSkill(skill)} className="text-gray-400 hover:text-primary"><X size={10}/></button>
+                                                <button onClick={() => removeSkill(skill)} className="text-black/50 hover:text-primary"><X size={10}/></button>
                                             </span>
                                         ))}
                                     </div>
@@ -446,12 +455,12 @@ const Profile: React.FC = () => {
                                 </div>
 
                                 <div className="space-y-1">
-                                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Summary / Bio</label>
+                                    <label className="text-[11px] font-bold text-black/60 uppercase tracking-wide">Summary / Bio</label>
                                     <textarea rows={3} value={editForm.summary || ''} onChange={(e) => setEditForm({...editForm, summary: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] focus:outline-none focus:border-[#b5242c] text-[13px] resize-none leading-[23.52px]" placeholder="Bio..." />
                                 </div>
                             </div>
                             <div className="p-5 bg-gray-50 flex justify-end gap-2">
-                                <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-1.5 text-[13px] font-bold text-gray-500">Cancel</button>
+                                <button onClick={() => setIsEditModalOpen(false)} className="px-4 py-1.5 text-[13px] font-bold text-black/60">Cancel</button>
                                 <button onClick={handleSaveProfile} className="bg-primary text-white px-6 py-1.5 rounded-[4px] text-[13px] font-bold shadow-none hover:bg-[#a11f27]">Save changes</button>
                             </div>
                         </motion.div>
@@ -468,7 +477,7 @@ const Profile: React.FC = () => {
                         >
                             <div className="p-5 border-b border-outline-variant/30 flex items-center justify-between">
                                 <h3 className="text-[18px] font-bold text-on-surface">{isExpEdit ? 'Edit experience' : 'Add experience'}</h3>
-                                <button onClick={() => { setIsExpModalOpen(false); setIsExpEdit(false); setEditIndex(null); }} className="text-gray-400 hover:text-primary"><X size={20}/></button>
+                                <button onClick={() => { setIsExpModalOpen(false); setIsExpEdit(false); setEditIndex(null); }} className="text-black/50 hover:text-primary"><X size={20}/></button>
                             </div>
                             <div className="p-5 space-y-3">
                                 <input type="text" value={expForm.title} onChange={(e) => setExpForm({...expForm, title: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] text-[13px]" placeholder="Job title" />
@@ -480,7 +489,7 @@ const Profile: React.FC = () => {
                                 <textarea rows={2} value={expForm.description} onChange={(e) => setExpForm({...expForm, description: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] text-[13px] resize-none" placeholder="Description" />
                             </div>
                             <div className="p-5 bg-gray-50 flex justify-end gap-2">
-                                <button onClick={() => { setIsExpModalOpen(false); setIsExpEdit(false); setEditIndex(null); }} className="px-5 py-1.5 text-[13px] font-bold text-gray-500">Cancel</button>
+                                <button onClick={() => { setIsExpModalOpen(false); setIsExpEdit(false); setEditIndex(null); }} className="px-5 py-1.5 text-[13px] font-bold text-black/60">Cancel</button>
                                 <button onClick={handleAddExperience} className="bg-primary text-white px-7 py-1.5 rounded-[4px] text-[13px] font-bold">{isExpEdit ? 'Update' : 'Save'}</button>
                             </div>
                         </motion.div>
@@ -497,7 +506,7 @@ const Profile: React.FC = () => {
                         >
                             <div className="p-5 border-b border-outline-variant/30 flex items-center justify-between">
                                 <h3 className="text-[18px] font-bold text-on-surface">{isEduEdit ? 'Edit education' : 'Add education'}</h3>
-                                <button onClick={() => { setIsEduModalOpen(false); setIsEduEdit(false); setEditIndex(null); }} className="text-gray-400 hover:text-primary"><X size={20}/></button>
+                                <button onClick={() => { setIsEduModalOpen(false); setIsEduEdit(false); setEditIndex(null); }} className="text-black/50 hover:text-primary"><X size={20}/></button>
                             </div>
                             <div className="p-5 space-y-3">
                                 <input type="text" value={eduForm.institution} onChange={(e) => setEduForm({...eduForm, institution: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] text-[13px]" placeholder="Institution" />
@@ -508,7 +517,7 @@ const Profile: React.FC = () => {
                                 </div>
                             </div>
                             <div className="p-5 bg-gray-50 flex justify-end gap-2">
-                                <button onClick={() => { setIsEduModalOpen(false); setIsEduEdit(false); setEditIndex(null); }} className="px-5 py-1.5 text-[13px] font-bold text-gray-500">Cancel</button>
+                                <button onClick={() => { setIsEduModalOpen(false); setIsEduEdit(false); setEditIndex(null); }} className="px-5 py-1.5 text-[13px] font-bold text-black/60">Cancel</button>
                                 <button onClick={handleAddEducation} className="bg-primary text-white px-7 py-1.5 rounded-[4px] text-[13px] font-bold">{isEduEdit ? 'Update' : 'Save'}</button>
                             </div>
                         </motion.div>
@@ -525,14 +534,14 @@ const Profile: React.FC = () => {
                         >
                             <div className="p-5 border-b border-outline-variant/30 flex items-center justify-between">
                                 <h3 className="text-[18px] font-bold text-on-surface">Add project</h3>
-                                <button onClick={() => setIsPortfolioModalOpen(false)} className="text-gray-400 hover:text-primary"><X size={20}/></button>
+                                <button onClick={() => setIsPortfolioModalOpen(false)} className="text-black/50 hover:text-primary"><X size={20}/></button>
                             </div>
                             <div className="p-5 space-y-3">
                                 <input type="text" value={portfolioForm.title} onChange={(e) => setPortfolioForm({...portfolioForm, title: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] text-[13px]" placeholder="Project title" />
                                 <input type="text" value={portfolioForm.image} onChange={(e) => setPortfolioForm({...portfolioForm, image: e.target.value})} className="w-full px-3 py-1.5 border border-gray-200 rounded-[4px] text-[13px]" placeholder="Image URL" />
                             </div>
                             <div className="p-5 bg-gray-50 flex justify-end gap-2">
-                                <button onClick={() => setIsPortfolioModalOpen(false)} className="px-5 py-1.5 text-[13px] font-bold text-gray-500">Cancel</button>
+                                <button onClick={() => setIsPortfolioModalOpen(false)} className="px-5 py-1.5 text-[13px] font-bold text-black/60">Cancel</button>
                                 <button onClick={handleAddPortfolio} className="bg-primary text-white px-7 py-1.5 rounded-[4px] text-[13px] font-bold">Add</button>
                             </div>
                         </motion.div>
@@ -549,7 +558,7 @@ const Profile: React.FC = () => {
                         >
                             <div className="p-5 border-b border-outline-variant/30 flex items-center justify-between">
                                 <h3 className="text-[18px] font-bold text-on-surface">Update profile photo</h3>
-                                <button onClick={() => { setIsPhotoModalOpen(false); setPhotoPreview(null); }} className="text-gray-400 hover:text-primary transition-colors"><X size={20}/></button>
+                                <button onClick={() => { setIsPhotoModalOpen(false); setPhotoPreview(null); }} className="text-black/50 hover:text-primary transition-colors"><X size={20}/></button>
                             </div>
                             <div className="p-6">
                                 <div className="flex flex-col items-center">
@@ -565,17 +574,17 @@ const Profile: React.FC = () => {
                                             <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
                                         </label>
                                     </div>
-                                    <p className="text-[12px] text-gray-400 text-center px-4 leading-relaxed">
+                                    <p className="text-[12px] text-black/50 text-center px-4 leading-relaxed">
                                         Upload a high-quality square photo for your professional profile.
                                     </p>
                                 </div>
                             </div>
                             <div className="p-5 bg-gray-50 flex justify-end gap-2">
-                                <button onClick={() => { setIsPhotoModalOpen(false); setPhotoPreview(null); }} className="px-5 py-2 text-[13px] font-bold text-gray-500">Cancel</button>
+                                <button onClick={() => { setIsPhotoModalOpen(false); setPhotoPreview(null); }} className="px-5 py-2 text-[13px] font-bold text-black/60">Cancel</button>
                                 <button 
                                     onClick={handleUpdatePhotos} 
                                     disabled={!selectedFile}
-                                    className={`px-7 py-2 rounded-lg text-[13px] font-bold shadow-none transition-all ${selectedFile ? 'bg-primary text-white hover:bg-[#a11f27]' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}
+                                    className={`px-7 py-2 rounded-lg text-[13px] font-bold shadow-none transition-all ${selectedFile ? 'bg-primary text-white hover:bg-[#a11f27]' : 'bg-gray-200 text-black/50 cursor-not-allowed'}`}
                                 >
                                     Save Changes
                                 </button>
@@ -585,70 +594,117 @@ const Profile: React.FC = () => {
                 )}
             </AnimatePresence>
 
-                {/* Profile Header Section */}
-                <section className="bg-white rounded-xl border border-[#e5e7eb] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] mb-10">
-                    <div className="flex flex-col md:flex-row items-start md:items-center gap-stack-lg">
-                        <div className="relative cursor-pointer group" onClick={() => setIsPhotoModalOpen(true)}>
-                            {user.profilePicture ? (
-                                <img 
-                                    alt={user.fullName} 
-                                    className="w-32 h-32 rounded-lg object-cover border-2 border-surface-variant group-hover:opacity-80 transition-opacity" 
-                                    src={user.profilePicture} 
-                                />
+                {/* Top Profile Container */}
+                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-start gap-6 mb-8">
+                    {/* Profile Header Section */}
+                    <div className="lg:w-2/3">
+                        <section className="bg-white rounded-xl border border-[#e5e7eb] py-6 px-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                                <div className="relative cursor-pointer group" onClick={() => setIsPhotoModalOpen(true)}>
+                                    {user.profilePicture ? (
+                                        <img 
+                                            alt={user.fullName} 
+                                            className="w-24 h-24 rounded-lg object-cover border-2 border-gray-100 group-hover:opacity-80 transition-opacity" 
+                                            src={user.profilePicture} 
+                                        />
+                                    ) : (
+                                        <div className="w-24 h-24 rounded-lg bg-gray-50 flex items-center justify-center border-2 border-gray-100 group-hover:bg-gray-100 transition-all">
+                                            <User size={40} className="text-black/50" />
+                                        </div>
+                                    )}
+                                    <div className="absolute -bottom-1 -right-1 bg-white p-1 rounded-full border border-gray-200 shadow-sm group-hover:scale-110 transition-transform">
+                                        {user.verified ? (
+                                            <span className="material-symbols-outlined text-green-600 text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
+                                        ) : (
+                                            <span className="material-symbols-outlined text-black/50 text-[18px]">add_a_photo</span>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="flex-grow">
+                                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                                        <h1 className="text-[24px] font-bold text-black">{user.fullName}</h1>
+                                        {user.verified && (
+                                            <span className="bg-green-50 text-green-600 px-2 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border border-green-100">
+                                                <span className="material-symbols-outlined text-[12px]">shield</span>
+                                                VERIFIED ARCHITECT
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-[14px] text-black font-medium mb-3">{user.professionalHeadline || 'Professional Freelancer'}</p>
+                                    <div className="flex flex-wrap gap-4 items-center">
+                                        <div className="flex items-center gap-1 text-black">
+                                            <span className="material-symbols-outlined text-yellow-500 text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+                                            <span className="text-[13px] font-bold">{user.rating || '0.0'} / 5.0</span>
+                                            <span className="text-black/50 text-[12px] ml-1">({user.reviewsCount || 0} Reviews)</span>
+                                        </div>
+                                        <div className="flex items-center gap-1 text-black">
+                                            <span className="material-symbols-outlined text-black/60 text-[18px]">location_on</span>
+                                            <span className="text-[13px] font-medium text-black">{user.location || 'Remote'}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 bg-green-50/50 border border-green-100 px-3 py-1 rounded-lg">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                                            <span className="text-[11px] font-bold text-green-600">Available</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex flex-col items-end gap-3">
+                                    <div className="text-right">
+                                        <p className="text-[10px] font-bold text-black uppercase tracking-wider mb-0.5">Wallet Balance</p>
+                                        <p className="text-[24px] text-black font-bold">₹{user.walletBalance?.toLocaleString() || '0.00'}</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setIsEditModalOpen(true)}
+                                        className="bg-primary text-white px-8 py-2 rounded-lg text-[13px] font-bold hover:opacity-90 active:scale-95 transition-all shadow-sm whitespace-nowrap"
+                                    >
+                                        Edit Profile
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Expertise & Skills Side Section */}
+                    <div className="lg:w-1/3 flex flex-col gap-4">
+                        <div className="bg-white rounded-xl border border-[#e5e7eb] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                            <h3 className="text-[11px] font-bold text-black/50 uppercase tracking-[0.15em] mb-4 flex justify-between items-center">
+                                Expertise & Skills
+                                <button onClick={() => setIsEditModalOpen(true)} className="text-gray-300 hover:text-primary"><Edit2 size={12}/></button>
+                            </h3>
+                            {!user.skills || user.skills.length === 0 ? (
+                                <p className="text-[12px] text-black/50 italic">No skills added yet.</p>
                             ) : (
-                                <div className="w-32 h-32 rounded-lg bg-surface-container flex items-center justify-center border-2 border-surface-variant group-hover:bg-surface-container-high transition-all">
-                                    <User size={48} className="text-on-surface-variant" />
+                                <div className="flex flex-wrap gap-2 mb-6">
+                                    {user.skills.map((skill: string) => (
+                                        <span key={skill} className="px-3 py-1 bg-gray-50 text-black rounded-full text-[11px] font-bold border border-gray-100">
+                                            {skill}
+                                        </span>
+                                    ))}
                                 </div>
                             )}
-                            <div className="absolute -bottom-2 -right-2 bg-white p-1 rounded-full border border-outline-variant shadow-sm group-hover:scale-110 transition-transform">
-                                {user.verified ? (
-                                    <span className="material-symbols-outlined text-tertiary-container text-[24px]" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
-                                ) : (
-                                    <span className="material-symbols-outlined text-on-surface-variant text-[24px]">add_a_photo</span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="flex-grow">
-                            <div className="flex flex-wrap items-center gap-3 mb-1">
-                                <h1 className="font-headline-lg text-headline-lg text-on-surface">{user.fullName}</h1>
-                                {user.verified && (
-                                    <span className="bg-tertiary-container/10 text-tertiary px-3 py-1 rounded-full text-label-sm font-semibold flex items-center gap-1">
-                                        <span className="material-symbols-outlined text-sm">shield</span>
-                                        VERIFIED ARCHITECT
-                                    </span>
-                                )}
-                            </div>
-                            <p className="font-body-lg text-body-lg text-on-surface-variant mb-4">{user.professionalHeadline || 'Professional Freelancer'}</p>
-                            <div className="flex flex-wrap gap-stack-lg items-center">
-                                <div className="flex items-center gap-1 text-on-surface">
-                                    <span className="material-symbols-outlined text-primary text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
-                                    <span className="font-label-md">{user.rating || '0.0'} / 5.0</span>
-                                    <span className="text-on-surface-variant opacity-60 text-body-sm ml-1">({user.reviewsCount || 0} Reviews)</span>
+                            
+                            <div className="pt-4 border-t border-gray-50 space-y-2">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-black/50">
+                                        <MapPin size={16} />
+                                    </div>
+                                    <span className="font-bold text-black text-[13px] capitalize">{user.location || 'Chennai, India'}</span>
                                 </div>
-                                <div className="flex items-center gap-1 text-on-surface">
-                                    <span className="material-symbols-outlined text-on-surface-variant text-[20px]">location_on</span>
-                                    <span className="font-body-md text-on-surface-variant">{user.location || 'Remote'}</span>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-black/50">
+                                        <Calendar size={16} />
+                                    </div>
+                                    <span className="font-bold text-black text-[13px]">Joined {user.joinedDate ? new Date(user.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'May 2026'}</span>
                                 </div>
-                                <div className="flex items-center gap-2 bg-secondary-container/15 border border-secondary-container/30 px-4 py-2 rounded-lg">
-                                    <div className="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
-                                    <span className="font-label-md text-secondary">Available for new projects</span>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-black/50">
+                                        <Clock size={16} />
+                                    </div>
+                                    <span className="font-bold text-black text-[13px]">{currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} local</span>
                                 </div>
                             </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-stack-sm">
-                            <div className="text-right">
-                                <p className="text-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Wallet Balance</p>
-                                <p className="font-display-lg text-headline-lg text-secondary font-bold">₹{user.walletBalance?.toLocaleString() || '0.00'}</p>
-                            </div>
-                            <button 
-                                onClick={() => setIsEditModalOpen(true)}
-                                className="bg-primary text-on-primary px-8 py-3 rounded-lg font-label-md hover:opacity-90 active:scale-95 transition-all shadow-sm"
-                            >
-                                Edit Profile
-                            </button>
                         </div>
                     </div>
-                </section>
+                </div>
 
                 {/* Tab Navigation */}
                 <nav className="flex border-b border-outline-variant/30 gap-10 mb-10 overflow-x-auto scrollbar-hide px-2">
@@ -662,7 +718,7 @@ const Profile: React.FC = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`pb-4 text-[16px] font-semibold transition-all relative whitespace-nowrap px-1 ${
-                                activeTab === tab.id ? 'text-on-surface' : 'text-on-surface-variant/60 hover:text-on-surface'
+                                activeTab === tab.id ? 'text-on-surface' : 'text-black/60 hover:text-on-surface'
                             }`}
                         >
                             {tab.label}
@@ -694,7 +750,7 @@ const Profile: React.FC = () => {
                                     {!user.portfolio || user.portfolio.length === 0 ? (
                                         <div onClick={() => setIsPortfolioModalOpen(true)} className="py-16 text-center bg-gray-50/50 border-2 border-dashed border-outline-variant/30 rounded-2xl cursor-pointer hover:bg-gray-100 transition-all">
                                             <ImageIcon size={40} className="mx-auto text-gray-300 mb-4" />
-                                            <p className="text-gray-400 font-medium">Click to upload your first portfolio project</p>
+                                            <p className="text-black/50 font-medium">Click to upload your first portfolio project</p>
                                         </div>
                                     ) : (
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -719,7 +775,7 @@ const Profile: React.FC = () => {
                                 {/* Summary Section */}
                                 <section className="bg-white rounded-2xl border border-outline-variant/30 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                                     <h2 className="text-[20px] font-bold text-on-surface mb-4">Professional Bio</h2>
-                                    <p className="text-[15px] text-gray-600 leading-relaxed whitespace-pre-line">
+                                    <p className="text-[15px] text-black/80 leading-relaxed whitespace-pre-line">
                                         {user.summary || "No bio summary added yet. Click 'Edit Profile' to introduce yourself to potential clients."}
                                     </p>
                                 </section>
@@ -728,13 +784,13 @@ const Profile: React.FC = () => {
                                 <section className="bg-white rounded-2xl border border-outline-variant/30 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                                     <div className="flex justify-between items-center mb-10">
                                         <h2 className="text-[20px] font-bold text-on-surface">Work Experience</h2>
-                                        <button onClick={() => { setIsExpEdit(false); setIsExpModalOpen(true); }} className="bg-gray-50 text-gray-600 p-2 rounded-lg hover:bg-primary hover:text-white transition-all">
+                                        <button onClick={() => { setIsExpEdit(false); setIsExpModalOpen(true); }} className="bg-gray-50 text-black/80 p-2 rounded-lg hover:bg-primary hover:text-white transition-all">
                                             <Plus size={18} />
                                         </button>
                                     </div>
                                     
                                     {!user.experience || user.experience.length === 0 ? (
-                                        <p className="text-gray-400 italic text-center py-10">No experience history added.</p>
+                                        <p className="text-black/50 italic text-center py-10">No experience history added.</p>
                                     ) : (
                                         <div className="relative ml-4 space-y-12">
                                             <div className="absolute left-[-16px] top-2 bottom-2 w-0.5 bg-gray-100"></div>
@@ -747,20 +803,20 @@ const Profile: React.FC = () => {
                                                             <p className="text-primary font-bold text-[13px]">{exp.company}</p>
                                                         </div>
                                                         <div className="flex items-center gap-3">
-                                                            <span className="text-[11px] font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-outline-variant/30">
+                                                            <span className="text-[11px] font-bold text-black/50 bg-gray-50 px-3 py-1 rounded-full border border-outline-variant/30">
                                                                 {formatPeriod(exp.period)}
                                                             </span>
                                                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <button onClick={() => handleEditExperienceClick(i)} className="text-gray-400 hover:text-primary transition-colors">
+                                                                <button onClick={() => handleEditExperienceClick(i)} className="text-black/50 hover:text-primary transition-colors">
                                                                     <Edit2 size={14} />
                                                                 </button>
-                                                                <button onClick={() => handleDeleteItem('experience', i)} className="text-gray-400 hover:text-red-500 transition-colors">
+                                                                <button onClick={() => handleDeleteItem('experience', i)} className="text-black/50 hover:text-red-500 transition-colors">
                                                                     <Trash2 size={14} />
                                                                 </button>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <p className="text-[14px] text-gray-500 leading-relaxed">{exp.description}</p>
+                                                    <p className="text-[14px] text-black/60 leading-relaxed">{exp.description}</p>
                                                 </div>
                                             ))}
                                         </div>
@@ -771,13 +827,13 @@ const Profile: React.FC = () => {
                                 <section className="bg-white rounded-2xl border border-outline-variant/30 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                                     <div className="flex justify-between items-center mb-8">
                                         <h2 className="text-[20px] font-bold text-on-surface">Education</h2>
-                                        <button onClick={() => { setIsEduEdit(false); setIsEduModalOpen(true); }} className="bg-gray-50 text-gray-600 p-2 rounded-lg hover:bg-primary hover:text-white transition-all">
+                                        <button onClick={() => { setIsEduEdit(false); setIsEduModalOpen(true); }} className="bg-gray-50 text-black/80 p-2 rounded-lg hover:bg-primary hover:text-white transition-all">
                                             <Plus size={18} />
                                         </button>
                                     </div>
                                     
                                     {!user.education || user.education.length === 0 ? (
-                                        <p className="text-gray-400 italic text-center py-6">Education details not added.</p>
+                                        <p className="text-black/50 italic text-center py-6">Education details not added.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             {user.education.map((edu: any, i: number) => (
@@ -786,13 +842,13 @@ const Profile: React.FC = () => {
                                                         <GraduationCap size={22} />
                                                     </div>
                                                     <h3 className="font-bold text-[15px] text-on-surface mb-1">{edu.institution}</h3>
-                                                    <p className="text-[13px] font-bold text-gray-500 mb-2">{edu.degree}</p>
-                                                    <p className="text-[11px] text-gray-400 font-medium uppercase tracking-tight">{formatPeriod(edu.period)}</p>
+                                                    <p className="text-[13px] font-bold text-black/60 mb-2">{edu.degree}</p>
+                                                    <p className="text-[11px] text-black/50 font-medium uppercase tracking-tight">{formatPeriod(edu.period)}</p>
                                                     <div className="absolute top-4 right-4 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                        <button onClick={() => handleEditEducationClick(i)} className="text-gray-400 hover:text-primary transition-colors">
+                                                        <button onClick={() => handleEditEducationClick(i)} className="text-black/50 hover:text-primary transition-colors">
                                                             <Edit2 size={14} />
                                                         </button>
-                                                        <button onClick={() => handleDeleteItem('education', i)} className="text-gray-400 hover:text-red-500 transition-colors">
+                                                        <button onClick={() => handleDeleteItem('education', i)} className="text-black/50 hover:text-red-500 transition-colors">
                                                             <Trash2 size={14} />
                                                         </button>
                                                     </div>
@@ -819,7 +875,7 @@ const Profile: React.FC = () => {
                                     ) : myProjects.length === 0 ? (
                                         <div className="py-20 text-center bg-gray-50/50 border-2 border-dashed border-outline-variant/30 rounded-2xl">
                                             <Briefcase size={40} className="mx-auto text-gray-200 mb-4" />
-                                            <p className="text-gray-400 font-medium">You haven't posted any projects yet.</p>
+                                            <p className="text-black/50 font-medium">You haven't posted any projects yet.</p>
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
@@ -833,7 +889,7 @@ const Profile: React.FC = () => {
                                                             >
                                                                 {proj.title}
                                                             </h4>
-                                                            <div className="flex flex-wrap items-center gap-4 text-[12px] text-gray-400">
+                                                            <div className="flex flex-wrap items-center gap-4 text-[12px] text-black/50">
                                                                 <span className="bg-on-surface text-white px-3 py-0.5 rounded-full font-bold uppercase tracking-tighter text-[9px]">{proj.category}</span>
                                                                 <span className="flex items-center gap-1"><Calendar size={13} /> {new Date(proj.postedAt).toLocaleDateString()}</span>
                                                                 <span className="flex items-center gap-1 font-bold text-primary"><MessageSquare size={13} /> {proj.bidCount || 0} Proposals</span>
@@ -841,7 +897,7 @@ const Profile: React.FC = () => {
                                                         </div>
                                                         <div className="text-right shrink-0">
                                                             <p className="text-[20px] font-bold text-on-surface">₹{proj.budgetAmount?.toLocaleString()}</p>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{proj.paymentType}</p>
+                                                            <p className="text-[10px] text-black/50 font-bold uppercase tracking-widest">{proj.paymentType}</p>
                                                         </div>
                                                     </div>
                                                     <div className="flex items-center justify-between pt-4 border-t border-gray-50">
@@ -849,7 +905,7 @@ const Profile: React.FC = () => {
                                                             <div className="w-8 h-8 rounded-full bg-green-50 text-green-600 flex items-center justify-center font-bold text-[10px] border border-green-100">
                                                                 LIVE
                                                             </div>
-                                                            <span className="text-[12px] font-medium text-gray-500">Currently accepting proposals</span>
+                                                            <span className="text-[12px] font-medium text-black/60">Currently accepting proposals</span>
                                                         </div>
                                                         <button 
                                                             onClick={() => navigate(`/projects/${proj.id}`)}
@@ -881,7 +937,7 @@ const Profile: React.FC = () => {
                                     ) : myProposals.length === 0 ? (
                                         <div className="py-20 text-center bg-gray-50/50 border-2 border-dashed border-outline-variant/30 rounded-2xl">
                                             <MessageSquare size={40} className="mx-auto text-gray-200 mb-4" />
-                                            <p className="text-gray-400 font-medium">You haven't submitted any bids yet.</p>
+                                            <p className="text-black/50 font-medium">You haven't submitted any bids yet.</p>
                                         </div>
                                     ) : (
                                         <div className="space-y-4">
@@ -895,7 +951,7 @@ const Profile: React.FC = () => {
                                                             >
                                                                 {prop.project?.title}
                                                             </h4>
-                                                            <div className="flex items-center gap-4 text-[11px] text-gray-400">
+                                                            <div className="flex items-center gap-4 text-[11px] text-black/50">
                                                                 <span className="flex items-center gap-1"><Clock size={12} /> {new Date(prop.createdAt).toLocaleDateString()}</span>
                                                                 <span className={`px-3 py-0.5 rounded-full font-bold uppercase text-[9px] ${
                                                                     prop.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : 'bg-orange-50 text-orange-600'
@@ -906,18 +962,18 @@ const Profile: React.FC = () => {
                                                         </div>
                                                         <div className="text-right">
                                                             <p className="text-[20px] font-bold text-on-surface">₹{prop.bidAmount?.toLocaleString()}</p>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Your Bid</p>
+                                                            <p className="text-[10px] text-black/50 font-bold uppercase tracking-widest">Your Bid</p>
                                                         </div>
                                                     </div>
                                                     <div className="bg-gray-50 rounded-xl p-4 mb-4">
-                                                        <p className="text-[13px] text-gray-600 line-clamp-2 italic leading-relaxed">
+                                                        <p className="text-[13px] text-black/80 line-clamp-2 italic leading-relaxed">
                                                             "{prop.coverLetter}"
                                                         </p>
                                                     </div>
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-3">
                                                             <span className="text-[12px] font-bold text-on-surface flex items-center gap-1">
-                                                                <Smartphone size={14} className="text-gray-400" /> {prop.deliveryTime} Days
+                                                                <Smartphone size={14} className="text-black/50" /> {prop.deliveryTime} Days
                                                             </span>
                                                         </div>
                                                         <button 
@@ -948,7 +1004,7 @@ const Profile: React.FC = () => {
                                         ].map((item, i) => (
                                             <div key={i} className="p-6 rounded-2xl border border-outline-variant/30 bg-gray-50/50 flex items-start gap-4 transition-all hover:bg-white hover:shadow-md">
                                                 <div className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center border ${
-                                                    item.status ? 'bg-green-50 border-green-100 text-green-600' : 'bg-white border-outline-variant/30 text-gray-400'
+                                                    item.status ? 'bg-green-50 border-green-100 text-green-600' : 'bg-white border-outline-variant/30 text-black/50'
                                                 }`}>
                                                     <item.icon size={24} />
                                                 </div>
@@ -957,7 +1013,7 @@ const Profile: React.FC = () => {
                                                         <h4 className="font-bold text-[15px]">{item.label} Verification</h4>
                                                         {item.status && <CheckCircle2 size={14} className="text-green-500" fill="currentColor" />}
                                                     </div>
-                                                    <p className="text-[12px] text-gray-500 mb-3">{item.desc}</p>
+                                                    <p className="text-[12px] text-black/60 mb-3">{item.desc}</p>
                                                     {!item.status ? (
                                                         <button 
                                                             onClick={() => handleVerify(item.field)}
@@ -987,11 +1043,11 @@ const Profile: React.FC = () => {
                                         ].map((activity, i) => (
                                             <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-gray-50/50 border border-outline-variant/10">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-10 h-10 rounded-lg bg-white border border-outline-variant/20 flex items-center justify-center text-gray-400">
+                                                    <div className="w-10 h-10 rounded-lg bg-white border border-outline-variant/20 flex items-center justify-center text-black/50">
                                                         <activity.icon size={20} />
                                                     </div>
                                                     <div>
-                                                        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{activity.label}</p>
+                                                        <p className="text-[11px] font-bold text-black/50 uppercase tracking-wider">{activity.label}</p>
                                                         <p className="text-[14px] font-bold text-on-surface">{activity.value}</p>
                                                     </div>
                                                 </div>
@@ -1015,47 +1071,9 @@ const Profile: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Right Column (Sidebar) */}
+                    {/* Right Column (Sidebar) - Now handled in Top Container for primary info */}
                     <aside className="lg:col-span-4 space-y-6">
-                        {/* Expertise Section */}
-                        <div className="bg-white rounded-2xl border border-outline-variant/30 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-                            <h3 className="text-[13px] font-bold text-gray-400 uppercase tracking-widest mb-6 flex justify-between items-center">
-                                Expertise & Skills
-                                <button onClick={() => setIsEditModalOpen(true)} className="text-gray-300 hover:text-primary"><Edit2 size={14}/></button>
-                            </h3>
-                            {!user.skills || user.skills.length === 0 ? (
-                                <p className="text-[13px] text-gray-400 italic">No skills added yet.</p>
-                            ) : (
-                                <div className="flex flex-wrap gap-2">
-                                    {user.skills.map((skill: string) => (
-                                        <span key={skill} className="px-3 py-1 bg-gray-50 text-[#12151b] rounded-full text-[12px] font-bold border border-gray-100">
-                                            {skill}
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6 space-y-1">
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
-                                    <MapPin size={18} strokeWidth={1.5} />
-                                </div>
-                                <span className="font-bold text-[#12151b] text-[15px] capitalize leading-tight">{user.location || 'Your location'}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
-                                    <Calendar size={18} strokeWidth={1.5} />
-                                </div>
-                                <span className="font-bold text-[#12151b] text-[15px] leading-tight">Joined {user.joinedDate ? new Date(user.joinedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'May 2026'}</span>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400">
-                                    <Clock size={18} strokeWidth={1.5} />
-                                </div>
-                                <span className="font-bold text-[#12151b] text-[15px] leading-tight">{currentTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} local</span>
-                            </div>
-                        </div>
+                        {/* You can add secondary sidebar widgets here later */}
                     </aside>
                 </div>
             </div>
