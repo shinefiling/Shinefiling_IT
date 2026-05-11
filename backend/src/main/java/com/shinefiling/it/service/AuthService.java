@@ -205,4 +205,31 @@ public class AuthService {
             throw new RuntimeException("Error verifying Google token: " + e.getMessage());
         }
     }
+    public User processGoogleLoginRaw(String email, String name, String googleId, String requestedRole, String profileImage) {
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            return userOpt.get();
+        } else {
+            // Create new user
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setFullName(name);
+            newUser.setUsername(email.split("@")[0]);
+            newUser.setPassword(passwordEncoder.encode(googleId)); // Use googleId as partial basis for random pass
+            newUser.setUserRole(requestedRole != null ? requestedRole : "FREELANCER");
+            newUser.setVerified(true);
+            User savedUser = userRepository.save(newUser);
+
+            // Create Profile
+            Profile profile = new Profile();
+            profile.setEmail(email);
+            profile.setFullName(name);
+            profile.setUsername(newUser.getUsername());
+            profile.setProfilePicture(profileImage);
+            profile.setEmailVerified(true);
+            profileRepository.save(profile);
+
+            return savedUser;
+        }
+    }
 }

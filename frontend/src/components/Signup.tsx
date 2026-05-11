@@ -3,7 +3,7 @@ import { User, Mail, Lock, Eye, EyeOff, ArrowRight, Github, ShieldCheck, ArrowLe
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config';
-import { GoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 
 const Signup: React.FC = () => {
     const navigate = useNavigate();
@@ -138,42 +138,58 @@ const Signup: React.FC = () => {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse: any) => {
-        setIsLoading(true);
-        setError('');
-        
-        if (!signupData.userRole) {
-            setError('Please select your role (Freelancer or Client) first.');
-            setIsLoading(false);
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({ 
-                    token: credentialResponse.credential,
-                    userRole: signupData.userRole
-                })
-            });
-            const data = await response.json();
-            if (response.ok) {
-                localStorage.setItem('user', JSON.stringify(data.user || data));
-                if (data.userRole === 'CLIENT') navigate('/client-profile');
-                else navigate('/profile');
-            } else {
-                setError(data.message || 'Google registration failed.');
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            if (!signupData.userRole) {
+                setError('Please select your role (Freelancer or Client) first.');
+                return;
             }
-        } catch (err) {
-            setError('Connection error with Google service.');
-        } finally {
-            setIsLoading(false);
+            setIsLoading(true);
+            setError('');
+            try {
+                // 1. Fetch User Info using Access Token
+                const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+                });
+                const userInfo = await userInfoRes.json();
+                const { email, name, sub: googleId, picture: profileImage } = userInfo;
+
+                // 2. Send to Backend
+                const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ 
+                        email, 
+                        name, 
+                        googleId, 
+                        profileImage,
+                        userRole: signupData.userRole
+                    })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    localStorage.setItem('user', JSON.stringify(data.user || data));
+                    if (data.userRole === 'CLIENT') navigate('/client-profile');
+                    else navigate('/profile');
+                } else {
+                    setError(data.message || 'Google registration failed.');
+                }
+            } catch (err) {
+                console.error("Google Signup Error:", err);
+                setError('Google registration failed. Please try again.');
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        onError: error => {
+            console.error('Google Signup Failed:', error);
+            setError('Google login was cancelled or failed.');
         }
-    };
+    });
 
     return (
         <div className="min-h-screen flex flex-col lg:flex-row font-['Poppins'] bg-[#fdfaf0]">
@@ -441,16 +457,14 @@ const Signup: React.FC = () => {
                                 </div>
 
                                 <div className="flex justify-center w-full">
-                                    <GoogleLogin 
-                                        onSuccess={(res) => {
-                                            console.log("Google Signup Success:", res);
-                                            handleGoogleSuccess(res);
-                                        }}
-                                        onError={() => {
-                                            console.error("Google Signup Error");
-                                            setError('Google Registration Failed');
-                                        }}
-                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => handleGoogleLogin()}
+                                        className="w-full flex items-center justify-center gap-3 py-2.5 border border-[#eee] rounded-md hover:bg-gray-50 transition-all font-medium text-[#444] text-sm"
+                                    >
+                                        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+                                        Continue with Google
+                                    </button>
                                 </div>
                             </div>
 

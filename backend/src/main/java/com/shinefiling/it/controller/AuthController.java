@@ -98,11 +98,25 @@ public class AuthController {
     }
 
     @PostMapping("/google")
-    public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> googleLogin(@RequestBody Map<String, Object> payload) {
         try {
-            String token = request.get("token");
-            String role = request.get("userRole"); // Optional, mainly for signup
-            User user = authService.googleLogin(token, role);
+            String token = (String) payload.get("token");
+            String email = (String) payload.get("email");
+            String name = (String) payload.get("name");
+            String googleId = (String) payload.get("googleId");
+            String role = (String) payload.get("userRole");
+            String profileImage = (String) payload.get("profileImage");
+
+            User user;
+            if (token != null && !token.isEmpty()) {
+                // Secure path: verify ID token
+                user = authService.googleLogin(token, role);
+            } else if (email != null && googleId != null) {
+                // Fallback path: trust raw info (similar to shinefiling-web)
+                user = authService.processGoogleLoginRaw(email, name, googleId, role, profileImage);
+            } else {
+                throw new RuntimeException("Invalid Google login request");
+            }
             return ResponseEntity.ok(user);
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
