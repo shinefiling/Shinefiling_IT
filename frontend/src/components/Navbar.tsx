@@ -99,7 +99,7 @@ const Navbar: React.FC = () => {
     const fetchNotifications = async (userId: any) => {
         if (!userId || userId === 'undefined') return;
         try {
-            const response = await fetch(`http://localhost:8080/api/notifications/user/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/notifications/user/${userId}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
@@ -116,7 +116,7 @@ const Navbar: React.FC = () => {
 
     const markNotificationAsRead = async (id: number) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/notifications/${id}/read`, {
+            const response = await fetch(`${API_BASE_URL}/api/notifications/${id}/read`, {
                 method: 'PATCH',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -133,7 +133,7 @@ const Navbar: React.FC = () => {
 
     const fetchLatestUserData = async (userId: number) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/wallet/balance/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/wallet/balance/${userId}`, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
