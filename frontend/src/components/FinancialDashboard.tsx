@@ -6,6 +6,7 @@ import {
     CheckCircle2, Clock, Smartphone, MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 
 const FinancialDashboard: React.FC = () => {
     const [user, setUser] = useState<any>(null);
@@ -26,7 +27,7 @@ const FinancialDashboard: React.FC = () => {
 
     const fetchTransactions = async (email: string) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/dashboard/transactions/${email}`);
+            const response = await fetch(`${API_BASE_URL}/api/dashboard/transactions/${email}`);
             if (response.ok) {
                 const data = await response.json();
                 setTransactions(data);
@@ -58,14 +59,14 @@ const FinancialDashboard: React.FC = () => {
                 status: 'COMPLETED'
             };
 
-            const response = await fetch(`http://localhost:8080/api/dashboard/transactions`, {
+            const response = await fetch(`${API_BASE_URL}/api/dashboard/transactions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(txData)
             });
 
             if (response.ok) {
-                const profileResponse = await fetch(`http://localhost:8080/api/profiles/${user.email}`);
+                const profileResponse = await fetch(`${API_BASE_URL}/api/profiles/${user.email}`);
                 if (profileResponse.ok) {
                     const updatedUser = await profileResponse.json();
                     setUser(updatedUser);

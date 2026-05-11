@@ -59,7 +59,7 @@ const BrowseJobs: React.FC = () => {
             }
             if (priceRange < 1000000) params.append('maxPrice', priceRange.toString());
 
-            const response = await fetch(`http://localhost:8080/api/jobs/search?${params.toString()}`, {
+            const response = await fetch(`${API_BASE_URL}/api/jobs/search?${params.toString()}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             if (response.ok) {

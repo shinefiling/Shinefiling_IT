@@ -11,6 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Collections;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class AuthService {
@@ -148,5 +155,54 @@ public class AuthService {
         user.setOtp(null);
         user.setOtpExpiry(null);
         userRepository.save(user);
+    }
+
+    @Value("${google.client.id}")
+    private String googleClientId;
+
+    public User googleLogin(String idTokenString, String requestedRole) {
+        try {
+            GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+                    .setAudience(Collections.singletonList(googleClientId))
+                    .build();
+
+            GoogleIdToken idToken = verifier.verify(idTokenString);
+            if (idToken != null) {
+                Payload payload = idToken.getPayload();
+                String email = payload.getEmail();
+                String name = (String) payload.get("name");
+                String pictureUrl = (String) payload.get("picture");
+
+                Optional<User> userOpt = userRepository.findByEmail(email);
+                if (userOpt.isPresent()) {
+                    return userOpt.get();
+                } else {
+                    // Create new user
+                    User newUser = new User();
+                    newUser.setEmail(email);
+                    newUser.setFullName(name);
+                    newUser.setUsername(email.split("@")[0]);
+                    newUser.setPassword(passwordEncoder.encode(Random.class.getName())); // Random password
+                    newUser.setUserRole(requestedRole != null ? requestedRole : "FREELANCER");
+                    newUser.setVerified(true);
+                    User savedUser = userRepository.save(newUser);
+
+                    // Create Profile
+                    Profile profile = new Profile();
+                    profile.setEmail(email);
+                    profile.setFullName(name);
+                    profile.setUsername(newUser.getUsername());
+                    profile.setProfilePicture(pictureUrl);
+                    profile.setEmailVerified(true);
+                    profileRepository.save(profile);
+
+                    return savedUser;
+                }
+            } else {
+                throw new RuntimeException("Invalid ID token.");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error verifying Google token: " + e.getMessage());
+        }
     }
 }

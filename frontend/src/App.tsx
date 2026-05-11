@@ -110,11 +110,16 @@ const AppContent: React.FC = () => {
     );
 };
 
+import { GoogleOAuthProvider } from '@react-oauth/google';
+import { GOOGLE_CLIENT_ID } from './config';
+
 const App: React.FC = () => {
     return (
-        <Router basename="/ITfreelancers">
-            <AppContent />
-        </Router>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <Router basename="/ITfreelancers">
+                <AppContent />
+            </Router>
+        </GoogleOAuthProvider>
     );
 };
 

@@ -3,6 +3,7 @@ import { Mail, Lock, Eye, EyeOff, ArrowRight, Github, ShieldCheck, ArrowLeft } f
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login: React.FC = () => {
     const navigate = useNavigate();
@@ -59,6 +60,34 @@ const Login: React.FC = () => {
             }
         } catch (err) {
             setError('Connection error. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleGoogleSuccess = async (credentialResponse: any) => {
+        setIsLoading(true);
+        setError('');
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ token: credentialResponse.credential })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                localStorage.setItem('user', JSON.stringify(data.user || data));
+                if (data.userRole === 'ADMIN') navigate('/admin-dashboard');
+                else if (data.userRole === 'CLIENT') navigate('/client-profile');
+                else navigate('/profile');
+            } else {
+                setError(data.message || 'Google login failed.');
+            }
+        } catch (err) {
+            setError('Connection error with Google service.');
         } finally {
             setIsLoading(false);
         }
@@ -301,11 +330,13 @@ const Login: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="flex justify-center">
-                                <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-[#eee] rounded-md hover:bg-[#f9fafb] transition-all font-medium text-sm text-[#444]">
-                                    <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                                    Sign in with Google
-                                </button>
+                            <div className="flex justify-center w-full">
+                                <GoogleLogin 
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={() => setError('Google Login Failed')}
+                                    useOneTap
+                                    width="100%"
+                                />
                             </div>
                         </div>
                     )}

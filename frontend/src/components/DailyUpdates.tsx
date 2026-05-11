@@ -5,6 +5,7 @@ import {
     Search, Bell
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 
 const DailyUpdates: React.FC = () => {
     const [newsList, setNewsList] = useState<any[]>([]);
@@ -13,7 +14,7 @@ const DailyUpdates: React.FC = () => {
     useEffect(() => {
         const fetchNews = async () => {
             try {
-                const response = await fetch('http://localhost:8080/api/news/all');
+                const response = await fetch(`${API_BASE_URL}/api/news/all`);
                 if (response.ok) {
                     const data = await response.json();
                     setNewsList(data);

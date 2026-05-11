@@ -62,7 +62,7 @@ const ClientProfile: React.FC = () => {
             }
 
             try {
-                const response = await fetch(`${API_BASE_URL}/${targetEmail}`, {
+                const response = await fetch(`${API_BASE_URL}/api/profiles/${targetEmail}`, {
                     headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
                 if (response.ok) {
@@ -84,7 +84,7 @@ const ClientProfile: React.FC = () => {
 
     const fetchClientData = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/jobs`, {
+            const response = await fetch(`${API_BASE_URL}/api/jobs`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             if (response.ok) {

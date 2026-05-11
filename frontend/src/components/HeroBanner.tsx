@@ -35,7 +35,7 @@ const HeroBanner: React.FC = () => {
                 >
                     <div className="relative w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[480px]">
                         <img
-                            src="Hero1.png"
+                            src={`${import.meta.env.BASE_URL}Hero1.png`}
                             alt="Freelance Platform"
                             className="w-full h-auto object-contain scale-105 lg:scale-110 origin-bottom"
                         />

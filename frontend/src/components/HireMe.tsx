@@ -7,6 +7,7 @@ import {
     ChevronLeft, Info, Wallet
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL } from '../config';
 
 const HireMe: React.FC = () => {
     const [searchParams] = useSearchParams();
@@ -36,7 +37,7 @@ const HireMe: React.FC = () => {
 
     const fetchFreelancer = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/api/profiles/${freelancerId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/profiles/${freelancerId}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             if (response.ok) {
