@@ -4,6 +4,7 @@ import {
     Save, Key, Wallet, ShieldCheck, Briefcase, 
     AlertCircle, Smartphone, Check, Clock, Eye, EyeOff
 } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const Settings: React.FC = () => {
     const [activeSection, setActiveSection] = useState('profile');
@@ -40,7 +41,7 @@ const Settings: React.FC = () => {
 
     const fetchProfile = async (email: string, currentUser: any) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/profiles/${email}`, {
+            const response = await fetch(`${API_BASE_URL}/api/profiles/${email}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             if (response.ok) {
@@ -73,7 +74,7 @@ const Settings: React.FC = () => {
 
         try {
             setSaving(true);
-            const response = await fetch(`http://localhost:8080/api/profiles`, {
+            const response = await fetch(`${API_BASE_URL}/api/profiles`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

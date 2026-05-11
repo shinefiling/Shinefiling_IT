@@ -6,6 +6,7 @@ import {
     ChevronLeft, Contact, Headphones, Languages, Lock,
     Folder, Eye
 } from 'lucide-react';
+import { API_BASE_URL } from '../config';
 
 const ProjectDetails: React.FC = () => {
     const { id } = useParams();
@@ -32,7 +33,7 @@ const ProjectDetails: React.FC = () => {
     const fetchProject = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`http://localhost:8080/api/projects/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/projects/${id}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             }); 
             if (!response.ok) throw new Error("Project not found");
@@ -51,7 +52,7 @@ const ProjectDetails: React.FC = () => {
 
     const fetchProposals = async (projectId: number) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/proposals/project/${projectId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/proposals/project/${projectId}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             if (response.ok) {
@@ -79,7 +80,7 @@ const ProjectDetails: React.FC = () => {
             setSubmitting(true);
             setErrorMsg(null);
             
-            const response = await fetch(`http://localhost:8080/api/proposals/project/${project.id}/freelancer/${userId}`, {
+            const response = await fetch(`${API_BASE_URL}/api/proposals/project/${project.id}/freelancer/${userId}`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

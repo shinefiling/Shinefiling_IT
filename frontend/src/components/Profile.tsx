@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { API_BASE_URL as GLOBAL_API_BASE_URL } from '../config';
 
 const Profile: React.FC = () => {
     const location = useLocation();
@@ -42,7 +43,7 @@ const Profile: React.FC = () => {
     const [myProposals, setMyProposals] = useState<any[]>([]);
     const [fetchingData, setFetchingData] = useState(false);
 
-    const API_BASE_URL = 'http://localhost:8080/api/profiles';
+    const API_BASE_URL = `${GLOBAL_API_BASE_URL}/api/profiles`;
 
     useEffect(() => {
         const timer = setInterval(() => setCurrentTime(new Date()), 30000);
@@ -133,8 +134,8 @@ const Profile: React.FC = () => {
         setFetchingData(true);
         try {
             const [projectsRes, proposalsRes] = await Promise.all([
-                fetch(`http://localhost:8080/api/projects/client/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }),
-                fetch(`http://localhost:8080/api/proposals/freelancer/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                fetch(`${GLOBAL_API_BASE_URL}/api/projects/client/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }),
+                fetch(`${GLOBAL_API_BASE_URL}/api/proposals/freelancer/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             ]);
 
             if (projectsRes.ok) {
