@@ -236,7 +236,7 @@ const Navbar: React.FC = () => {
                 {/* Left: Logo */}
                 <div className="flex justify-start">
                     <Link to="/" className="flex items-center gap-2 cursor-pointer shrink-0">
-                        <img src="shine-logo.png" alt="ShineFiling Logo" className="h-16 md:h-24 w-auto object-contain hover:opacity-90 transition-all" />
+                        <img src={`${import.meta.env.BASE_URL}shine-logo.png`} alt="ShineFiling Logo" className="h-16 md:h-24 w-auto object-contain hover:opacity-90 transition-all" />
                     </Link>
                 </div>
                 
@@ -660,7 +660,7 @@ const Navbar: React.FC = () => {
                 <div className="p-0 flex flex-col h-full overflow-hidden">
                     <div className="p-6 flex items-center justify-between border-b border-gray-50">
                         <Link to="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
-                            <img src="shine-logo.png" alt="Shinefiling" className="h-14 w-auto" />
+                            <img src={`${import.meta.env.BASE_URL}shine-logo.png`} alt="Shinefiling" className="h-14 w-auto" />
                         </Link>
                         <button onClick={() => setIsMobileMenuOpen(false)}>
                             <X size={24} className="text-[#242424]" />

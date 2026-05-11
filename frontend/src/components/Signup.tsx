@@ -39,7 +39,7 @@ const Signup: React.FC = () => {
                 return;
             }
 
-            const response = await fetch('http://localhost:8080/api/auth/signup', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -415,7 +415,7 @@ const Signup: React.FC = () => {
             <div className="w-full lg:w-1/2 relative overflow-hidden order-1 lg:order-1 min-h-[500px] bg-[#242424]">
                 {/* Image as background */}
                 <img 
-                    src="signup.jpeg" 
+                    src={`${import.meta.env.BASE_URL}signup.jpeg`} 
                     alt="Registration Visual" 
                     className="absolute inset-0 w-full h-full object-cover"
                 />

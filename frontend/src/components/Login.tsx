@@ -68,7 +68,7 @@ const Login: React.FC = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:8080/api/auth/verify-otp', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/verify-otp`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ const Login: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('http://localhost:8080/api/auth/resend-otp', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/resend-otp`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -314,7 +314,7 @@ const Login: React.FC = () => {
             <div className="w-full lg:w-1/2 relative overflow-hidden order-1 lg:order-1 min-h-[500px]">
                 {/* Image as background */}
                 <img 
-                    src="loginimage.png" 
+                    src={`${import.meta.env.BASE_URL}loginimage.png`} 
                     alt="Login Visual" 
                     className="absolute inset-0 w-full h-full object-cover"
                 />
