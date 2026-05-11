@@ -214,8 +214,12 @@ public class AuthService {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setFullName(name);
-            newUser.setUsername(email.split("@")[0]);
-            newUser.setPassword(passwordEncoder.encode(googleId)); // Use googleId as partial basis for random pass
+            // Ensure unique username by appending last 4 chars of googleId
+            String usernamePrefix = email.split("@")[0];
+            String uniqueSuffix = googleId.length() > 4 ? googleId.substring(googleId.length() - 4) : googleId;
+            newUser.setUsername(usernamePrefix + "_" + uniqueSuffix);
+            
+            newUser.setPassword(passwordEncoder.encode(googleId)); 
             newUser.setUserRole(requestedRole != null ? requestedRole : "FREELANCER");
             newUser.setVerified(true);
             User savedUser = userRepository.save(newUser);
