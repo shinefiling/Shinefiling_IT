@@ -385,7 +385,7 @@ const Profile: React.FC = () => {
             
             <AnimatePresence mode="wait">
                 {isEditModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -459,7 +459,7 @@ const Profile: React.FC = () => {
                 )}
 
                 {isExpModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -488,7 +488,7 @@ const Profile: React.FC = () => {
                 )}
 
                 {isEduModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -516,12 +516,12 @@ const Profile: React.FC = () => {
                 )}
 
                 {isPortfolioModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.95 }}
-                            className="bg-white rounded-lg shadow-2xl w-full max-md overflow-hidden"
+                            className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden"
                         >
                             <div className="p-5 border-b border-outline-variant/30 flex items-center justify-between">
                                 <h3 className="text-[18px] font-bold text-on-surface">Add project</h3>
@@ -540,7 +540,7 @@ const Profile: React.FC = () => {
                 )}
 
                 {isPhotoModalOpen && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                         <motion.div 
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}

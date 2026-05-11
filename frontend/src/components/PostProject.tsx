@@ -97,7 +97,7 @@ const PostProject: React.FC = () => {
                         initial={{ opacity: 0, x: 50, y: -20 }}
                         animate={{ opacity: 1, x: 0, y: 0 }}
                         exit={{ opacity: 0, x: 50, y: -20 }}
-                        className="fixed top-24 right-6 z-[100] bg-white border-l-4 border-red-500 shadow-2xl p-4 flex items-center gap-4 rounded-md min-w-[320px]"
+                        className="fixed top-24 right-6 z-[10000] bg-white border-l-4 border-red-500 shadow-2xl p-4 flex items-center gap-4 rounded-md min-w-[320px]"
                     >
                         <div className="bg-red-50 p-2 rounded-full text-red-500">
                             <AlertCircle size={20} />
