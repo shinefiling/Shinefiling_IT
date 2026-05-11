@@ -248,7 +248,7 @@ const ForgotPassword: React.FC = () => {
 
             <div className="w-full lg:w-1/2 relative overflow-hidden order-1 lg:order-1 min-h-[500px]">
                 <img 
-                    src="/loginimage.png" 
+                    src="loginimage.png" 
                     alt="Reset Password Visual" 
                     className="absolute inset-0 w-full h-full object-cover"
                 />

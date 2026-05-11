@@ -415,7 +415,7 @@ const Signup: React.FC = () => {
             <div className="w-full lg:w-1/2 relative overflow-hidden order-1 lg:order-1 min-h-[500px] bg-[#242424]">
                 {/* Image as background */}
                 <img 
-                    src="/signup.jpeg" 
+                    src="signup.jpeg" 
                     alt="Registration Visual" 
                     className="absolute inset-0 w-full h-full object-cover"
                 />

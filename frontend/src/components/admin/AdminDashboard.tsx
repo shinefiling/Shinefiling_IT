@@ -243,7 +243,7 @@ const AdminDashboard: React.FC = () => {
                     onClick={() => navigate('/')}
                 >
                     <img 
-                        src="/shine-logo.png" 
+                        src="shine-logo.png" 
                         alt="Shinefiling" 
                         className="h-32 w-auto max-w-full object-contain transition-transform group-hover:scale-105" 
                     />
