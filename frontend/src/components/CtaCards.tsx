@@ -14,7 +14,7 @@ const CtaCards: React.FC = () => {
                         className="bg-white border border-[#eee] rounded-xl p-6 lg:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 group hover:shadow-2xl transition-all"
                     >
                         <div className="w-2/3 sm:w-2/5 group-hover:scale-110 transition-transform duration-500">
-                            <img src="/3655442-removebg-preview.png" alt="IT Expert" className="w-full h-auto" />
+                            <img src="3655442-removebg-preview.png" alt="IT Expert" className="w-full h-auto" />
                         </div>
                         <div className="flex-1 text-center sm:text-right">
                             <h3 className="text-[#242424] font-bold text-xl lg:text-2xl mb-2 lg:mb-4 font-['Poppins']">Become an IT Freelancer</h3>
@@ -37,7 +37,7 @@ const CtaCards: React.FC = () => {
                             <button className="bg-[#242424] text-white px-6 py-2.5 rounded-lg text-xs lg:text-sm font-bold hover:bg-black transition-colors">Contact Sales</button>
                         </div>
                         <div className="w-2/3 sm:w-2/5 group-hover:scale-110 transition-transform duration-500">
-                            <img src="/6203116-removebg-preview.png" alt="Hire Talent" className="w-full h-auto" />
+                            <img src="6203116-removebg-preview.png" alt="Hire Talent" className="w-full h-auto" />
                         </div>
                     </motion.div>
                 </div>

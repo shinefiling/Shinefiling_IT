@@ -2,5 +2,5 @@ const isProduction = window.location.hostname === 'shinefiling.com' || window.lo
 
 // If in production, use the main domain API, otherwise use local network IP
 export const API_BASE_URL = isProduction 
-    ? 'https://api.shinefiling.com' 
+    ? 'https://shinefiling.com/ITfreelancers' 
     : `http://${window.location.hostname}:8081`;
