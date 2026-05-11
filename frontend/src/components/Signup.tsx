@@ -442,10 +442,14 @@ const Signup: React.FC = () => {
 
                                 <div className="flex justify-center w-full">
                                     <GoogleLogin 
-                                        onSuccess={handleGoogleSuccess}
-                                        onError={() => setError('Google Registration Failed')}
-                                        useOneTap
-                                        width="100%"
+                                        onSuccess={(res) => {
+                                            console.log("Google Signup Success:", res);
+                                            handleGoogleSuccess(res);
+                                        }}
+                                        onError={() => {
+                                            console.error("Google Signup Error");
+                                            setError('Google Registration Failed');
+                                        }}
                                     />
                                 </div>
                             </div>

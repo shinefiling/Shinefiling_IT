@@ -66,6 +66,7 @@ const Login: React.FC = () => {
     };
 
     const handleGoogleSuccess = async (credentialResponse: any) => {
+        console.log("Google login success, response:", credentialResponse);
         setIsLoading(true);
         setError('');
         try {
@@ -87,6 +88,7 @@ const Login: React.FC = () => {
                 setError(data.message || 'Google login failed.');
             }
         } catch (err) {
+            console.error("Google auth fetch error:", err);
             setError('Connection error with Google service.');
         } finally {
             setIsLoading(false);
@@ -333,9 +335,10 @@ const Login: React.FC = () => {
                             <div className="flex justify-center w-full">
                                 <GoogleLogin 
                                     onSuccess={handleGoogleSuccess}
-                                    onError={() => setError('Google Login Failed')}
-                                    useOneTap
-                                    width="100%"
+                                    onError={() => {
+                                        console.error('Google Login Failed');
+                                        setError('Google Login Failed');
+                                    }}
                                 />
                             </div>
                         </div>
