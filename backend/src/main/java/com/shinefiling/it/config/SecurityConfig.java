@@ -20,20 +20,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(request -> {
-                var corsConfiguration = new org.springframework.web.cors.CorsConfiguration();
-                corsConfiguration.setAllowedOrigins(java.util.List.of("*"));
-                corsConfiguration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                corsConfiguration.setAllowedHeaders(java.util.List.of("*"));
-                corsConfiguration.setAllowCredentials(false); // Credentials must be false when origin is "*"
-                return corsConfiguration;
-            }))
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> cors.disable()) // Disable for now to test 401
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/**", "/ITfreelancers/api/**").permitAll()
-                .requestMatchers("/uploads/**", "/ITfreelancers/uploads/**").permitAll()
                 .anyRequest().permitAll()
-            );
+            )
+            .httpBasic(basic -> basic.disable())
+            .formLogin(form -> form.disable());
         return http.build();
     }
 }
