@@ -1,0 +1,45 @@
+SHINEFILING IT FREELANCER PLATFORM - WORKFLOW DOCUMENTATION
+==========================================================
+
+1. HIRE DEVELOPERS WORKFLOW (CLIENT SIDE)
+-----------------------------------------
+Module: BrowseFreelancers.tsx | Privacy Level: High (ID-based)
+
+Step A: Discovery
+- Browse Talents: Client navigates to "Hire Developers" to see freelancers.
+- Filtering: Use search to find specific skills (e.g., React, Java).
+
+Step B: Engagement
+- Message: Opens the Messages (Chat) window. Privacy: URL uses ?with={userId}.
+- Invite to Project: Client select a job -> System creates "INVITED" status -> Sends Auto-Chat message.
+- Hire & Contract: Opens the HireMe interface using ?id={userId}.
+
+
+2. FIND A JOB WORKFLOW (FREELANCER SIDE)
+----------------------------------------
+Module: BrowseJobs.tsx | JobApply.tsx | Profile.tsx
+
+Step A: Exploration
+- Search Jobs: Freelancer browses the "Find Work" page.
+- Job Details: View full description, budget, and client info.
+
+Step B: Application
+- Apply Now: Fills out application (Bid, Delivery Time, Cover letter).
+- Submission: Saved as "PENDING".
+
+
+3. THE "INVITATIONS" TAB (FREELANCER PROFILE)
+---------------------------------------------
+- Freelancers check the "Invitations" tab in their profile.
+- They can see which company invited them.
+- Action: Click "Chat & Accept" to start discussing the project.
+
+
+4. PRIVACY STANDARDS
+--------------------
+- No emails in URLs (uses database IDs).
+- Secure profile resolution via backend.
+- End-to-end synchronized communication.
+
+----------------------------------------------------------
+Documentation Version: 2.0 (Complete)

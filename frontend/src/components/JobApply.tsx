@@ -117,10 +117,13 @@ const JobApply: React.FC = () => {
     const handleSubmit = async () => {
         setLoading(true);
         try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
             const applicationData = {
                 jobId: job.id,
                 jobTitle: job.title,
                 company: job.company,
+                clientEmail: job.userEmail, // The email of the person who posted the job
+                freelancerId: user.id,      // The ID of the person applying
                 fullName: formData.fullName,
                 email: formData.email,
                 phone: formData.phone,

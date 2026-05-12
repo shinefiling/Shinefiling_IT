@@ -19,6 +19,8 @@ import SupportView from './SupportView';
 import OperationalPulseView from './OperationalPulseView';
 import AuditLogView from './AuditLogView';
 import SiteConfigView from './SiteConfigView';
+import JobApplicationsView from './JobApplicationsView';
+import MessagesView from './MessagesView';
 import ComingSoonView from './ComingSoonView';
 
 // --- STYLES ---
@@ -171,7 +173,9 @@ const AdminDashboard: React.FC = () => {
             section: 'PROJECT GOVERNANCE',
             items: [
                 { icon: BriefcaseIcon, label: 'Active Engagements', id: 'live_projects' },
+                { icon: Database, label: 'Job Applications', id: 'all_applications' },
                 { icon: UserCheck, label: 'Client Ecosystem', id: 'clients' },
+                { icon: MessageSquare, label: 'Communication Logs', id: 'all_messages' },
                 { icon: MessageSquare, label: 'Escalation Support', id: 'support' }
             ]
         },
@@ -215,6 +219,10 @@ const AdminDashboard: React.FC = () => {
                 return <AuditLogView />;
             case 'support':
                 return <SupportView />;
+            case 'all_applications':
+                return <JobApplicationsView />;
+            case 'all_messages':
+                return <MessagesView />;
             case 'cms':
                 return <SiteConfigView />;
             case 'profile':

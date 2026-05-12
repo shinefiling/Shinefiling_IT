@@ -38,9 +38,10 @@ const Profile: React.FC = () => {
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [skillInput, setSkillInput] = useState('');
     const [currentTime, setCurrentTime] = useState(new Date());
-    const [activeTab, setActiveTab] = useState<'about' | 'projects' | 'proposals' | 'verifications'>('about');
+    const [activeTab, setActiveTab] = useState<'about' | 'projects' | 'proposals' | 'verifications' | 'invitations'>('about');
     const [myProjects, setMyProjects] = useState<any[]>([]);
     const [myProposals, setMyProposals] = useState<any[]>([]);
+    const [myInvitations, setMyInvitations] = useState<any[]>([]);
     const [fetchingData, setFetchingData] = useState(false);
 
     const API_BASE_URL = `${GLOBAL_API_BASE_URL}/api/profiles`;
@@ -142,9 +143,10 @@ const Profile: React.FC = () => {
         
         setFetchingData(true);
         try {
-            const [projectsRes, proposalsRes] = await Promise.all([
+            const [projectsRes, proposalsRes, invitationsRes] = await Promise.all([
                 fetch(`${GLOBAL_API_BASE_URL}/api/projects/client/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }),
-                fetch(`${GLOBAL_API_BASE_URL}/api/proposals/freelancer/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                fetch(`${GLOBAL_API_BASE_URL}/api/proposals/freelancer/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } }),
+                fetch(`${GLOBAL_API_BASE_URL}/api/job-applications/freelancer/${user.id}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
             ]);
 
             if (projectsRes.ok) {
@@ -154,6 +156,10 @@ const Profile: React.FC = () => {
             if (proposalsRes.ok) {
                 const proposalsData = await proposalsRes.json();
                 setMyProposals(proposalsData);
+            }
+            if (invitationsRes.ok) {
+                const invitationsData = await invitationsRes.json();
+                setMyInvitations(invitationsData.filter((inv: any) => inv.status === 'INVITED'));
             }
         } catch (err) {
             console.error("Error fetching user content:", err);
@@ -712,6 +718,7 @@ const Profile: React.FC = () => {
                         { id: 'about', label: 'About' },
                         { id: 'projects', label: 'Projects' },
                         { id: 'proposals', label: 'Proposals' },
+                        { id: 'invitations', label: 'Invitations' },
                         { id: 'verifications', label: 'Verifications' }
                     ].map(tab => (
                         <button 
@@ -984,6 +991,62 @@ const Profile: React.FC = () => {
                                                         </button>
                                                     </div>
                                                 </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'invitations' && (
+                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                <div className="bg-white rounded-2xl border border-outline-variant/30 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+                                    <div className="flex justify-between items-center mb-8">
+                                        <h2 className="text-[20px] font-bold text-on-surface">Project Invitations</h2>
+                                        <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-[12px] font-bold">
+                                            {myInvitations.length} Pending
+                                        </span>
+                                    </div>
+
+                                    {fetchingData ? (
+                                        <div className="py-20 flex justify-center"><div className="w-8 h-8 border-4 border-[#b5242c] border-t-transparent rounded-full animate-spin"></div></div>
+                                    ) : myInvitations.length === 0 ? (
+                                        <div className="py-20 text-center bg-gray-50/50 border-2 border-dashed border-outline-variant/30 rounded-2xl">
+                                            <Mail size={40} className="mx-auto text-gray-200 mb-4" />
+                                            <p className="text-black/50 font-medium">No active invitations yet.</p>
+                                        </div>
+                                    ) : (
+                                        <div className="grid grid-cols-1 gap-4">
+                                            {myInvitations.map((inv) => (
+                                                <motion.div 
+                                                    key={inv.id}
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="p-6 rounded-2xl border border-outline-variant/30 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white"
+                                                >
+                                                    <div className="flex-1">
+                                                        <div className="flex items-center gap-2 mb-2">
+                                                            <span className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-[10px] font-bold uppercase tracking-wider">New Invitation</span>
+                                                            <span className="text-[11px] text-slate-400 font-bold">{new Date(inv.submittedAt).toLocaleDateString()}</span>
+                                                        </div>
+                                                        <h3 className="text-[18px] font-bold text-slate-800">{inv.jobTitle}</h3>
+                                                        <p className="text-sm text-slate-500 flex items-center gap-1.5 mt-1">
+                                                            <Briefcase size={14} className="text-primary" /> Invited by <span className="font-bold text-slate-700">{inv.company}</span>
+                                                        </p>
+                                                        <div className="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-100 italic text-[13px] text-slate-600">
+                                                            "Check your messages for more details about this invitation!"
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className="flex gap-2 w-full md:w-auto">
+                                                        <button 
+                                                            onClick={() => navigate(`/messages?with=${inv.clientId || inv.clientEmail}`)}
+                                                            className="flex-1 md:flex-none px-6 py-2.5 bg-primary text-white rounded-lg text-[13px] font-bold shadow-md shadow-primary/20 hover:bg-[#a11f27] transition-all flex items-center justify-center gap-2"
+                                                        >
+                                                            <MessageSquare size={16} /> Chat & Accept
+                                                        </button>
+                                                    </div>
+                                                </motion.div>
                                             ))}
                                         </div>
                                     )}

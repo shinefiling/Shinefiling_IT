@@ -21,6 +21,7 @@ public class Profile {
     private String email;
 
     private String username;
+    private String userRole; // FREELANCER, CLIENT
     private String professionalHeadline;
     
     @Column(columnDefinition = "TEXT")

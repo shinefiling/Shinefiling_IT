@@ -126,7 +126,7 @@ const ProjectDetails: React.FC = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#fdfaf0] pt-[100px] pb-20">
+        <div className="min-h-screen bg-[#fdfaf0] pt-[100px] lg:pt-[150px] pb-20 font-['Poppins']">
             <div className="max-w-[1320px] mx-auto px-4 lg:px-8">
                 
                 {/* Back Button */}
@@ -154,16 +154,16 @@ const ProjectDetails: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
-                                <h1 className="text-[30px] font-medium text-[#242424] leading-[42px] flex-1">
+                                <h1 className="text-[24px] lg:text-[30px] font-bold text-[#242424] leading-[32px] lg:leading-[42px] flex-1 break-words">
                                     {project.title}
                                 </h1>
-                                <div className="flex items-center gap-3 shrink-0">
+                                <div className="flex items-center gap-3 shrink-0 w-full md:w-auto">
                                     <button className="p-2.5 border border-gray-100 rounded-md text-gray-400 hover:text-[#b5242c] hover:border-[#b5242c]/20 transition-all bg-[#f9fafb]">
                                         <Bookmark size={18} />
                                     </button>
                                     <button 
                                         onClick={scrollToForm}
-                                        className="bg-[#b5242c] hover:bg-[#a11f27] text-white px-6 py-2.5 rounded-md font-bold transition-all shadow-lg shadow-[#b5242c]/20 flex items-center gap-2 text-sm"
+                                        className="flex-1 md:flex-none bg-[#b5242c] hover:bg-[#a11f27] text-white px-6 py-2.5 rounded-md font-bold transition-all shadow-lg shadow-[#b5242c]/20 flex items-center justify-center gap-2 text-sm"
                                     >
                                         Send Proposal
                                     </button>
@@ -359,11 +359,11 @@ const ProjectDetails: React.FC = () => {
                                                         <span className="flex items-center gap-1 text-[#b5242c]"><Star size={12} className="fill-[#b5242c]" /> Top Rated</span>
                                                     </div>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-[30px] font-medium text-[#242424] leading-[24px] mb-1">
+                                                <div className="text-left md:text-right shrink-0">
+                                                    <p className="text-[20px] lg:text-[30px] font-bold text-[#242424] leading-tight mb-1">
                                                         {project.currency === 'USD' ? '$' : '₹'}{prop.bidAmount}
                                                     </p>
-                                                    <p className="text-[12px] text-[#777777] font-normal leading-[24px] uppercase tracking-wider">in {prop.deliveryTime}</p>
+                                                    <p className="text-[12px] text-[#777777] font-normal uppercase tracking-wider">in {prop.deliveryTime}</p>
                                                 </div>
                                             </div>
                                             <p className="text-[16px] text-[#777777] leading-[30px] font-normal tracking-tight">
@@ -386,7 +386,7 @@ const ProjectDetails: React.FC = () => {
                             <div className="flex items-center justify-between mb-4">
                                 <div>
                                     <p className="text-[12px] text-[#777777] font-normal leading-[24px] mb-1 uppercase tracking-widest">Budget</p>
-                                    <h2 className="text-[30px] font-medium text-[#242424] leading-[24px]">
+                                    <h2 className="text-[24px] lg:text-[30px] font-bold text-[#242424] leading-tight">
                                         {project.currency === 'USD' ? '$' : '₹'}
                                         {project.budgetAmount?.toLocaleString()}
                                     </h2>

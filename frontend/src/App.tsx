@@ -31,6 +31,8 @@ import JobDetails from './components/JobDetails';
 import HireMe from './components/HireMe';
 import JobApply from './components/JobApply';
 
+import { Navigate } from 'react-router-dom';
+
 const HomePage: React.FC = () => (
     <>
         <HeroBanner />
@@ -41,6 +43,14 @@ const HomePage: React.FC = () => (
         <ReadyToScale />
     </>
 );
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const user = localStorage.getItem('user');
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
+    return <>{children}</>;
+};
 
 const AppContent: React.FC = () => {
     const location = useLocation();
@@ -85,26 +95,29 @@ const AppContent: React.FC = () => {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/post-project" element={<PostProject />} />
-                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                
+                {/* Public Browse Routes */}
                 <Route path="/projects" element={<BrowseProjects />} />
                 <Route path="/jobs" element={<BrowseJobs />} />
                 <Route path="/projects/:id" element={<ProjectDetails />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/client-profile" element={<ClientProfile />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/admin-dashboard" element={<AdminDashboard />} />
-                <Route path="/freelancers" element={<BrowseFreelancers />} />
-                <Route path="/post-job" element={<PostJob />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/financial-dashboard" element={<FinancialDashboard />} />
-                <Route path="/analytics" element={<Analytics />} />
-                <Route path="/daily-updates" element={<DailyUpdates />} />
                 <Route path="/jobs/:id" element={<JobDetails />} />
-                <Route path="/hire-me" element={<HireMe />} />
-                <Route path="/apply-job/:id" element={<JobApply />} />
+                <Route path="/freelancers" element={<BrowseFreelancers />} />
+                <Route path="/pricing" element={<Pricing />} />
 
+                {/* Protected Routes */}
+                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                <Route path="/post-project" element={<ProtectedRoute><PostProject /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/client-profile" element={<ProtectedRoute><ClientProfile /></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/post-job" element={<ProtectedRoute><PostJob /></ProtectedRoute>} />
+                <Route path="/financial-dashboard" element={<ProtectedRoute><FinancialDashboard /></ProtectedRoute>} />
+                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                <Route path="/daily-updates" element={<ProtectedRoute><DailyUpdates /></ProtectedRoute>} />
+                <Route path="/hire-me" element={<ProtectedRoute><HireMe /></ProtectedRoute>} />
+                <Route path="/apply-job/:id" element={<ProtectedRoute><JobApply /></ProtectedRoute>} />
             </Routes>
             {!hideHeaderFooter && <SiteFooter />}
         </main>

@@ -31,6 +31,10 @@ public class JobApplication {
     private String coverLetter;
     
     private String resumeFileName;
+    private String clientEmail;
+    private Long clientId;
+    private Long freelancerId;
+    private String status = "PENDING"; // PENDING, ACCEPTED, REJECTED, INVITED
 
     private LocalDateTime submittedAt;
 

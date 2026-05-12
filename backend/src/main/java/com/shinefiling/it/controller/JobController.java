@@ -37,4 +37,9 @@ public class JobController {
     public Job getJobById(@PathVariable Long id) {
         return jobService.getJobById(id);
     }
+
+    @GetMapping("/client/{email}")
+    public List<Job> getJobsByClientEmail(@PathVariable String email) {
+        return jobService.getJobsByUserEmail(email);
+    }
 }

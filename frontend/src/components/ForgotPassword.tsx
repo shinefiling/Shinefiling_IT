@@ -21,7 +21,7 @@ const ForgotPassword: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('${API_BASE_URL}/api/auth/forgot-password', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ const ForgotPassword: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('${API_BASE_URL}/api/auth/verify-reset-otp', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/verify-reset-otp`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
@@ -77,7 +77,7 @@ const ForgotPassword: React.FC = () => {
         setIsLoading(true);
         setError('');
         try {
-            const response = await fetch('${API_BASE_URL}/api/auth/reset-password', {
+            const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

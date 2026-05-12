@@ -28,7 +28,8 @@ const Navbar: React.FC = () => {
     const [selectedNotification, setSelectedNotification] = useState<any>(null);
     const [notifications, setNotifications] = useState<any[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
-    const [news, setNews] = useState<string>("Welcome to Shinefiling! Stay tuned for daily IT news updates.");
+    const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+    const [news, setNews] = useState("Welcome to Shinefiling! Stay tuned for daily IT news updates.");
 
     const fetchNews = async () => {
         try {
@@ -70,8 +71,18 @@ const Navbar: React.FC = () => {
             loadUserData();
         };
 
+        const handleOpenChat = (e: any) => {
+            const { contact } = e.detail || {};
+            if (contact) {
+                setSelectedChat(contact);
+                setChatMessages([{ id: Date.now(), text: `Hi! I'd like to discuss the project with you.`, sender: 'other', time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            }
+            setIsChatOpen(true);
+        };
+
         window.addEventListener('user-updated', handleUserUpdate);
         window.addEventListener('storage', handleUserUpdate);
+        window.addEventListener('open-chat', handleOpenChat);
 
         const interval = setInterval(() => {
             const storedUser = localStorage.getItem('user');
@@ -91,6 +102,7 @@ const Navbar: React.FC = () => {
             window.removeEventListener('scroll', handleScroll);
             window.removeEventListener('user-updated', handleUserUpdate);
             window.removeEventListener('storage', handleUserUpdate);
+            window.removeEventListener('open-chat', handleOpenChat);
             clearInterval(interval);
             clearInterval(newsUpdateInterval);
         };
@@ -105,7 +117,20 @@ const Navbar: React.FC = () => {
                 }
             });
             if (response.ok) {
-                const data = await response.json();
+                let data = await response.json();
+                
+                // Preprocess to extract names from messages if senderName is missing
+                data = data.map((n: any) => {
+                    if (!n.senderName && n.message) {
+                        // Pattern: "Name has placed a bid" or "Name bid on"
+                        const match = n.message.match(/^([A-Za-z\s]+)\s+(?:has placed a bid|bid on|has sent)/i);
+                        if (match && match[1]) {
+                            return { ...n, senderName: match[1].trim() };
+                        }
+                    }
+                    return n;
+                });
+
                 setNotifications(data);
                 setUnreadCount(data.filter((n: any) => !n.read).length);
             }
@@ -180,17 +205,6 @@ const Navbar: React.FC = () => {
 
         setChatMessages(prev => [...prev, newMessage]);
         setMessageInput('');
-
-        // Simulate a real person's delay in responding
-        setTimeout(() => {
-            const reply = {
-                id: Date.now() + 1,
-                text: "Got your message! I'm checking it now.",
-                sender: 'other',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-            setChatMessages(prev => [...prev, reply]);
-        }, 1500);
     };
 
     const navLinks = [
@@ -358,15 +372,26 @@ const Navbar: React.FC = () => {
                                                                 className={`px-4 py-3 flex gap-2.5 hover:bg-gray-50 cursor-pointer transition-colors relative border-b border-gray-50/50 last:border-0 ${!n.read ? 'bg-blue-50/30' : ''}`}
                                                             >
                                                                 <div className="relative shrink-0">
-                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center mt-0.5 ${!n.read ? 'bg-[#b5242c]/10 text-[#b5242c]' : 'bg-gray-100 text-gray-400'}`}>
-                                                                        <Bell size={16} />
+                                                                    <div className="w-9 h-9 rounded-none flex items-center justify-center mt-0.5 border border-gray-100 bg-white">
+                                                                        {n.img ? (
+                                                                            <img src={n.img} alt="" className="w-full h-full object-cover" />
+                                                                        ) : (
+                                                                            <span className="text-[12px] font-bold text-black uppercase">
+                                                                                {n.senderName ? n.senderName.substring(0, 2).toUpperCase() : (n.title?.toLowerCase().includes('bid') ? 'BD' : 'U')}
+                                                                            </span>
+                                                                        )}
                                                                     </div>
+                                                                    {!n.img && !n.senderName && (
+                                                                        <div className="absolute -bottom-1 -right-1">
+                                                                            <Bell size={12} className="text-black" />
+                                                                        </div>
+                                                                    )}
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-start justify-between mb-0">
                                                                         <div className="text-[12.5px] leading-tight font-['Poppins'] text-[#242424]">
-                                                                            <p className="font-bold text-[#b5242c] mb-0.5">{n.title}</p>
-                                                                            <p className="text-gray-500 font-medium">{n.message}</p>
+                                                                            <p className="font-bold text-[#b5242c] mb-0.5">{n.senderName || n.title}</p>
+                                                                            <p className="text-gray-500 font-medium">{n.senderName ? n.title + ': ' + n.message : n.message}</p>
                                                                         </div>
                                                                         {!n.read && (
                                                                             <span className="bg-[#b5242c] w-2 h-2 rounded-full shrink-0 mt-1.5 ml-2"></span>
@@ -381,10 +406,6 @@ const Navbar: React.FC = () => {
                                                 <div className="p-3 bg-gray-50 border-t border-gray-100 text-center">
                                                     <button 
                                                         onClick={() => {
-                                                            if (!selectedChat) {
-                                                                setSelectedChat({ name: "Sofia V.", username: "FLSofia", msg: "Hi Prakash! I'm Sofia...", time: "Apr 29", active: "2 m", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" });
-                                                                setChatMessages([{ id: 1, text: "Hi Prakash! I'm Sofia, here to chat about your project.", sender: 'other', time: "Apr 29" }]);
-                                                            }
                                                             setChatTab('notifications');
                                                             setIsChatOpen(true);
                                                             setIsNotificationsOpen(false);
@@ -404,11 +425,16 @@ const Navbar: React.FC = () => {
                                     onMouseEnter={() => setIsMessagesOpen(true)}
                                     onMouseLeave={() => setIsMessagesOpen(false)}
                                 >
-                                    <button className="text-[#000000] hover:text-[#b5242c] transition-colors relative">
+                                    <button 
+                                        onClick={() => setIsChatOpen(true)}
+                                        className="text-[#000000] hover:text-[#b5242c] transition-colors relative"
+                                    >
                                         <MessageSquare size={20} strokeWidth={1.5} />
-                                        <span className="absolute -top-1 -right-1 w-[13px] h-[13px] bg-[#b5242c] text-white text-[8px] font-bold rounded-full border border-white flex items-center justify-center">
-                                            3
-                                        </span>
+                                        {unreadMessagesCount > 0 && (
+                                            <span className="absolute -top-1 -right-1 w-[13px] h-[13px] bg-[#b5242c] text-white text-[8px] font-bold rounded-full border border-white flex items-center justify-center">
+                                                {unreadMessagesCount}
+                                            </span>
+                                        )}
                                     </button>
 
                                     <AnimatePresence>
@@ -427,10 +453,6 @@ const Navbar: React.FC = () => {
                                                     <h3 className="text-[14px] font-bold text-white uppercase tracking-wider">Recent Messages</h3>
                                                     <button 
                                                         onClick={() => {
-                                                            if (!selectedChat) {
-                                                                setSelectedChat({ name: "Sofia V.", username: "FLSofia", msg: "Hi Prakash! I'm Sofia...", time: "Apr 29", active: "2 m", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" });
-                                                                setChatMessages([{ id: 1, text: "Hi Prakash! I'm Sofia, here to chat about your project.", sender: 'other', time: "Apr 29" }]);
-                                                            }
                                                             setChatTab('messages');
                                                             setIsChatOpen(true);
                                                             setIsMessagesOpen(false);
@@ -441,53 +463,13 @@ const Navbar: React.FC = () => {
                                                     </button>
                                                 </div>
                                                 <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
-                                                    {[
-                                                        { name: "Sofia V.", username: "FLSofia", msg: "Hi Prakash! I'm Sofia from the Verifi...", time: "Apr 29", count: 2, verified: true, active: "2 m", activeBg: "bg-green-50" },
-                                                        { name: "Alexi C.", username: "FLAlexi", msg: "Hey Prakash! I'm Alexi, here to chat ...", time: "Apr 10", count: 1, verified: false, active: "3 h", activeBg: "bg-green-50" },
-                                                        { name: "Nicholas F.", username: "FLNicholas", msg: "Hey Prakash! Just checking in to see if y...", time: "Sep 20, 2025", count: 0, verified: true, active: "1 h", activeBg: "bg-gray-50" }
-                                                    ].map((m, i) => (
-                                                        <div 
-                                                            key={i} 
-                                                            onClick={() => {
-                                                                setSelectedChat(m);
-                                                                setChatMessages([
-                                                                    { id: 1, text: m.msg, sender: 'other', time: m.time }
-                                                                ]);
-                                                                setIsChatOpen(true);
-                                                                setIsMessagesOpen(false);
-                                                            }}
-                                                            className="px-4 py-3 flex gap-3 hover:bg-gray-50/80 cursor-pointer transition-colors relative border-b border-gray-50/50 last:border-0"
-                                                        >
-                                                            <div className="relative shrink-0">
-                                                                <div className="w-11 h-11 bg-white rounded-lg shadow-sm border border-gray-100 flex items-center justify-center overflow-hidden">
-                                                                    <div className="bg-[#00aff0] p-2 rotate-45">
-                                                                        <div className="w-3.5 h-3.5 border-2 border-white rounded-sm"></div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className={`absolute -bottom-1 -right-1 ${m.activeBg} text-green-600 text-[9px] font-bold px-1.5 py-0.5 rounded-full border border-white shadow-sm`}>
-                                                                    {m.active}
-                                                                </div>
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <div className="flex items-center justify-between mb-0.5">
-                                                                    <div className="flex items-center gap-1.5 min-w-0">
-                                                                        <span className="text-[13px] font-bold text-[#242424] truncate">{m.name}</span>
-                                                                        <span className="text-[11px] text-gray-400 truncate">@{m.username}</span>
-                                                                        {m.verified && <ShieldCheck size={13} className="text-blue-500 shrink-0" fill="currentColor" />}
-                                                                    </div>
-                                                                    <span className="text-[10px] text-gray-400 shrink-0">{m.time}</span>
-                                                                </div>
-                                                                <div className="flex items-center justify-between gap-2">
-                                                                    <p className="text-[12.5px] text-gray-500 truncate leading-tight">{m.msg}</p>
-                                                                    {m.count > 0 && (
-                                                                        <span className="w-[17px] h-[17px] bg-[#b5242c] text-white text-[9px] font-bold rounded-full flex items-center justify-center shrink-0">
-                                                                            {m.count}
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            </div>
+                                                    <div className="px-6 py-12 text-center">
+                                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                                                            <MessageSquare size={24} className="text-gray-300" />
                                                         </div>
-                                                    ))}
+                                                        <h4 className="text-[14px] font-bold text-[#242424] mb-1">No messages yet</h4>
+                                                        <p className="text-[12px] text-gray-400 font-['Poppins']">Connect with freelancers to start a conversation.</p>
+                                                    </div>
                                                 </div>
                                             </motion.div>
                                         )}
@@ -683,6 +665,27 @@ const Navbar: React.FC = () => {
                                     </div>
                                 </div>
                             ))}
+                            {user && (
+                                <div className="flex flex-col gap-2">
+                                    <button 
+                                        onClick={() => {
+                                            setIsChatOpen(true);
+                                            setIsMobileMenuOpen(false);
+                                        }}
+                                        className="flex items-center justify-between border-b border-[#f5f5f5] pb-4 cursor-pointer w-full text-left"
+                                    >
+                                        <span className="text-[#242424] font-medium text-[15px]">Messages</span>
+                                        <div className="relative">
+                                            <MessageSquare size={18} className="text-[#888]" />
+                                            {unreadMessagesCount > 0 && (
+                                                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#b5242c] text-white text-[7px] font-bold rounded-full border border-white flex items-center justify-center">
+                                                    {unreadMessagesCount}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {!user ? (
@@ -750,7 +753,7 @@ const Navbar: React.FC = () => {
                                     handlePostProject();
                                     setIsMobileMenuOpen(false);
                                 }}
-                                className="w-full py-4 bg-[#b5242c] text-white rounded-xl font-bold shadow-lg shadow-[#b5242c]/20 hover:bg-[#a11f27] transition-all"
+                                className="w-full py-4 bg-[#b5242c] text-white rounded-xl font-bold hover:bg-[#a11f27] transition-all"
                             >
                                 POST A PROJECT
                             </button>
@@ -772,9 +775,8 @@ const Navbar: React.FC = () => {
                 </div>
         </div>
 
-        {/* Floating Chat Window */}
-        {/* Floating Chat Window - Only show if user is logged in */}
-        {user && (
+        {/* Floating Chat Window - Only show if user is logged in and not on messages page */}
+        {user && location.pathname !== '/messages' && (
         <AnimatePresence>
             {/* Floating Chat Tab (Minimized state) */}
             {!isChatOpen && (
@@ -782,21 +784,20 @@ const Navbar: React.FC = () => {
                     initial={{ y: 50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     onClick={() => {
-                        // Default to first chat if none selected
-                        if (!selectedChat) {
-                            setSelectedChat({ name: "Sofia V.", username: "FLSofia", msg: "Hi Prakash! I'm Sofia...", time: "Apr 29", active: "2 m", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" });
-                            setChatMessages([{ id: 1, text: "Hi Prakash! I'm Sofia, here to chat about your project.", sender: 'other', time: "Apr 29" }]);
-                        }
                         setIsChatOpen(true);
                     }}
-                    className="fixed bottom-0 right-10 w-[280px] bg-white border border-gray-200 border-b-0 rounded-t-xl shadow-[0_-5px_25px_rgba(0,0,0,0.1)] cursor-pointer hover:bg-gray-50 transition-colors z-[2000] flex items-center justify-between px-4 py-3"
+                    className="fixed bottom-0 right-5 md:right-10 w-[calc(100%-40px)] max-w-[280px] bg-white border border-gray-200 border-b-0 rounded-none shadow-[0_-5px_25px_rgba(0,0,0,0.1)] cursor-pointer hover:bg-gray-50 transition-colors z-[2000] flex items-center justify-between px-4 py-3"
                 >
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden border border-gray-200">
                                 <MessageSquare size={16} className="text-[#b5242c]" />
                             </div>
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#b5242c] text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-white">3</div>
+                            {unreadMessagesCount > 0 && (
+                                <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#b5242c] text-white text-[9px] font-bold rounded-full flex items-center justify-center border border-white">
+                                    {unreadMessagesCount}
+                                </div>
+                            )}
                         </div>
                         <span className="text-[14px] font-bold text-[#242424]">Messages</span>
                     </div>
@@ -806,202 +807,236 @@ const Navbar: React.FC = () => {
                 </motion.div>
             )}
 
-            {isChatOpen && selectedChat && (
+            {isChatOpen && (
                 <motion.div
-                    initial={{ y: 100, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 100, opacity: 0 }}
-                    className="fixed bottom-0 right-10 w-[680px] h-[520px] bg-white shadow-[0_-5px_50px_rgba(0,0,0,0.2)] rounded-t-xl z-[2001] border border-gray-200 overflow-hidden flex"
+                    initial={{ y: 100, opacity: 0, scale: 0.95 }}
+                    animate={{ y: 0, opacity: 1, scale: 1 }}
+                    exit={{ y: 100, opacity: 0, scale: 0.95 }}
+                    className="fixed bottom-0 right-0 md:right-10 w-full md:w-[680px] h-[95vh] md:h-[520px] bg-[#fdfaf0] shadow-[0_-10px_60px_rgba(0,0,0,0.1)] rounded-none z-[2001] border border-gray-200/50 border-b-0 overflow-hidden flex font-['Poppins']"
                 >
                     {/* Sidebar - Chat List */}
-                    <div className="w-[260px] border-r border-gray-100 flex flex-col bg-white">
-                        <div className="bg-[#b5242c] px-2 flex items-end h-[50px]">
-                            <button 
-                                onClick={() => setChatTab('messages')}
-                                className={`flex-1 py-3 text-[11px] font-bold uppercase tracking-wider transition-all border-b-2 ${chatTab === 'messages' ? 'text-white border-white' : 'text-white/60 border-transparent hover:text-white/80'}`}
-                            >
-                                Messages
-                            </button>
-                            <button 
-                                onClick={() => setChatTab('notifications')}
-                                className={`flex-1 py-3 text-[11px] font-bold uppercase tracking-wider transition-all border-b-2 ${chatTab === 'notifications' ? 'text-white border-white' : 'text-white/60 border-transparent hover:text-white/80'}`}
-                            >
-                                Alerts
-                            </button>
-                        </div>
-                        <div className="p-3">
-                            <div className="relative">
+                    <div className={`${(selectedChat || selectedNotification) ? 'hidden md:flex' : 'flex'} w-full md:w-[250px] border-r border-gray-200/50 flex-col bg-[#fdfaf0]/80`}>
+                        <div className="p-5 pb-2">
+                            <div className="flex items-center justify-between mb-5">
+                                <h2 className="text-[18px] font-bold text-[#242424]">Messages</h2>
+                                <button className="w-8 h-8 rounded-none bg-gray-50 flex items-center justify-center text-[#b5242c] hover:bg-gray-100 transition-all border border-gray-100">
+                                    <PlusCircle size={18} />
+                                </button>
+                            </div>
+                            
+                            <div className="flex gap-0 mb-5 bg-gray-100/50 p-1 rounded-none border border-gray-200/50">
+                                <button 
+                                    onClick={() => setChatTab('messages')}
+                                    className={`flex-1 py-1.5 text-[11px] font-bold rounded-none transition-all ${chatTab === 'messages' ? 'bg-white text-[#b5242c] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                >
+                                    Chats
+                                </button>
+                                <button 
+                                    onClick={() => setChatTab('notifications')}
+                                    className={`flex-1 py-1.5 text-[11px] font-bold rounded-none transition-all ${chatTab === 'notifications' ? 'bg-white text-[#b5242c] shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                >
+                                    Alerts
+                                </button>
+                            </div>
+
+                            <div className="relative group">
                                 <input 
                                     type="text" 
                                     placeholder={`Search ${chatTab}...`} 
-                                    className="w-full bg-gray-50 border border-gray-100 rounded-lg py-1.5 pl-8 pr-3 text-[12px] outline-none focus:border-[#b5242c]/30 transition-all"
+                                    className="w-full bg-white border border-gray-200 rounded-none py-2 pl-9 pr-3 text-[12px] outline-none focus:border-[#b5242c]/30 transition-all"
                                 />
-                                <div className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400">
-                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#b5242c] transition-colors">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 </div>
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto custom-scrollbar">
+
+                        <div className="flex-1 overflow-y-auto px-2 py-3 custom-scrollbar space-y-1">
                             {chatTab === 'messages' ? (
-                                [
-                                    { name: "Sofia V.", username: "FLSofia", msg: "Hi Prakash! I'm Sofia...", time: "Apr 29", active: "2 m", img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" },
-                                    { name: "Alexi C.", username: "FLAlexi", msg: "Hey! I'm Alexi...", time: "Apr 10", active: "3 h", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100" },
-                                    { name: "Nicholas F.", username: "FLNicholas", msg: "Checking in...", time: "Sep 20", active: "1 h", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100" }
-                                ].map((chat, i) => (
-                                    <div 
-                                        key={i} 
-                                        onClick={() => {
-                                            setSelectedChat(chat);
-                                            setChatMessages([{ id: Date.now(), text: chat.msg, sender: 'other', time: chat.time }]);
-                                        }}
-                                        className={`p-3 flex gap-3 cursor-pointer transition-all border-b border-gray-50/50 ${selectedChat?.name === chat.name ? 'bg-red-50/50 border-l-4 border-l-[#b5242c]' : 'hover:bg-gray-50'}`}
-                                    >
-                                        <div className="relative shrink-0">
-                                            <img src={chat.img} alt="" className="w-10 h-10 rounded-full object-cover shadow-sm" />
-                                            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white"></div>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center justify-between mb-0.5">
-                                                <span className="text-[12px] font-bold text-[#242424] truncate">{chat.name}</span>
-                                                <span className="text-[9px] text-gray-400">{chat.time}</span>
-                                            </div>
-                                            <p className="text-[11px] text-gray-500 truncate leading-tight">{chat.msg}</p>
-                                        </div>
-                                    </div>
-                                ))
+                                // This will be populated by real chat data
+                                <div className="py-20 text-center opacity-20">
+                                    <MessageSquare size={40} className="mx-auto mb-3" />
+                                    <p className="text-[12px] font-bold uppercase tracking-wider">No active chats</p>
+                                </div>
                             ) : (
-                                [
-                                    { name: "Markus Klein", action: "posted a photo", time: "13:04 pm", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100" },
-                                    { name: "Tobia Rodic", action: "commented on video", time: "11:10 am", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100" },
-                                    { name: "Nathan Bruner", action: "posted 2 comments", time: "Yesterday", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100" }
-                                ].map((notif, i) => (
-                                    <div 
-                                        key={i} 
-                                        onClick={() => setSelectedNotification(notif)}
-                                        className={`p-3 flex gap-3 cursor-pointer transition-all border-b border-gray-50/50 ${selectedNotification?.name === notif.name ? 'bg-red-50/50 border-l-4 border-l-[#b5242c]' : 'hover:bg-gray-50'}`}
-                                    >
-                                        <div className="relative shrink-0">
-                                            <img src={notif.img} alt="" className="w-9 h-9 rounded-full object-cover shadow-sm" />
-                                            <div className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#b5242c] rounded-full border-2 border-white flex items-center justify-center">
-                                                <Bell size={8} className="text-white" />
-                                            </div>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-[11.5px] text-[#242424] leading-tight">
-                                                <span className="font-bold">{notif.name}</span> {notif.action}
-                                            </p>
-                                            <span className="text-[10px] text-gray-400 mt-1 block">{notif.time}</span>
-                                        </div>
-                                    </div>
-                                ))
+                                        notifications.map((n, i) => (
+                                            <button 
+                                                key={i}
+                                                onClick={() => setSelectedNotification(n)}
+                                                className={`w-full p-3 rounded-none flex gap-3 transition-all text-left ${selectedNotification?.id === n.id ? 'bg-[#fff0ef] border-[#e2bebc]/30' : 'hover:bg-gray-50 border-transparent'} border`}
+                                            >
+                                                <div className="w-10 h-10 rounded-none bg-white border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                                                    {n.img ? (
+                                                        <img src={n.img} alt="" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <div className="flex flex-col items-center justify-center">
+                                                            <span className="text-[12px] font-bold text-black uppercase">
+                                                                {n.senderName ? n.senderName.substring(0, 2).toUpperCase() : (n.title?.toLowerCase().includes('bid') ? 'BD' : 'U')}
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between">
+                                                        <p className={`text-[12px] font-bold truncate ${!n.read ? 'text-[#242424]' : 'text-gray-500'}`}>{n.senderName || n.title}</p>
+                                                        <Bell size={12} className="text-black shrink-0" />
+                                                    </div>
+                                                    <p className="text-[10px] text-gray-400 truncate">{n.message}</p>
+                                                </div>
+                                                {!n.read && <div className="w-1.5 h-1.5 bg-[#b5242c] mt-1 shrink-0"></div>}
+                                            </button>
+                                        ))
                             )}
                         </div>
                     </div>
 
                     {/* Main Area */}
-                    <div className="flex-1 flex flex-col bg-[#f8f9fa]">
+                    <div className={`${(!selectedChat && !selectedNotification) ? 'hidden md:flex' : 'flex'} flex-1 flex-col bg-[#fdfaf0] relative`}>
                         {chatTab === 'messages' && selectedChat ? (
                             <>
                                 {/* Chat Header */}
-                                <div className="bg-[#b5242c] p-3.5 flex items-center justify-between shadow-sm relative z-10">
-                                    <div className="flex items-center gap-2.5">
+                                <div className="p-4 flex items-center justify-between border-b border-gray-200/50 relative z-10 bg-[#fdfaf0]">
+                                    <div className="flex items-center gap-3">
+                                        <button onClick={() => setSelectedChat(null)} className="md:hidden p-2 text-gray-400 hover:bg-gray-100 rounded-none transition-all mr-1">
+                                            <ChevronDown size={20} className="rotate-90" />
+                                        </button>
                                         <div className="relative">
-                                            <div className="w-9 h-9 rounded-full overflow-hidden border border-white/30 shadow-sm">
+                                            <div className="w-10 h-10 rounded-none overflow-hidden border border-gray-100">
                                                 <img src={selectedChat.img || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"} alt="" className="w-full h-full object-cover" />
                                             </div>
-                                            <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#b5242c]"></div>
+                                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-none border-2 border-white"></div>
                                         </div>
                                         <div className="leading-tight">
-                                            <h4 className="text-[13px] font-bold text-white tracking-tight">{selectedChat.name}</h4>
-                                            <div className="flex items-center gap-1">
-                                                <span className="w-1.5 h-1.5 bg-white/60 rounded-full animate-pulse"></span>
-                                                <span className="text-[10px] text-white/80 font-medium">Online</span>
-                                            </div>
+                                            <h4 className="text-[14px] font-bold text-[#242424] tracking-tight">{selectedChat.name}</h4>
+                                            <p className="text-[11px] text-gray-400 font-medium">last seen recently</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <button className="text-white hover:bg-white/10 p-1.5 rounded-lg transition-all"><Settings size={16} /></button>
-                                        <button onClick={() => setIsChatOpen(false)} className="text-white hover:bg-white/10 p-1.5 rounded-lg transition-all"><X size={18} /></button>
+                                        <button className="text-gray-400 hover:bg-gray-50 p-2 rounded-none transition-all"><ChevronDown size={18} /></button>
+                                        <button className="text-gray-400 hover:bg-gray-50 p-2 rounded-none transition-all"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg></button>
+                                        <button className="text-gray-400 hover:bg-gray-50 p-2 rounded-none transition-all"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
+                                        <div className="w-[1px] h-6 bg-gray-100 mx-1"></div>
+                                        <button onClick={() => setIsChatOpen(false)} className="text-gray-400 hover:bg-red-50 hover:text-red-500 p-2 rounded-none transition-all"><X size={18} /></button>
                                     </div>
                                 </div>
 
                                 {/* Messages Area */}
-                                <div className="h-[360px] p-4 overflow-y-auto bg-[#f8f9fa] flex flex-col gap-3 custom-scrollbar">
-                                    <div className="flex flex-col items-center mb-2">
-                                        <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-md mb-2">
-                                            <img src={selectedChat.img} alt="" className="w-full h-full object-cover" />
-                                        </div>
-                                        <p className="text-[14px] font-bold text-[#242424]">{selectedChat.name}</p>
-                                        <p className="text-[11px] text-gray-400">Freelancer @Verifi</p>
+                                <div className="flex-1 p-5 overflow-y-auto bg-[#fdfaf0] flex flex-col gap-5 custom-scrollbar">
+                                    <div className="flex flex-col items-center my-4 opacity-50">
+                                        <div className="bg-gray-50 px-3 py-1 rounded-none text-[10px] font-bold text-gray-500 uppercase tracking-widest">Today, Jun 20</div>
                                     </div>
 
-                                    {chatMessages.map((msg) => (
-                                        <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} w-full animate-in slide-in-from-bottom-1 duration-200`}>
-                                            <div className={`max-w-[80%] flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
-                                                <div className={`p-2.5 px-3.5 shadow-sm ${
-                                                    msg.sender === 'user' 
-                                                    ? 'bg-[#b5242c] text-white rounded-2xl rounded-tr-none' 
-                                                    : 'bg-white border border-gray-100 text-[#242424] rounded-2xl rounded-tl-none'
-                                                }`}>
-                                                    <p className="text-[12.5px] leading-relaxed">{msg.text}</p>
+                                    <div className="flex flex-col gap-4">
+                                        {chatMessages.map((msg) => (
+                                            <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} w-full`}>
+                                                <div className={`flex gap-3 max-w-[85%] ${msg.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                                                    <div className="w-8 h-8 rounded-none overflow-hidden border border-gray-100 shrink-0 mt-auto">
+                                                        <img src={msg.sender === 'user' ? "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" : selectedChat.img} alt="" className="w-full h-full object-cover" />
+                                                    </div>
+                                                    <div className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}>
+                                                        <div className={`p-3 px-4 rounded-none text-[13px] leading-relaxed ${
+                                                            msg.sender === 'user' 
+                                                            ? 'bg-[#eef5ff] text-[#242424] border border-[#d8e8ff]' 
+                                                            : 'bg-[#f8f9fa] text-[#242424] border border-gray-100'
+                                                        }`}>
+                                                            <p>{msg.text}</p>
+                                                        </div>
+                                                        <span className="text-[10px] text-gray-400 mt-1 font-medium">{msg.time}</span>
+                                                    </div>
                                                 </div>
-                                                <span className="text-[9px] text-gray-400 mt-1 px-1">{msg.time}</span>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
 
                                 {/* Chat Input */}
-                                <div className="p-3 bg-white border-t border-gray-100 shadow-[0_-5px_15px_rgba(0,0,0,0.02)]">
-                                    <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-1.5 border border-gray-100 focus-within:border-[#b5242c]/30 focus-within:ring-2 focus-within:ring-[#b5242c]/5 transition-all">
-                                        <input 
-                                            type="text" 
-                                            value={messageInput}
-                                            onChange={(e) => setMessageInput(e.target.value)}
-                                            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                                            placeholder="Write a message..." 
-                                            className="flex-1 bg-transparent border-none outline-none text-[13px] text-[#242424] py-1 placeholder:text-gray-400"
-                                        />
-                                        <button 
-                                            onClick={handleSendMessage}
-                                            disabled={!messageInput.trim()}
-                                            className={`p-1.5 rounded-lg transition-all ${messageInput.trim() ? 'text-[#b5242c] hover:bg-[#b5242c]/10' : 'text-gray-300'}`}
-                                        >
-                                            <Zap size={18} fill={messageInput.trim() ? "currentColor" : "none"} />
-                                        </button>
+                                <div className="p-4 bg-[#fdfaf0] border-t border-gray-200/50">
+                                    <div className="flex items-center gap-3">
+                                        <button className="text-gray-400 hover:text-gray-600 p-1.5 rounded-none hover:bg-gray-50 transition-all"><Plus size={20} /></button>
+                                        <div className="flex-1 flex items-center gap-3 bg-[#f8f9fa] rounded-none px-4 py-1 border border-gray-100 focus-within:border-gray-200 focus-within:bg-white transition-all">
+                                            <input 
+                                                type="text" 
+                                                value={messageInput}
+                                                onChange={(e) => setMessageInput(e.target.value)}
+                                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                                                placeholder="Write your message..." 
+                                                className="flex-1 bg-transparent border-none outline-none text-[13px] text-[#242424] py-2 placeholder:text-gray-400"
+                                            />
+                                            <div className="flex items-center gap-2">
+                                                <button className="text-gray-400 hover:text-gray-600 transition-colors"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
+                                                <button 
+                                                    onClick={handleSendMessage}
+                                                    disabled={!messageInput.trim()}
+                                                    className={`p-1.5 rounded-none transition-all ${messageInput.trim() ? 'text-[#b5242c] hover:bg-red-50' : 'text-gray-300'}`}
+                                                >
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </>
                         ) : chatTab === 'notifications' && selectedNotification ? (
-                            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in-95 duration-300">
-                                <div className="relative mb-6">
-                                    <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-xl">
-                                        <img src={selectedNotification.img} alt="" className="w-full h-full object-cover" />
+                            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center animate-in fade-in slide-in-from-bottom-4 duration-500 bg-[#fafafa]">
+                                <button onClick={() => setSelectedNotification(null)} className="absolute top-4 left-4 p-2 text-gray-400 hover:bg-gray-100 rounded-none transition-all">
+                                    <ChevronDown size={20} className="rotate-90" />
+                                </button>
+                                <button onClick={() => setIsChatOpen(false)} className="absolute top-4 right-4 p-2 text-gray-400 hover:bg-gray-100 rounded-none transition-all">
+                                    <X size={20} />
+                                </button>
+                                <div className="relative mb-8">
+                                    <div className="w-28 h-28 rounded-none overflow-hidden border-4 border-white shadow-2xl flex items-center justify-center bg-white/50">
+                                        {selectedNotification.img ? (
+                                            <img src={selectedNotification.img} alt="" className="w-full h-full object-cover" />
+                                        ) : (
+                                            <span className="text-[32px] font-bold text-black uppercase">
+                                                {selectedNotification.senderName ? selectedNotification.senderName.substring(0, 2).toUpperCase() : (selectedNotification.title?.toLowerCase().includes('bid') ? 'BD' : 'U')}
+                                            </span>
+                                        )}
                                     </div>
-                                    <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#b5242c] rounded-full border-4 border-[#f8f9fa] flex items-center justify-center">
-                                        <Bell size={14} className="text-white" />
+                                    <div className="absolute -bottom-2 -right-2 flex items-center justify-center">
+                                        <Bell size={24} className="text-black" />
                                     </div>
                                 </div>
-                                <h3 className="text-[20px] font-bold text-[#242424] mb-2">{selectedNotification.name}</h3>
-                                <p className="text-[14px] text-gray-500 mb-6 leading-relaxed">
-                                    {selectedNotification.action} on your profile. <br/>
-                                    This happened at <span className="text-[#b5242c] font-medium">{selectedNotification.time}</span>.
+                                <h3 className="text-[22px] font-bold text-[#242424] mb-3">{selectedNotification.senderName || selectedNotification.title}</h3>
+                                <p className="text-[14px] text-gray-500 mb-10 leading-relaxed max-w-[320px] mx-auto">
+                                    {selectedNotification.message}. This was recorded at <span className="text-[#b5242c] font-bold">{new Date(selectedNotification.createdAt).toLocaleTimeString()}</span>.
                                 </p>
-                                <div className="flex flex-col gap-3 w-full max-w-[200px]">
-                                    <button className="w-full py-3 bg-[#b5242c] text-white rounded-xl font-bold text-[13px] shadow-lg shadow-[#b5242c]/20 hover:bg-[#ff4545] transition-all">
-                                        View Details
+                                <div className="flex gap-4 w-full max-w-[300px]">
+                                    <button 
+                                        onClick={() => {
+                                            if (user?.userRole === 'CLIENT') {
+                                                navigate('/client-profile?tab=jobs');
+                                            } else {
+                                                navigate('/profile');
+                                            }
+                                            setIsChatOpen(false);
+                                            setSelectedNotification(null);
+                                        }}
+                                        className="flex-1 py-3.5 bg-[#b5242c] text-white rounded-none font-bold text-[13px] hover:bg-[#a11f27] transition-all"
+                                    >
+                                        Action Required
                                     </button>
-                                    <button className="w-full py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-[13px] hover:bg-gray-50 transition-all">
-                                        Mark as Read
+                                    <button 
+                                        onClick={() => setSelectedNotification(null)}
+                                        className="flex-1 py-3.5 bg-white border border-gray-200 text-gray-600 rounded-none font-bold text-[13px] hover:bg-gray-50 transition-all"
+                                    >
+                                        Dismiss
                                     </button>
                                 </div>
                             </div>
                         ) : (
-                            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-gray-400">
-                                <div className="bg-gray-100 p-4 rounded-full mb-4">
-                                    {chatTab === 'messages' ? <MessageSquare size={32} /> : <Bell size={32} />}
+                            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-gray-400 bg-[#fdfaf0]">
+                                <button onClick={() => setIsChatOpen(false)} className="absolute top-4 right-4 p-2 text-gray-300 hover:text-gray-500 hover:bg-gray-100 rounded-none transition-all">
+                                    <X size={20} />
+                                </button>
+                                <div className="mb-8">
+                                    <div className="text-black">
+                                        {chatTab === 'messages' ? <MessageSquare size={60} strokeWidth={1.5} /> : <Bell size={60} strokeWidth={1.5} />}
+                                    </div>
                                 </div>
-                                <p className="text-[14px] font-medium">Select a {chatTab === 'messages' ? 'conversation' : 'notification'} to view details</p>
+                                <h3 className="text-[18px] font-bold text-[#242424] mb-2">No {chatTab === 'messages' ? 'Conversation' : 'Alert'} Selected</h3>
+                                <p className="text-[13px] font-medium max-w-[240px] mx-auto leading-relaxed">Choose a {chatTab === 'messages' ? 'contact' : 'notification'} from the list to start communicating.</p>
                             </div>
                         )}
                     </div>

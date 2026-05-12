@@ -33,11 +33,11 @@ const HeroBanner: React.FC = () => {
                     transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
                     className="relative flex justify-center lg:justify-start lg:-translate-x-10 z-10 mt-8 lg:mt-20"
                 >
-                    <div className="relative w-full max-w-[320px] sm:max-w-[400px] lg:max-w-[480px]">
+                    <div className="relative w-full max-w-[450px] sm:max-w-[550px] lg:max-w-[750px]">
                         <img
-                            src="Hero1.png"
+                            src="Herobanner1.png"
                             alt="Freelance Platform"
-                            className="w-full h-auto object-contain scale-105 lg:scale-110 origin-bottom"
+                            className="w-full h-auto object-contain scale-110 lg:scale-125 origin-bottom"
                         />
                     </div>
                 </motion.div>

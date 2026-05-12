@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 
@@ -63,14 +64,14 @@
   --spacing-stack-md: 16px;
   --spacing-stack-sm: 8px;
 
-  --font-display-lg: "Manrope", sans-serif;
-  --font-body-sm: "Inter", sans-serif;
-  --font-label-sm: "Inter", sans-serif;
-  --font-label-md: "Inter", sans-serif;
-  --font-body-lg: "Inter", sans-serif;
-  --font-headline-md: "Manrope", sans-serif;
-  --font-headline-lg: "Manrope", sans-serif;
-  --font-body-md: "Inter", sans-serif;
+  --font-display-lg: "Plus Jakarta Sans", sans-serif;
+  --font-body-sm: "Plus Jakarta Sans", sans-serif;
+  --font-label-sm: "Plus Jakarta Sans", sans-serif;
+  --font-label-md: "Plus Jakarta Sans", sans-serif;
+  --font-body-lg: "Plus Jakarta Sans", sans-serif;
+  --font-headline-md: "Plus Jakarta Sans", sans-serif;
+  --font-headline-lg: "Plus Jakarta Sans", sans-serif;
+  --font-body-md: "Plus Jakarta Sans", sans-serif;
 
   --text-display-lg: 48px;
   --text-display-lg--line-height: 1.2;
@@ -128,7 +129,7 @@ body {
   margin: 0;
   overflow-x: hidden;
   background-color: var(--color-surface);
-  font-family: var(--font-body-md);
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 16px;
   font-weight: 400;
   line-height: 1.6;

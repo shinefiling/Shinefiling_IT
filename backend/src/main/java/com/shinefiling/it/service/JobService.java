@@ -31,6 +31,8 @@ public class JobService {
     public Job getJobById(Long id) {
         return jobRepository.findById(id).orElse(null);
     }
-    
 
+    public List<Job> getJobsByUserEmail(String email) {
+        return jobRepository.findByUserEmail(email);
+    }
 }

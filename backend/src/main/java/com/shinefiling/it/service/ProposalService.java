@@ -19,6 +19,7 @@ public class ProposalService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final EscrowService escrowService;
 
     @Transactional
     public Proposal submitProposal(Long projectId, Long freelancerId, Proposal proposalRequest) {
@@ -70,5 +71,35 @@ public class ProposalService {
                 .orElseThrow(() -> new RuntimeException("Proposal not found"));
         proposal.setStatus(status);
         return proposalRepository.save(proposal);
+    }
+
+    @Transactional
+    public Proposal acceptProposal(Long proposalId) {
+        Proposal proposal = proposalRepository.findById(proposalId)
+                .orElseThrow(() -> new RuntimeException("Proposal not found"));
+
+        if (!"PENDING".equals(proposal.getStatus())) {
+            throw new RuntimeException("Only PENDING proposals can be accepted");
+        }
+
+        Project project = proposal.getProject();
+        User client = project.getClient();
+        User freelancer = proposal.getFreelancer();
+
+        // Create escrow
+        escrowService.createEscrow(project.getId(), client.getId(), freelancer.getId(), proposal.getBidAmount());
+
+        // Update status
+        proposal.setStatus("ACCEPTED");
+        Proposal savedProposal = proposalRepository.save(proposal);
+
+        // Notify freelancer
+        notificationService.createNotification(freelancer, "Proposal Accepted!", "Your proposal for '" + project.getTitle() + "' has been accepted. Funds are held in escrow.");
+
+        return savedProposal;
+    }
+
+    public List<Proposal> getProposalsByClient(Long clientId) {
+        return proposalRepository.findByProjectClientId(clientId);
     }
 }

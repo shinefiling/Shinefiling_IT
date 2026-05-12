@@ -27,9 +27,18 @@ public class JobApplicationController {
 
     @GetMapping("/job/{jobId}")
     public List<JobApplication> getApplicationsByJobId(@PathVariable Long jobId) {
-        // This is a simple mock, ideally use a custom query in repository
         return repository.findAll().stream()
                 .filter(a -> a.getJobId().equals(jobId))
                 .toList();
+    }
+
+    @GetMapping("/client/{email}")
+    public List<JobApplication> getApplicationsByClientEmail(@PathVariable String email) {
+        return repository.findByClientEmail(email);
+    }
+
+    @GetMapping("/freelancer/{id}")
+    public List<JobApplication> getApplicationsByFreelancerId(@PathVariable Long id) {
+        return repository.findByFreelancerId(id);
     }
 }

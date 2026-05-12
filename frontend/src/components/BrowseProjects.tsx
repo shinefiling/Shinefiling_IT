@@ -5,7 +5,7 @@ import { API_BASE_URL } from '../config';
 import { 
     Search, ChevronDown, ChevronUp, Star, Bookmark, Clock, 
     CheckCircle2, ChevronRight, ChevronLeft, MapPin,
-    Lock, Info, AlertCircle
+    Lock, Info, AlertCircle, Filter, X
 } from 'lucide-react';
 
 const BrowseProjects: React.FC = () => {
@@ -15,7 +15,12 @@ const BrowseProjects: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 25;
+    
+    // Filter States
+    const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+    const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+    const [selectedPaymentTypes, setSelectedPaymentTypes] = useState<string[]>([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     React.useEffect(() => {
         fetchProjects();
@@ -39,11 +44,23 @@ const BrowseProjects: React.FC = () => {
         }
     };
 
-    const filteredProjects = projects.filter(project => 
-        project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        project.skills?.some((s: string) => s.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
+    const filteredProjects = projects.filter(project => {
+        const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            project.description.toLowerCase().includes(searchQuery.toLowerCase());
+        
+        const matchesSkills = selectedSkills.length === 0 || 
+                             selectedSkills.some(s => project.skills?.includes(s));
+        
+        const matchesPrice = (!priceRange.min || project.budgetAmount >= parseFloat(priceRange.min)) &&
+                            (!priceRange.max || project.budgetAmount <= parseFloat(priceRange.max));
+
+        const matchesPaymentType = selectedPaymentTypes.length === 0 || 
+                                  selectedPaymentTypes.includes(project.paymentType === 'fixed' ? 'Fixed Price' : 'Hourly Rate');
+
+        return matchesSearch && matchesSkills && matchesPrice && matchesPaymentType;
+    });
+
+    const itemsPerPage = 25;
 
     // Pagination Logic
     const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
@@ -97,13 +114,44 @@ const BrowseProjects: React.FC = () => {
                 </div>
             </div>
 
+            <div className="max-w-[1320px] mx-auto px-4 lg:px-8 py-4 lg:hidden">
+                <button 
+                    onClick={() => setIsFilterOpen(true)}
+                    className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 py-3 rounded-md font-bold text-[#242424] shadow-sm active:scale-[0.98] transition-all"
+                >
+                    <Filter size={18} className="text-[#ff0066]" />
+                    Search Filters
+                </button>
+            </div>
+
             <div className="max-w-[1320px] mx-auto px-4 lg:px-8 py-10">
                 <div className="flex flex-col lg:grid lg:grid-cols-[260px_1fr] gap-6">
                     
+                    {/* Filter Sidebar - Mobile Overlay */}
+                    {isFilterOpen && (
+                        <div 
+                            className="fixed inset-0 bg-black/50 z-[2001] lg:hidden"
+                            onClick={() => setIsFilterOpen(false)}
+                        />
+                    )}
+
                     {/* Left Sidebar - Filters */}
-                    <aside className="space-y-6">
-                        <div className="bg-white rounded-md p-6 border border-gray-100 shadow-sm">
-                            <h3 className="text-[18px] font-bold text-[#242424] tracking-tight mb-6">Filters</h3>
+                    <aside className={`
+                        fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-auto lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible
+                        ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}
+                    `}>
+                        <div className="bg-white p-6 lg:rounded-md lg:border lg:border-gray-100 lg:shadow-sm min-h-full">
+                            <div className="flex items-center justify-between mb-6 lg:mb-8">
+                                <h3 className="text-[18px] font-bold text-[#242424] tracking-tight flex items-center gap-2">
+                                    <Filter size={18} className="text-[#ff0066]" />
+                                    Search Filters
+                                </h3>
+                                <button onClick={() => setIsFilterOpen(false)} className="lg:hidden text-gray-400 hover:text-black">
+                                    <X size={24} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
 
                             {/* Project Type */}
                             <div className="mb-6">
@@ -113,16 +161,32 @@ const BrowseProjects: React.FC = () => {
                                 </div>
                                 <div className="space-y-2.5">
                                     <label className="flex items-center gap-2.5 cursor-pointer group">
-                                        <input type="checkbox" className="hidden" />
-                                        <div className="w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center transition-all group-hover:border-[#ff0066]">
-                                            <div className="w-2.5 h-2.5 bg-[#ff0066] rounded-sm opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                        <input 
+                                            type="checkbox" 
+                                            className="hidden" 
+                                            checked={selectedPaymentTypes.includes('Hourly Rate')}
+                                            onChange={(e) => {
+                                                const type = 'Hourly Rate';
+                                                setSelectedPaymentTypes(prev => e.target.checked ? [...prev, type] : prev.filter(t => t !== type));
+                                            }}
+                                        />
+                                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${selectedPaymentTypes.includes('Hourly Rate') ? 'bg-[#ff0066] border-[#ff0066]' : 'border-gray-300 group-hover:border-[#ff0066]'}`}>
+                                            {selectedPaymentTypes.includes('Hourly Rate') && <CheckCircle2 size={12} className="text-white" />}
                                         </div>
                                         <span className="text-[13px] text-[#555] tracking-tight">Hourly Rate</span>
                                     </label>
                                     <label className="flex items-center gap-2.5 cursor-pointer group">
-                                        <input type="checkbox" className="hidden" defaultChecked />
-                                        <div className="w-4 h-4 border border-[#ff0066] bg-[#ff0066] rounded-sm flex items-center justify-center transition-all shadow-sm">
-                                            <CheckCircle2 size={12} className="text-white" />
+                                        <input 
+                                            type="checkbox" 
+                                            className="hidden" 
+                                            checked={selectedPaymentTypes.includes('Fixed Price')}
+                                            onChange={(e) => {
+                                                const type = 'Fixed Price';
+                                                setSelectedPaymentTypes(prev => e.target.checked ? [...prev, type] : prev.filter(t => t !== type));
+                                            }}
+                                        />
+                                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${selectedPaymentTypes.includes('Fixed Price') ? 'bg-[#ff0066] border-[#ff0066]' : 'border-gray-300 group-hover:border-[#ff0066]'}`}>
+                                            {selectedPaymentTypes.includes('Fixed Price') && <CheckCircle2 size={12} className="text-white" />}
                                         </div>
                                         <span className="text-[13px] text-[#242424] font-medium tracking-tight">Fixed Price</span>
                                     </label>
@@ -140,13 +204,15 @@ const BrowseProjects: React.FC = () => {
                                         <span className="text-[11px] text-gray-400 font-bold uppercase">min</span>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 w-8 border-r border-gray-100 flex items-center justify-center text-gray-400 text-[11px] font-bold">₹</div>
-                                            <input type="text" placeholder="0" className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" />
+                                            <input 
+                                                type="text" 
+                                                placeholder="0" 
+                                                className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" 
+                                                value={priceRange.min}
+                                                onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                                            />
                                             <div className="absolute inset-y-0 right-0 px-3 flex items-center gap-1 border-l border-gray-100 text-gray-400 text-[11px] font-bold uppercase">
                                                 INR
-                                                <div className="flex flex-col scale-75 opacity-50">
-                                                    <ChevronUp size={10} />
-                                                    <ChevronDown size={10} />
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -154,13 +220,15 @@ const BrowseProjects: React.FC = () => {
                                         <span className="text-[11px] text-gray-400 font-bold uppercase">max</span>
                                         <div className="relative">
                                             <div className="absolute inset-y-0 left-0 w-8 border-r border-gray-100 flex items-center justify-center text-gray-400 text-[11px] font-bold">₹</div>
-                                            <input type="text" placeholder="1500+" className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" />
+                                            <input 
+                                                type="text" 
+                                                placeholder="1500+" 
+                                                className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" 
+                                                value={priceRange.max}
+                                                onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                                            />
                                             <div className="absolute inset-y-0 right-0 px-3 flex items-center gap-1 border-l border-gray-100 text-gray-400 text-[11px] font-bold uppercase">
                                                 INR
-                                                <div className="flex flex-col scale-75 opacity-50">
-                                                    <ChevronUp size={10} />
-                                                    <ChevronDown size={10} />
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -220,13 +288,20 @@ const BrowseProjects: React.FC = () => {
                                     />
                                 </div>
                                 <div className="space-y-2.5 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar">
-                                    {['Java', 'MySQL', 'AngularJS', 'React.js', 'Payment Gateway Integration', 'AWS Lambda', 'Flutter', 'GitHub', 'Microservices', 'Spring Boot'].map((skill, idx) => (
+                                    {['Java', 'MySQL', 'AngularJS', 'React.js', 'Payment Gateway Integration', 'AWS Lambda', 'Flutter', 'GitHub', 'Microservices', 'Spring Boot'].map((skill) => (
                                         <label key={skill} className="flex items-center gap-2.5 cursor-pointer group">
-                                            <input type="checkbox" className="hidden" defaultChecked={idx < 4 || idx > 5} />
-                                            <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${(idx < 4 || idx > 5) ? 'bg-[#ff0066] border-[#ff0066]' : 'border-gray-300 group-hover:border-[#ff0066]'}`}>
-                                                {(idx < 4 || idx > 5) && <CheckCircle2 size={12} className="text-white" />}
+                                            <input 
+                                                type="checkbox" 
+                                                className="hidden" 
+                                                checked={selectedSkills.includes(skill)}
+                                                onChange={(e) => {
+                                                    setSelectedSkills(prev => e.target.checked ? [...prev, skill] : prev.filter(s => s !== skill));
+                                                }}
+                                            />
+                                            <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${selectedSkills.includes(skill) ? 'bg-[#ff0066] border-[#ff0066]' : 'border-gray-300 group-hover:border-[#ff0066]'}`}>
+                                                {selectedSkills.includes(skill) && <CheckCircle2 size={12} className="text-white" />}
                                             </div>
-                                            <span className={`text-[12px] tracking-tight ${(idx < 4 || idx > 5) ? 'text-[#242424] font-medium' : 'text-[#555]'}`}>{skill}</span>
+                                            <span className={`text-[12px] tracking-tight ${selectedSkills.includes(skill) ? 'text-[#242424] font-medium' : 'text-[#555]'}`}>{skill}</span>
                                         </label>
                                     ))}
                                 </div>
@@ -297,7 +372,8 @@ const BrowseProjects: React.FC = () => {
                                 </label>
                             </div>
                         </div>
-                    </aside>
+                    </div>
+                </aside>
 
                     {/* Right Content - Project List */}
                     <main className="space-y-6">
@@ -307,17 +383,17 @@ const BrowseProjects: React.FC = () => {
                                 {loading ? "Loading projects..." : `Top results ${startIndex + 1}-${Math.min(startIndex + itemsPerPage, filteredProjects.length)} of ${filteredProjects.length} results`}
                             </span>
                             
-                            <div className="flex items-center gap-6">
+                            <div className="flex flex-col xs:flex-row items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
                                 <label className="flex items-center gap-2 cursor-pointer group">
                                     <div className="w-8 h-4 bg-gray-200 rounded-full relative transition-colors group-hover:bg-gray-300">
                                         <div className="absolute left-1 top-1 w-2 h-2 bg-white rounded-full transition-all"></div>
                                     </div>
-                                    <span className="text-[13px] font-medium text-gray-600">Receive alerts for this search</span>
+                                    <span className="text-[13px] font-medium text-gray-600">Receive alerts</span>
                                 </label>
                                 
                                 <div className="flex items-center gap-3">
                                     <span className="text-[13px] text-gray-500">Sort by</span>
-                                    <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-md text-[13px] font-bold cursor-pointer hover:border-[#ff0066] transition-all group">
+                                    <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-md text-[13px] font-bold cursor-pointer hover:border-[#ff0066] transition-all group whitespace-nowrap">
                                         Newest First
                                         <ChevronDown size={14} className="text-gray-400 group-hover:text-[#ff0066]" />
                                     </div>
@@ -357,14 +433,14 @@ const BrowseProjects: React.FC = () => {
                                     >
                                         <div className="flex flex-col lg:flex-row gap-3">
                                             <div className="flex-1">
-                                                <div className="flex items-start justify-between mb-1">
+                                                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 gap-2">
                                                     <h3 
                                                         onClick={() => navigate(`/projects/${project.id}`)}
-                                                        className="text-[17px] font-bold text-[#242424] hover:text-[#0066ff] cursor-pointer tracking-tight leading-tight"
+                                                        className="text-[17px] font-bold text-[#242424] hover:text-[#0066ff] cursor-pointer tracking-tight leading-tight break-words flex-1"
                                                     >
                                                         {project.title}
                                                     </h3>
-                                                    <div className="text-right shrink-0">
+                                                    <div className="text-left sm:text-right shrink-0">
                                                         <div className="text-[15px] font-bold text-[#242424]">{project.bidCount || 0} bids</div>
                                                         <div className="text-[14px] font-bold text-[#242424] mt-0.5">
                                                             ₹{project.budgetAmount?.toLocaleString('en-IN')}
@@ -390,8 +466,8 @@ const BrowseProjects: React.FC = () => {
                                                     ))}
                                                 </div>
 
-                                                <div className="flex items-center gap-4">
-                                                    <div className="flex items-center gap-1">
+                                                <div className="flex flex-wrap items-center gap-y-2 gap-x-4">
+                                                    <div className="flex items-center gap-1 shrink-0">
                                                         {[1,2,3,4,5].map(star => (
                                                             <Star 
                                                                 key={star} 
@@ -406,7 +482,7 @@ const BrowseProjects: React.FC = () => {
                                                         </span>
                                                     </div>
                                                     
-                                                    <div className="flex items-center gap-1.5 text-gray-400 text-[12px] font-medium">
+                                                    <div className="flex items-center gap-1.5 text-gray-400 text-[12px] font-medium shrink-0">
                                                         <Clock size={12} />
                                                         {getTimeAgo(project.postedAt)}
                                                     </div>

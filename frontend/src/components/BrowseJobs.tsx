@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
 import {
-    Search, Filter,
+    Search, Filter, X,
     Heart, ChevronDown, Bell, CheckCircle, MapPin, Briefcase, Clock
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -17,12 +17,30 @@ const BrowseJobs: React.FC = () => {
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
     const [activeFilters, setActiveFilters] = useState<string[]>(['keyword', 'categories', 'type', 'location', 'experience', 'skills', 'date', 'price']);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const toggleFilter = (filter: string) => {
         setActiveFilters(prev =>
             prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
         );
     };
+
+    // Client-side filtering logic
+    const filteredResults = jobs.filter(job => {
+        const matchesSearch = !searchQuery || 
+            job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            job.description.toLowerCase().includes(searchQuery.toLowerCase());
+            
+        const matchesCategory = selectedCategories.length === 0 || 
+            selectedCategories.includes(job.category);
+            
+        const matchesLevel = selectedLevels.length === 0 || 
+            selectedLevels.includes(job.experience);
+            
+        const matchesPrice = job.price <= priceRange;
+
+        return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
+    });
 
     React.useEffect(() => {
         fetchJobs();
@@ -78,7 +96,6 @@ const BrowseJobs: React.FC = () => {
         setPriceRange(1000000);
         setSelectedCategories([]);
         setSelectedLevels([]);
-        setFilteredJobs(jobs);
     };
 
     const toggleCategory = (cat: string) => {
@@ -94,24 +111,51 @@ const BrowseJobs: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#fdfaf0] pt-[150px] pb-20 font-['Poppins']">
-            <div className="max-w-[1440px] mx-auto px-6 lg:px-16">
+        <div className="min-h-screen bg-[#fdfaf0] pt-[100px] lg:pt-[150px] pb-20 font-['Poppins']">
+            <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-16">
+                
+                <div className="lg:hidden mb-6">
+                    <button 
+                        onClick={() => setIsFilterOpen(true)}
+                        className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 py-3.5 rounded-none font-bold text-[#242424] shadow-sm active:scale-[0.98] transition-all font-['Poppins']"
+                    >
+                        <Filter size={18} className="text-primary" />
+                        Search Filters
+                    </button>
+                </div>
+
                 <div className="flex flex-col lg:grid lg:grid-cols-[300px_1fr] gap-8">
+                    
+                    {/* Filter Sidebar - Mobile Overlay */}
+                    {isFilterOpen && (
+                        <div 
+                            className="fixed inset-0 bg-black/50 z-[2001] lg:hidden"
+                            onClick={() => setIsFilterOpen(false)}
+                        />
+                    )}
 
                     {/* Left Sidebar - Filters */}
-                    <aside className="space-y-6 font-['Poppins']">
-                        <div className="bg-white rounded-none p-0 shadow-sm border border-[#eee]">
+                    <aside className={`
+                        fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-auto lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible font-['Poppins']
+                        ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}
+                    `}>
+                        <div className="bg-white lg:rounded-none p-0 lg:shadow-sm lg:border lg:border-[#eee] min-h-full">
                             <div className="px-6 py-5 border-b border-[#eee] flex items-center justify-between">
                                 <h3 className="font-bold text-[#242424] flex items-center gap-2 font-['Poppins']">
                                     <Filter size={18} className="text-primary" />
                                     Search Filters
                                 </h3>
-                                <button
-                                    onClick={clearFilters}
-                                    className="text-[11px] font-bold text-primary hover:underline uppercase font-['Poppins']"
-                                >
-                                    Clear Result
-                                </button>
+                                <div className="flex items-center gap-4">
+                                    <button
+                                        onClick={clearFilters}
+                                        className="text-[11px] font-bold text-primary hover:underline uppercase font-['Poppins']"
+                                    >
+                                        Clear
+                                    </button>
+                                    <button onClick={() => setIsFilterOpen(false)} className="lg:hidden text-gray-400">
+                                        <X size={20} />
+                                    </button>
+                                </div>
                             </div>
 
                             <FilterSection title="Search by Keyword" isOpen={activeFilters.includes('keyword')} onToggle={() => toggleFilter('keyword')}>
@@ -224,11 +268,11 @@ const BrowseJobs: React.FC = () => {
                     {/* Right Content - Job List */}
                     <main className="space-y-6 font-['Poppins']">
                         {/* Results Bar */}
-                        <div className="bg-white rounded-none px-6 py-4 shadow-sm border border-[#eee] flex items-center justify-between">
+                        <div className="bg-white rounded-none px-4 sm:px-6 py-4 shadow-sm border border-[#eee] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <span className="text-sm font-bold text-[#242424] font-['Poppins']">Found {filteredJobs.length} Results</span>
-                            <div className="flex items-center gap-3 font-['Poppins']">
+                            <div className="flex items-center justify-between sm:justify-end gap-3 font-['Poppins']">
                                 <span className="text-[12px] text-[#888] font-medium">Sort by</span>
-                                <div className="flex items-center gap-2 bg-[#f9fafb] border border-[#eee] px-4 py-2 rounded-none text-sm font-bold cursor-pointer hover:border-[#b5242c] transition-all">
+                                <div className="flex items-center gap-2 bg-[#f9fafb] border border-[#eee] px-4 py-2 rounded-none text-sm font-bold cursor-pointer hover:border-[#b5242c] transition-all whitespace-nowrap">
                                     Newest First
                                     <ChevronDown size={14} />
                                 </div>
@@ -236,7 +280,7 @@ const BrowseJobs: React.FC = () => {
                         </div>
 
                         {/* Job Alerts Banner */}
-                        <div className="bg-white rounded-none px-6 py-6 shadow-sm border border-[#eee] flex flex-col md:flex-row items-center justify-between gap-6 font-['Poppins']">
+                        <div className="bg-white rounded-none px-4 sm:px-6 py-6 shadow-sm border border-[#eee] flex flex-col md:flex-row items-center justify-between gap-6 font-['Poppins']">
                             <div>
                                 <h4 className="font-bold text-[#242424] mb-1 font-['Poppins']">Job alerts</h4>
                                 <p className="text-[12px] text-[#888] font-['Poppins']">Receive emails for the latest jobs matching your search criteria</p>
@@ -257,13 +301,13 @@ const BrowseJobs: React.FC = () => {
                                         <div className="h-4 bg-gray-50 rounded w-2/3"></div>
                                     </div>
                                 ))
-                            ) : filteredJobs.length === 0 ? (
+                            ) : filteredResults.length === 0 ? (
                                 <div className="bg-white rounded-none shadow-sm border border-[#eee] p-20 text-center">
                                     <Search size={48} className="mx-auto text-gray-200 mb-4" />
                                     <p className="text-gray-500 font-medium">No jobs found matching your criteria.</p>
                                 </div>
                             ) : (
-                                filteredJobs.map((job) => (
+                                filteredResults.map((job) => (
                                     <motion.div
                                         key={job.id}
                                         initial={{ opacity: 0, y: 10 }}
@@ -279,26 +323,26 @@ const BrowseJobs: React.FC = () => {
                                             </div>
                                         )}
 
-                                        <div className="pt-5 px-3 pb-3 flex-1">
+                                        <div className="pt-5 px-4 sm:px-3 pb-3 flex-1">
                                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-1">
                                                 <div className="flex-1">
                                                     <h3 className="text-[19px] font-bold text-[#242424] group-hover:text-[#b5242c] transition-colors leading-[24px] mb-2 font-['Poppins'] tracking-tight capitalize">
                                                         {job.title}
                                                     </h3>
-                                                    <div className="flex items-center gap-4 mb-2 text-[13px] text-gray-500 font-medium">
-                                                        <div className="flex items-center gap-1.5">
+                                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-2 text-[13px] text-gray-500 font-medium">
+                                                        <div className="flex items-center gap-1.5 shrink-0">
                                                             <Briefcase size={14} className="text-gray-400" />
                                                             <span className="capitalize">{job.role || job.company}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-1.5">
+                                                        <div className="flex items-center gap-1.5 shrink-0">
                                                             <MapPin size={14} className="text-gray-400" />
                                                             <span className="capitalize">{job.location}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-1.5">
+                                                        <div className="flex items-center gap-1.5 shrink-0">
                                                             <Clock size={14} className="text-gray-400" />
                                                             <span className="capitalize">{job.type}</span>
                                                         </div>
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-50 text-green-600 rounded-none text-[11px] font-bold border border-green-100 capitalize">
+                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-50 text-green-600 rounded-none text-[11px] font-bold border border-green-100 shrink-0 capitalize">
                                                             <span>{job.experience || 'Fresher'}</span>
                                                         </div>
                                                     </div>
@@ -326,8 +370,8 @@ const BrowseJobs: React.FC = () => {
                                         </div>
 
                                         {/* fr-right-information */}
-                                        <div className="px-3 py-2 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                                            <div className="flex items-center gap-6">
+                                        <div className="px-3 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
                                                 <div className="text-[12px] text-gray-500">
                                                     <span className="font-bold text-[#242424]">{job.proposals}</span> applications
                                                 </div>

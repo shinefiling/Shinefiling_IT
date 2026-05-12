@@ -34,7 +34,24 @@ public class ProfileController {
 
     @GetMapping
     public List<Profile> getAllProfiles() {
-        return profileRepository.findAll();
+        List<Profile> profiles = profileRepository.findAll();
+        // Sync userRole for existing profiles that have it as null
+        profiles.forEach(profile -> {
+            if (profile.getUserRole() == null) {
+                userRepository.findByEmail(profile.getEmail()).ifPresent(user -> {
+                    profile.setUserRole(user.getUserRole());
+                    profileRepository.save(profile);
+                });
+            }
+        });
+        return profiles;
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Profile> getProfileById(@PathVariable Long id) {
+        return profileRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/search")
@@ -82,6 +99,7 @@ public class ProfileController {
                                 newProfile.setEmail(user.getEmail());
                                 newProfile.setFullName(user.getFullName());
                                 newProfile.setUsername(user.getUsername());
+                                newProfile.setUserRole(user.getUserRole());
                                 newProfile.setEmailVerified(user.isVerified());
                                 return ResponseEntity.ok(profileRepository.save(newProfile));
                             })
@@ -107,6 +125,7 @@ public class ProfileController {
             p.setPortfolio(profile.getPortfolio());
             p.setProfilePicture(profile.getProfilePicture());
             p.setPhone(profile.getPhone());
+            p.setUserRole(profile.getUserRole());
             
             return ResponseEntity.ok(profileRepository.save(p));
         } else {

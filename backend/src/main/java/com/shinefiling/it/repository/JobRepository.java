@@ -11,6 +11,7 @@ import java.util.List;
 public interface JobRepository extends JpaRepository<Job, Long> {
     List<Job> findByFeaturedTrue();
     List<Job> findByTitleContainingIgnoreCase(String title);
+    List<Job> findByUserEmail(String userEmail);
 
     @Query("SELECT j FROM Job j WHERE " +
            "(:query IS NULL OR :query = '' OR LOWER(j.title) LIKE LOWER(CONCAT('%', :query, '%')) OR LOWER(j.description) LIKE LOWER(CONCAT('%', :query, '%'))) AND " +

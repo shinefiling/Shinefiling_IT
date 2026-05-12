@@ -49,7 +49,7 @@ const PostJob: React.FC = () => {
         setIsLoading(true);
         setError(null);
         try {
-            const response = await fetch('${API_BASE_URL}/api/jobs', {
+            const response = await fetch(`${API_BASE_URL}/api/jobs`, {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',

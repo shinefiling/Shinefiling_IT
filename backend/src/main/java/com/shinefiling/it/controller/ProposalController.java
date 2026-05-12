@@ -38,4 +38,14 @@ public class ProposalController {
             @RequestParam String status) {
         return ResponseEntity.ok(proposalService.updateProposalStatus(proposalId, status));
     }
+
+    @PostMapping("/{proposalId}/accept")
+    public ResponseEntity<Proposal> acceptProposal(@PathVariable Long proposalId) {
+        return ResponseEntity.ok(proposalService.acceptProposal(proposalId));
+    }
+
+    @GetMapping("/client/{clientId}")
+    public ResponseEntity<List<Proposal>> getProposalsByClient(@PathVariable Long clientId) {
+        return ResponseEntity.ok(proposalService.getProposalsByClient(clientId));
+    }
 }

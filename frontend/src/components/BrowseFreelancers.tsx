@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
     Search, Star, Heart, 
     Filter, ChevronDown, ChevronUp, 
-    Check, ArrowRight, UserCheck, Activity
+    Check, ArrowRight, UserCheck, Activity, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
@@ -19,6 +19,7 @@ interface Freelancer {
     location?: string;
     profilePicture?: string;
     skills?: string[];
+    userRole?: string;
     createdAt: string;
 }
 
@@ -30,9 +31,13 @@ const BrowseFreelancers: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+    const [clientJobs, setClientJobs] = useState<any[]>([]);
+    const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+    const [selectedFreelancer, setSelectedFreelancer] = useState<Freelancer | null>(null);
     
     // UI States
     const [activeFilters, setActiveFilters] = useState<string[]>(['keyword', 'price', 'skills']);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     useEffect(() => {
         fetchFreelancers();
@@ -45,13 +50,27 @@ const BrowseFreelancers: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setFreelancers(data);
-                setFilteredFreelancers(data);
+                // Show if it's explicitly FREELANCER or if userRole is missing (legacy data)
+                const onlyFreelancers = data.filter((f: any) => f.userRole === 'FREELANCER' || !f.userRole);
+                setFreelancers(onlyFreelancers);
+                setFilteredFreelancers(onlyFreelancers);
             }
         } catch (error) {
             console.error("Error fetching freelancers:", error);
         } finally {
             setLoading(false);
+        }
+
+        // Fetch client jobs for invitation
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            if (user.userRole === 'CLIENT') {
+                try {
+                    const res = await fetch(`${API_BASE_URL}/api/jobs/client/${user.email}`);
+                    if (res.ok) setClientJobs(await res.json());
+                } catch (e) { console.error(e); }
+            }
         }
     };
 
@@ -71,7 +90,8 @@ const BrowseFreelancers: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                setFilteredFreelancers(data);
+                const onlyFreelancers = data.filter((f: any) => f.userRole === 'FREELANCER' || !f.userRole);
+                setFilteredFreelancers(onlyFreelancers);
             }
         } catch (error) {
             console.error("Error filtering freelancers:", error);
@@ -133,19 +153,48 @@ const BrowseFreelancers: React.FC = () => {
                 </div>
             </div>
 
+            <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-4 lg:hidden">
+                <button 
+                    onClick={() => setIsFilterOpen(true)}
+                    className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 py-3 rounded-md font-bold text-[#242424] shadow-sm active:scale-[0.98] transition-all"
+                >
+                    <Filter size={18} className="text-[#b5242c]" />
+                    Search Filters
+                </button>
+            </div>
+
             <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-12 flex flex-col lg:flex-row gap-8">
                 
+                {/* Filter Sidebar - Mobile Overlay */}
+                {isFilterOpen && (
+                    <div 
+                        className="fixed inset-0 bg-black/50 z-[2001] lg:hidden"
+                        onClick={() => setIsFilterOpen(false)}
+                    />
+                )}
+
                 {/* Left Sidebar - Filters */}
-                <div className="w-full lg:w-[320px] shrink-0 space-y-4">
-                    <div className="bg-white rounded-none border border-[#eee] overflow-hidden shadow-sm">
+                <aside className={`
+                    fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-auto lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible
+                    ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}>
+                    <div className="bg-white lg:rounded-none lg:border lg:border-[#eee] overflow-hidden lg:shadow-sm min-h-full">
                         <div className="px-5 py-4 border-b border-[#eee] flex items-center justify-between">
-                            <h3 className="font-bold text-[#242424] text-[15px]">Search Filters</h3>
-                            <button 
-                                onClick={clearFilters}
-                                className="text-[11px] font-black text-primary uppercase tracking-wider hover:underline"
-                            >
-                                Clear Result
-                            </button>
+                            <h3 className="font-bold text-[#242424] text-[15px] flex items-center gap-2">
+                                <Filter size={18} className="text-primary" />
+                                Search Filters
+                            </h3>
+                            <div className="flex items-center gap-4">
+                                <button 
+                                    onClick={clearFilters}
+                                    className="text-[11px] font-black text-primary uppercase tracking-wider hover:underline"
+                                >
+                                    Clear
+                                </button>
+                                <button onClick={() => setIsFilterOpen(false)} className="lg:hidden text-gray-400">
+                                    <X size={20} />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Keyword Filter */}
@@ -235,7 +284,7 @@ const BrowseFreelancers: React.FC = () => {
                             </button>
                         </div>
                     </div>
-                </div>
+                </aside>
 
                 {/* Right Side - Results List */}
                 <div className="flex-1 space-y-6">
@@ -243,12 +292,12 @@ const BrowseFreelancers: React.FC = () => {
                     {/* Results Toolbar */}
                     <div className="bg-white p-4 rounded-none border border-[#eee] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <h2 className="font-bold text-[#242424] text-[15px]">Found {filteredFreelancers.length} Results</h2>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
                             <div className="flex items-center bg-gray-50 rounded-none p-1 border border-[#eee]">
                                 <button className="p-1.5 bg-primary text-white rounded-none"><Filter size={16} /></button>
                                 <button className="p-1.5 text-gray-400 hover:text-primary"><Activity size={16} /></button>
                             </div>
-                            <select className="bg-gray-50 border border-[#eee] text-[13px] px-4 py-1.5 rounded-none outline-none focus:border-primary">
+                            <select className="bg-gray-50 border border-[#eee] text-[13px] px-4 py-1.5 rounded-none outline-none focus:border-primary flex-1 sm:flex-none">
                                 <option>Sort by: Newest</option>
                                 <option>Sort by: Price (Low to High)</option>
                                 <option>Sort by: Rating</option>
@@ -313,24 +362,62 @@ const BrowseFreelancers: React.FC = () => {
                                             <Star size={14} fill="currentColor" />
                                             <span className="text-[12px] font-bold text-gray-400 uppercase tracking-tighter">No Reviews</span>
                                         </div>
+
+                                        {/* Portfolio Preview */}
+                                        {(freelancer as any).portfolio?.length > 0 && (
+                                            <div className="mt-4 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
+                                                {(freelancer as any).portfolio.map((item: any, idx: number) => (
+                                                    <div key={idx} className="w-16 h-12 bg-gray-100 rounded-sm overflow-hidden shrink-0 border border-[#eee]">
+                                                        <img src={item.imageUrl || 'https://via.placeholder.com/150'} className="w-full h-full object-cover" />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Action Section */}
-                                    <div className="flex flex-col justify-between md:items-end gap-4">
-                                        <div className="flex gap-2">
-                                            <button className="p-2.5 bg-gray-50 text-gray-400 rounded-none hover:bg-primary/10 hover:text-primary transition-all border border-[#eee]">
-                                                <Heart size={18} />
-                                            </button>
+                                    <div className="flex flex-col justify-between md:items-end gap-4 min-w-0 md:min-w-[200px] z-10">
+                                        <div className="w-full space-y-2">
+                                            <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedFreelancer(freelancer);
+                                                        setIsInviteModalOpen(true);
+                                                    }}
+                                                    className="flex-1 min-w-[80px] px-3 py-2.5 bg-white border border-[#b5242c] text-[#b5242c] rounded-sm font-bold text-[11px] uppercase tracking-wider hover:bg-[#b5242c] hover:text-white transition-all duration-300"
+                                                >
+                                                    Invite
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(`/messages?with=${freelancer.id}`);
+                                                    }}
+                                                    className="flex-1 min-w-[80px] px-3 py-2.5 bg-[#b5242c] text-white rounded-sm font-bold text-[11px] uppercase tracking-wider shadow-lg shadow-[#b5242c]/20 hover:bg-[#920218] transition-all duration-300"
+                                                >
+                                                    Message
+                                                </button>
+                                            </div>
                                             <button 
-                                                onClick={() => navigate(`/hire-me?id=${freelancer.id}`)}
-                                                className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-none font-bold text-sm shadow-md shadow-primary/10 hover:bg-[#a11f27] transition-all"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    navigate(`/hire-me?id=${freelancer.id}`);
+                                                }}
+                                                className="w-full py-2.5 bg-[#261817] text-white rounded-sm font-bold text-[11px] uppercase tracking-widest hover:bg-black transition-all duration-300 flex items-center justify-center gap-2"
                                             >
-                                                Hire Me <ArrowRight size={16} />
+                                                Hire & Contract <ArrowRight size={14} />
                                             </button>
                                         </div>
-                                        <button className="text-[13px] font-bold text-[#888] hover:text-primary flex items-center gap-1.5 transition-colors group/follow">
-                                            <Heart size={14} className="group-hover/follow:fill-primary transition-all" /> Follow
-                                        </button>
+                                        
+                                        <div className="flex items-center gap-4 w-full justify-between md:justify-end px-1">
+                                            <button className="text-[12px] font-bold text-[#888] hover:text-[#b5242c] flex items-center gap-1.5 transition-colors group/follow">
+                                                <Heart size={14} className="group-hover/follow:fill-[#b5242c] transition-all" /> Follow
+                                            </button>
+                                            <button className="p-2 bg-[#fff0ef] text-[#b5242c] rounded-full hover:bg-[#b5242c] hover:text-white transition-all border border-[#e2bebc]/30">
+                                                <Heart size={16} />
+                                            </button>
+                                        </div>
                                     </div>
                                 </motion.div>
                             ))
@@ -339,6 +426,104 @@ const BrowseFreelancers: React.FC = () => {
                 </div>
 
             </div>
+
+            {/* Invite Modal */}
+            <AnimatePresence>
+                {isInviteModalOpen && selectedFreelancer && (
+                    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white w-full max-w-lg rounded-none shadow-2xl overflow-hidden"
+                        >
+                            <div className="bg-primary p-6 text-white flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-xl font-bold uppercase tracking-tight">Invite to Project</h3>
+                                    <p className="text-white/70 text-xs mt-1">Inviting <span className="font-bold text-white">{selectedFreelancer.fullName}</span></p>
+                                </div>
+                                <button onClick={() => setIsInviteModalOpen(false)} className="hover:rotate-90 transition-transform"><X size={24} /></button>
+                            </div>
+                            <div className="p-6">
+                                <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">Select One of Your Active Jobs</h4>
+                                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {clientJobs.length === 0 ? (
+                                        <div className="text-center py-10 bg-gray-50 border border-dashed border-gray-200">
+                                            <p className="text-sm text-gray-500 font-medium">No active jobs found.</p>
+                                            <button onClick={() => navigate('/post-job')} className="text-primary font-bold text-xs mt-2 hover:underline">Post a Job First</button>
+                                        </div>
+                                    ) : (
+                                        clientJobs.map(job => (
+                                            <div 
+                                                key={job.id} 
+                                                className="p-4 border border-[#eee] hover:border-primary hover:bg-primary/5 cursor-pointer transition-all flex justify-between items-center group"
+                                                onClick={async () => {
+                                                    try {
+                                                        const user = JSON.parse(localStorage.getItem('user') || '{}');
+                                                        
+                                                        // 1. Create a "Job Application" with INVITED status
+                                                        const invitationData = {
+                                                            jobId: job.id,
+                                                            jobTitle: job.title,
+                                                            company: user.fullName || 'Strategic Client',
+                                                            clientEmail: user.email,
+                                                            clientId: user.id,
+                                                            freelancerId: selectedFreelancer.id,
+                                                            email: selectedFreelancer.email,
+                                                            fullName: selectedFreelancer.fullName,
+                                                            status: 'INVITED',
+                                                            skills: selectedFreelancer.skills?.join(', ') || '',
+                                                            experience: 'Invitation based on profile'
+                                                        };
+
+                                                        const inviteRes = await fetch(`${API_BASE_URL}/api/job-applications/apply`, {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify(invitationData)
+                                                        });
+
+                                                        // 2. Send an automated Chat Message
+                                                        const invitationMessage = {
+                                                            senderEmail: user.email,
+                                                            receiverEmail: selectedFreelancer.email,
+                                                            content: `Hello ${selectedFreelancer.fullName}! I'm impressed by your profile and would like to invite you to work on my project: "${job.title}". Please check the details in your profile invitations!`,
+                                                        };
+                                                        
+                                                        const msgRes = await fetch(`${API_BASE_URL}/api/messages/send`, {
+                                                            method: 'POST',
+                                                            headers: { 'Content-Type': 'application/json' },
+                                                            body: JSON.stringify(invitationMessage)
+                                                        });
+
+                                                        if (inviteRes.ok && msgRes.ok) {
+                                                            alert(`Successfully invited ${selectedFreelancer.fullName} to ${job.title}!`);
+                                                            setIsInviteModalOpen(false);
+                                                        } else {
+                                                            alert('Something went wrong. Please try again.');
+                                                        }
+                                                    } catch (e) { 
+                                                        console.error(e);
+                                                        alert('Connection error. Please try again.');
+                                                    }
+                                                }}
+                                            >
+                                                <div>
+                                                    <p className="font-bold text-[14px] text-[#242424]">{job.title}</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-0.5">Budget: ₹{job.salary || 'Negotiable'}</p>
+                                                </div>
+                                                <ArrowRight size={18} className="text-gray-200 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                            <div className="p-4 bg-gray-50 border-t border-[#eee] flex justify-end">
+                                <button onClick={() => setIsInviteModalOpen(false)} className="px-6 py-2 text-sm font-bold text-gray-500 hover:text-gray-700">Cancel</button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
