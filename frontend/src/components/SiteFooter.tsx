@@ -1,116 +1,153 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { 
     Facebook, Twitter, Youtube, Instagram, 
-    Globe, HelpCircle, Accessibility, Apple, PlayCircle
+    Globe, HelpCircle, Mail, MapPin, Phone,
+    ChevronRight, Github, Linkedin
 } from 'lucide-react';
 
 const SiteFooter: React.FC = () => {
     const footerColumns = [
         {
-            title: "Network",
-            links: ["Browse Projects", "Hire Freelancers", "Project Categories", "Contests", "Preferred Program", "Enterprise", "Membership", "API for Developers"]
+            title: "Marketplace",
+            links: [
+                { name: "Find A Job", path: "/jobs" },
+                { name: "Hire Developers", path: "/freelancers" },
+                { name: "Find A Project", path: "/projects" },
+                { name: "Post A Project", path: "/post-project" },
+                { name: "Pricing Plans", path: "/pricing" }
+            ]
         },
         {
-            title: "About",
-            links: ["About us", "Security", "Team", "News", "Success Stories", "Reviews", "Careers", "Awards"]
+            title: "Company",
+            links: [
+                { name: "About Us", path: "/about" },
+                { name: "Our Team", path: "/team" },
+                { name: "Success Stories", path: "/stories" },
+                { name: "News & Press", path: "/news" },
+                { name: "Careers", path: "/careers" }
+            ]
         },
         {
-            title: "Resources",
-            links: ["Help & Support", "Trust & Safety", "Community", "Sitemap", "Accessibility", "Legal", "Copyright Policy"]
+            title: "Support",
+            links: [
+                { name: "Help Center", path: "/help" },
+                { name: "Trust & Safety", path: "/trust" },
+                { name: "Community", path: "/community" },
+                { name: "API Docs", path: "/api" },
+                { name: "Sitemap", path: "/sitemap" }
+            ]
         },
         {
-            title: "Terms",
-            links: ["Privacy Policy", "Terms and Conditions", "Code of Conduct", "Fees and Charges", "Investor Relations"]
+            title: "Legal",
+            links: [
+                { name: "Privacy Policy", path: "/privacy" },
+                { name: "Terms of Service", path: "/terms" },
+                { name: "Code of Conduct", path: "/conduct" },
+                { name: "Cookie Policy", path: "/cookies" }
+            ]
         }
     ];
 
     return (
-        <footer className="bg-white text-[#242424] pt-16 pb-8 border-t border-gray-100 font-['Poppins']">
-            <div className="max-w-[1320px] mx-auto px-6 md:px-10">
+        <footer className="bg-[#0F2E4B] text-white pt-20 pb-10 overflow-hidden relative">
+            {/* Background Atmosphere - Subtle Blue Glow */}
+            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#317CD7]/10 blur-[150px] -z-0 pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#b5242c]/5 blur-[120px] -z-0 pointer-events-none"></div>
+
+            <div className="max-w-[1320px] mx-auto px-6 md:px-10 relative z-10">
                 
-                {/* Main Content Area */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 pb-16 border-b border-gray-100">
-                    
-                    {/* Left Brand Column */}
-                    <div className="lg:col-span-1 space-y-8">
-                        <div className="flex items-center gap-2">
-                            <img src="shine-logo.png" alt="Shinefiling" className="h-12 w-auto" />
-                        </div>
-                        
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-2 text-[13px] text-gray-500 hover:text-[#b5242c] cursor-pointer transition-colors">
-                                <Globe size={18} strokeWidth={1.5} />
-                                <span>India / English</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-[13px] text-gray-500 hover:text-[#b5242c] cursor-pointer transition-colors">
-                                <HelpCircle size={18} strokeWidth={1.5} />
-                                <span>Help & Support</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-[13px] text-gray-500 hover:text-[#b5242c] cursor-pointer transition-colors">
-                                <Accessibility size={18} strokeWidth={1.5} />
-                                <span>Accessibility</span>
-                            </div>
+                {/* Top Section: Brand & Newsletter */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-white/10">
+                    <div className="lg:col-span-4 space-y-8">
+                        <Link to="/" className="inline-block">
+                            <img src="shine-logo.png" alt="Shinefiling" className="h-20 w-auto brightness-0 invert" />
+                        </Link>
+                        <p 
+                            className="text-gray-200 text-[15px] max-w-sm" 
+                            style={{ fontFamily: 'Poppins, sans-serif', fontWeight: '500', lineHeight: '26px' }}
+                        >
+                            Shinefiling is the world's leading marketplace for elite IT talent and managed technical teams. We empower businesses to scale globally with pre-vetted specialists.
+                        </p>
+                        <div className="flex gap-4">
+                            {[Linkedin, Twitter, Facebook, Instagram, Github].map((Icon, i) => (
+                                <a key={i} href="#" className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#317CD7] hover:text-white transition-all transform hover:-translate-y-1">
+                                    <Icon size={18} />
+                                </a>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Dynamic Columns */}
-                    {footerColumns.map((col, idx) => (
-                        <div key={idx} className="lg:col-span-1">
-                            <h4 className="text-[15px] font-bold mb-6 text-[#242424]">{col.title}</h4>
-                            <ul className="space-y-3 text-[13px] text-[#777777]">
-                                {col.links.map(link => (
-                                    <li key={link}>
-                                        <a href="#" className="hover:text-[#b5242c] transition-colors">{link}</a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
+                    <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-8">
+                        {footerColumns.map((col, idx) => (
+                            <div key={idx}>
+                                <h4 className="text-[16px] font-bold mb-8 uppercase tracking-widest text-[#317CD7]" style={{ fontFamily: "'Montserrat', sans-serif" }}>
+                                    {col.title}
+                                </h4>
+                                <ul className="space-y-4">
+                                    {col.links.map(link => (
+                                        <li key={link.name}>
+                                            <Link 
+                                                to={link.path} 
+                                                className="text-gray-200 hover:text-white hover:translate-x-1 transition-all flex items-center gap-2 group text-[14px]"
+                                                style={{ fontFamily: "'Montserrat', sans-serif" }}
+                                            >
+                                                <span className="w-1 h-1 bg-[#317CD7] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                                                {link.name}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
-                    {/* Right Apps Column */}
-                    <div className="lg:col-span-1 space-y-6">
-                        <h4 className="text-[15px] font-bold mb-6 text-[#242424]">Apps</h4>
-                        <div className="space-y-3">
-                            <button className="w-full bg-white border border-gray-200 rounded-md p-2 flex items-center gap-3 hover:border-gray-400 transition-all shadow-sm">
-                                <Apple size={24} className="fill-[#242424]" />
-                                <div className="text-left">
-                                    <p className="text-[9px] uppercase leading-none text-gray-400">Available on the</p>
-                                    <p className="text-[14px] font-bold leading-tight text-[#242424]">App Store</p>
-                                </div>
-                            </button>
-                            <button className="w-full bg-white border border-gray-200 rounded-md p-2 flex items-center gap-3 hover:border-gray-400 transition-all shadow-sm">
-                                <PlayCircle size={24} className="text-[#242424]" />
-                                <div className="text-left">
-                                    <p className="text-[9px] uppercase leading-none text-gray-400">GET IT ON</p>
-                                    <p className="text-[14px] font-bold leading-tight text-[#242424]">Google Play</p>
-                                </div>
-                            </button>
+                {/* Middle Section: Stats & Contact */}
+                <div className="py-12 grid grid-cols-1 md:grid-cols-3 gap-8 items-center border-b border-white/10">
+                    <div className="flex items-center gap-4 group cursor-pointer">
+                        <div className="w-12 h-12 rounded-xl bg-[#317CD7]/10 flex items-center justify-center text-[#317CD7] group-hover:bg-[#317CD7] group-hover:text-white transition-all">
+                            <Mail size={20} />
                         </div>
-                        <div className="flex gap-4 pt-4 text-gray-400">
-                            <Facebook size={20} className="hover:text-[#b5242c] cursor-pointer transition-colors" />
-                            <Twitter size={20} className="hover:text-[#b5242c] cursor-pointer transition-colors" />
-                            <Youtube size={20} className="hover:text-[#b5242c] cursor-pointer transition-colors" />
-                            <Instagram size={20} className="hover:text-[#b5242c] cursor-pointer transition-colors" />
+                        <div>
+                            <p className="text-[12px] text-white uppercase tracking-widest font-bold opacity-60">Email Us</p>
+                            <p className="text-[15px] font-medium text-white">support@shinefiling.com</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-4 group cursor-pointer">
+                        <div className="w-12 h-12 rounded-xl bg-[#b5242c]/10 flex items-center justify-center text-[#b5242c] group-hover:bg-[#b5242c] group-hover:text-white transition-all">
+                            <Phone size={20} />
+                        </div>
+                        <div>
+                            <p className="text-[12px] text-white uppercase tracking-widest font-bold opacity-60">Call Us</p>
+                            <p className="text-[15px] font-medium text-white">+91 (800) 123-4567</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-4 group cursor-pointer">
+                        <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white group-hover:bg-white group-hover:text-[#0F2E4B] transition-all">
+                            <MapPin size={20} />
+                        </div>
+                        <div>
+                            <p className="text-[12px] text-white uppercase tracking-widest font-bold opacity-60">Global HQ</p>
+                            <p className="text-[15px] font-medium text-white">Bangalore, India</p>
                         </div>
                     </div>
                 </div>
 
-                {/* Bottom Bar Area */}
-                <div className="pt-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8">
-                    <div className="flex gap-12">
-                        <div>
-                            <p className="text-[18px] font-bold text-[#242424]">87,903,300</p>
-                            <p className="text-[12px] text-gray-400">Registered Users</p>
-                        </div>
-                        <div>
-                            <p className="text-[18px] font-bold text-[#242424]">25,583,710</p>
-                            <p className="text-[12px] text-gray-400">Total Jobs Posted</p>
+                {/* Bottom Section: Copyright */}
+                <div className="pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-6 text-white text-[12px] opacity-70">
+                        <p>© 2026 Shinefiling. All rights reserved.</p>
+                        <div className="hidden md:flex items-center gap-2">
+                            <Globe size={14} />
+                            <span>English (India)</span>
                         </div>
                     </div>
                     
-                    <div className="flex-1 lg:max-w-[600px] text-[11px] text-gray-400 leading-relaxed lg:text-right">
-                        <p className="mb-2">Shinefiling® is a registered Trademark of Shinefiling Technology Pty Limited (ACN 142 189 759) & Shinefiling Online India Private Limited (CIN U93000HR2011FTC043854)</p>
-                        <p>Copyright © 2026 Shinefiling Technology Pty Limited (ACN 142 189 759). All rights reserved.</p>
+                    <div className="flex gap-8 text-white text-[12px] uppercase tracking-widest font-bold opacity-70">
+                        <a href="#" className="hover:text-[#317CD7] transition-colors">Twitter</a>
+                        <a href="#" className="hover:text-[#317CD7] transition-colors">LinkedIn</a>
+                        <a href="#" className="hover:text-[#317CD7] transition-colors">Instagram</a>
                     </div>
                 </div>
             </div>

@@ -63,10 +63,10 @@ const MessagesView: React.FC = () => {
                     <table className="w-full text-left">
                         <thead>
                             <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Time</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Participants</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Content Preview</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                                <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Time</th>
+                                <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Participants</th>
+                                <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Content Preview</th>
+                                <th className="px-6 py-4 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-50 dark:divide-slate-700">

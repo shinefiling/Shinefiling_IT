@@ -30,7 +30,7 @@ const SupportView = () => {
                             <div className="flex justify-between items-start mb-4">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-2 h-2 rounded-full ${t.priority === 'HIGH' ? 'bg-red-500 animate-pulse' : t.priority === 'MEDIUM' ? 'bg-orange-500' : 'bg-blue-500'}`}></div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">{t.id}</span>
+                                    <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-400">{t.id}</span>
                                 </div>
                                 <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t.date}</span>
                             </div>
@@ -39,14 +39,14 @@ const SupportView = () => {
                             
                             <div className="flex items-center justify-between pt-4 border-t border-slate-50 dark:border-slate-800">
                                 <div className="flex items-center gap-4">
-                                    <span className={`text-[9px] font-black px-2 py-0.5 rounded tracking-widest uppercase ${
+                                    <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded tracking-widest uppercase ${
                                         t.status === 'OPEN' ? 'bg-red-50 dark:bg-red-500/10 text-red-600' :
                                         t.status === 'IN_PROGRESS' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600' :
                                         'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600'
                                     }`}>{t.status}</span>
-                                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">{t.priority} PRIORITY</span>
+                                    <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-[0.2em]">{t.priority} PRIORITY</span>
                                 </div>
-                                <button className="text-[10px] font-black text-[#003d4d] dark:text-orange-400 uppercase tracking-[0.2em] hover:underline">Reply to Ticket</button>
+                                <button className="text-[10px] font-extrabold text-[#003d4d] dark:text-orange-400 uppercase tracking-[0.2em] hover:underline">Reply to Ticket</button>
                             </div>
                         </div>
                     ))}
@@ -54,7 +54,7 @@ const SupportView = () => {
 
                 <div className="space-y-6">
                     <div className="shine-card p-6">
-                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Support Pulse</h3>
+                        <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] mb-6">Support Pulse</h3>
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -64,7 +64,7 @@ const SupportView = () => {
                                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Immediate action</p>
                                     </div>
                                 </div>
-                                <span className="text-lg font-black text-red-500 font-poppins">04</span>
+                                <span className="text-lg font-extrabold text-red-500 font-poppins">04</span>
                             </div>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -74,7 +74,7 @@ const SupportView = () => {
                                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Global Speed</p>
                                     </div>
                                 </div>
-                                <span className="text-lg font-black text-orange-500 font-poppins">1.2h</span>
+                                <span className="text-lg font-extrabold text-orange-500 font-poppins">1.2h</span>
                             </div>
                         </div>
                     </div>
@@ -84,7 +84,7 @@ const SupportView = () => {
                         <MessageSquare className="mb-6 opacity-60" size={32} />
                         <h3 className="text-xl font-bold mb-2 font-poppins">Automated Assistant</h3>
                         <p className="text-xs opacity-60 mb-6 leading-relaxed">AI is currently handling 74% of initial support inquiries.</p>
-                        <button className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10">Configure AI Bot</button>
+                        <button className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all border border-white/10">Configure AI Bot</button>
                     </div>
                 </div>
             </div>

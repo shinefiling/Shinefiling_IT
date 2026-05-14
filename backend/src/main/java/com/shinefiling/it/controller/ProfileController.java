@@ -59,8 +59,10 @@ public class ProfileController {
             @RequestParam(required = false) String query,
             @RequestParam(required = false) Double minRate,
             @RequestParam(required = false) Double maxRate,
-            @RequestParam(required = false) List<String> skills) {
-        return profileRepository.searchProfiles(query, minRate, maxRate, skills);
+            @RequestParam(required = false) List<String> skills,
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String industry) {
+        return profileRepository.searchProfiles(query, minRate, maxRate, skills, location, industry);
     }
 
     @GetMapping("/{email}")

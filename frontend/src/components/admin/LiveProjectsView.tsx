@@ -21,11 +21,11 @@ const LiveProjectsView = ({ projects }: any) => (
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
-                            <th className="px-8 py-5 text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Project Identity</th>
-                            <th className="px-8 py-5 text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Category</th>
-                            <th className="px-8 py-5 text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Budget</th>
-                            <th className="px-8 py-5 text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Execution Status</th>
-                            <th className="px-8 py-5 text-right text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Operational Actions</th>
+                            <th className="px-8 py-5 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Project Identity</th>
+                            <th className="px-8 py-5 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Category</th>
+                            <th className="px-8 py-5 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Budget</th>
+                            <th className="px-8 py-5 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Execution Status</th>
+                            <th className="px-8 py-5 text-right text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Operational Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -43,16 +43,16 @@ const LiveProjectsView = ({ projects }: any) => (
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <span className="bg-blue-50 dark:bg-blue-500/10 text-blue-600 text-[9px] px-2.5 py-1 rounded-lg font-black uppercase border border-blue-100 dark:border-blue-500/20 tracking-widest">{p.category}</span>
+                                    <span className="bg-blue-50 dark:bg-blue-500/10 text-blue-600 text-[9px] px-2.5 py-1 rounded-lg font-extrabold uppercase border border-blue-100 dark:border-blue-500/20 tracking-widest">{p.category}</span>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <p className="text-sm font-black text-slate-800 dark:text-white font-poppins">₹{p.budget?.toLocaleString()}</p>
+                                    <p className="text-sm font-extrabold text-slate-800 dark:text-white font-poppins">₹{p.budget?.toLocaleString()}</p>
                                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-tighter opacity-60">Locked Escrow</p>
                                 </td>
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]"></div>
-                                        <span className="text-[10px] font-black uppercase text-emerald-600 tracking-widest">{p.status || 'Active'}</span>
+                                        <span className="text-[10px] font-extrabold uppercase text-emerald-600 tracking-widest">{p.status || 'Active'}</span>
                                     </div>
                                 </td>
                                 <td className="px-8 py-6 text-right">

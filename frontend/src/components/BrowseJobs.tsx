@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
 import {
-    Search, Filter, X,
-    Heart, ChevronDown, Bell, CheckCircle, MapPin, Briefcase, Clock
+    Search, Filter, X, MapPin, Briefcase, Clock,
+    ChevronDown, Bell, CheckCircle, Heart, IndianRupee,
+    Layers, Calendar, Mail, FileText, ExternalLink,
+    Grid, List as ListIcon, Star, ArrowUpDown, ChevronRight, Check
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const BrowseJobs: React.FC = () => {
     const navigate = useNavigate();
@@ -13,36 +15,16 @@ const BrowseJobs: React.FC = () => {
     const [filteredJobs, setFilteredJobs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [locationQuery, setLocationQuery] = useState('');
     const [priceRange, setPriceRange] = useState(1000000);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
-    const [activeFilters, setActiveFilters] = useState<string[]>(['keyword', 'categories', 'type', 'location', 'experience', 'skills', 'date', 'price']);
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+    const [selectedDate, setSelectedDate] = useState('All Time');
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 30;
 
-    const toggleFilter = (filter: string) => {
-        setActiveFilters(prev =>
-            prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
-        );
-    };
-
-    // Client-side filtering logic
-    const filteredResults = jobs.filter(job => {
-        const matchesSearch = !searchQuery || 
-            job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            job.description.toLowerCase().includes(searchQuery.toLowerCase());
-            
-        const matchesCategory = selectedCategories.length === 0 || 
-            selectedCategories.includes(job.category);
-            
-        const matchesLevel = selectedLevels.length === 0 || 
-            selectedLevels.includes(job.experience);
-            
-        const matchesPrice = job.price <= priceRange;
-
-        return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
-    });
-
-    React.useEffect(() => {
+    useEffect(() => {
         fetchJobs();
     }, []);
 
@@ -64,383 +46,621 @@ const BrowseJobs: React.FC = () => {
         }
     };
 
-    const handleFilter = async () => {
-        setLoading(true);
-        try {
-            const params = new URLSearchParams();
-            if (searchQuery) params.append('query', searchQuery);
-            if (selectedCategories.length > 0) {
-                selectedCategories.forEach(cat => params.append('categories', cat));
-            }
-            if (selectedLevels.length > 0) {
-                selectedLevels.forEach(lvl => params.append('englishLevels', lvl));
-            }
-            if (priceRange < 1000000) params.append('maxPrice', priceRange.toString());
+    const filteredResults = jobs.filter(job => {
+        const matchesSearch = !searchQuery ||
+            job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (job.description && job.description.toLowerCase().includes(searchQuery.toLowerCase()));
 
-            const response = await fetch(`${API_BASE_URL}/api/jobs/search?${params.toString()}`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                setFilteredJobs(data);
-            }
-        } catch (err) {
-            console.error("Error filtering jobs:", err);
-        } finally {
-            setLoading(false);
+        const matchesLocation = !locationQuery ||
+            job.location.toLowerCase().includes(locationQuery.toLowerCase());
+
+        const matchesCategory = selectedCategories.length === 0 ||
+            selectedCategories.includes(job.category);
+
+        const matchesType = selectedTypes.length === 0 ||
+            selectedTypes.includes(job.type);
+
+        const matchesPrice = job.price <= priceRange;
+
+        const matchesDate = () => {
+            if (selectedDate === 'All Time') return true;
+            if (!job.postedAt) return false;
+            const date = new Date(job.postedAt);
+            const now = new Date();
+            const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+            if (selectedDate === 'Last 24 Hours') return diffInHours <= 24;
+            if (selectedDate === 'Last 7 Days') return diffInHours <= 24 * 7;
+            if (selectedDate === 'Last 30 Days') return diffInHours <= 24 * 30;
+            return true;
+        };
+
+        return matchesSearch && matchesLocation && matchesCategory && matchesType && matchesPrice && matchesDate();
+    });
+
+    const totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+    const paginatedJobs = filteredResults.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            setCurrentPage(page);
+            window.scrollTo({ top: 400, behavior: 'smooth' });
         }
     };
 
-    const clearFilters = () => {
-        setSearchQuery('');
-        setPriceRange(1000000);
-        setSelectedCategories([]);
-        setSelectedLevels([]);
-    };
+    const Pagination = () => {
+        if (totalPages <= 1) return null;
 
-    const toggleCategory = (cat: string) => {
-        setSelectedCategories(prev =>
-            prev.includes(cat) ? prev.filter(c => c !== cat) : [...prev, cat]
+        const pages = [];
+        for (let i = 1; i <= totalPages; i++) {
+            pages.push(i);
+        }
+
+        return (
+            <div className="flex items-center gap-2">
+                {pages.map(page => (
+                    <button
+                        key={page}
+                        onClick={() => handlePageChange(page)}
+                        className={`w-9 h-9 flex items-center justify-center rounded-lg text-[14px] font-bold transition-all ${
+                            currentPage === page 
+                            ? 'bg-[#0F2E4B] text-white shadow-lg' 
+                            : 'bg-white border border-gray-200 text-gray-400 hover:bg-gray-50'
+                        }`}
+                    >
+                        {page}
+                    </button>
+                ))}
+                {currentPage < totalPages && (
+                    <button 
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        className="w-9 h-9 flex items-center justify-center bg-white border border-gray-200 text-gray-400 rounded-lg text-[14px] font-bold hover:bg-gray-50 transition-all"
+                    >
+                        <ChevronRight size={18} />
+                    </button>
+                )}
+            </div>
         );
     };
 
-    const toggleLevel = (lvl: string) => {
-        setSelectedLevels(prev =>
-            prev.includes(lvl) ? prev.filter(l => l !== lvl) : [...prev, lvl]
-        );
-    };
+    const dynamicTypes = Array.from(new Set(jobs.map(j => j.type).filter(Boolean))).map(type => ({
+        label: type,
+        count: jobs.filter(j => j.type === type).length
+    }));
+
+    const dynamicCategories = Array.from(new Set(jobs.map(j => j.category).filter(Boolean))).map(cat => ({
+        label: cat,
+        count: jobs.filter(j => j.category === cat).length
+    }));
+
+    const featuredJobs = jobs.filter(j => j.featured).slice(0, 3);
+    const allSectors = Array.from(new Set(jobs.map(j => j.category).filter(Boolean)));
 
     return (
-        <div className="min-h-screen bg-[#fdfaf0] pt-[100px] lg:pt-[150px] pb-20 font-['Poppins']">
-            <div className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-16">
-                
-                <div className="lg:hidden mb-6">
-                    <button 
-                        onClick={() => setIsFilterOpen(true)}
-                        className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 py-3.5 rounded-none font-bold text-[#242424] shadow-sm active:scale-[0.98] transition-all font-['Poppins']"
-                    >
-                        <Filter size={18} className="text-primary" />
-                        Search Filters
-                    </button>
+        <div className="min-h-screen bg-[#f8f9fa] pt-[80px]" style={{ fontFamily: '"Poppins", sans-serif' }}>
+            {/* 1. MAP HEADER SECTION */}
+            <div className="relative h-[400px] bg-[#e5e7eb] overflow-hidden flex items-center justify-center">
+                {/* Simulated Map Background */}
+                <div className="absolute inset-0 opacity-40 grayscale">
+                    <img
+                        src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80"
+                        alt="Map Background"
+                        className="w-full h-full object-cover"
+                    />
                 </div>
+                {/* Search Overlay */}
+                <div className="relative z-10 w-full max-w-[900px] px-6">
+                    <div className="bg-[#0F2E4B] p-2 rounded-xl shadow-2xl flex flex-col md:flex-row gap-2">
+                        <div className="flex-1 relative">
+                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Geo Location"
+                                value={locationQuery}
+                                onChange={(e) => setLocationQuery(e.target.value)}
+                                className="w-full bg-white h-[42px] pl-11 pr-4 rounded-lg focus:outline-none focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] font-semibold text-[#0F2E4B] text-[14px] placeholder:text-gray-400"
+                            />
+                        </div>
+                        <div className="flex-1 relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Keyword"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-white h-[42px] pl-11 pr-4 rounded-lg focus:outline-none focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] font-semibold text-[#0F2E4B] text-[14px] placeholder:text-gray-400"
+                            />
+                        </div>
+                        <button className="bg-[#317CD7] hover:bg-[#2563b5] text-white px-8 h-[42px] rounded-lg font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shrink-0 text-[12px]">
+                            <Search size={18} strokeWidth={3} />
+                            SEARCH
+                        </button>
+                    </div>
+                </div>
+            </div>
 
-                <div className="flex flex-col lg:grid lg:grid-cols-[300px_1fr] gap-8">
-                    
-                    {/* Filter Sidebar - Mobile Overlay */}
-                    {isFilterOpen && (
-                        <div 
-                            className="fixed inset-0 bg-black/50 z-[2001] lg:hidden"
-                            onClick={() => setIsFilterOpen(false)}
-                        />
-                    )}
+            <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-16 py-12">
+                <div className="flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-10">
 
-                    {/* Left Sidebar - Filters */}
-                    <aside className={`
-                        fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-auto lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible font-['Poppins']
-                        ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}
-                    `}>
-                        <div className="bg-white lg:rounded-none p-0 lg:shadow-sm lg:border lg:border-[#eee] min-h-full">
-                            <div className="px-6 py-5 border-b border-[#eee] flex items-center justify-between">
-                                <h3 className="font-bold text-[#242424] flex items-center gap-2 font-['Poppins']">
-                                    <Filter size={18} className="text-primary" />
-                                    Search Filters
-                                </h3>
-                                <div className="flex items-center gap-4">
-                                    <button
-                                        onClick={clearFilters}
-                                        className="text-[11px] font-bold text-primary hover:underline uppercase font-['Poppins']"
-                                    >
-                                        Clear
-                                    </button>
-                                    <button onClick={() => setIsFilterOpen(false)} className="lg:hidden text-gray-400">
-                                        <X size={20} />
-                                    </button>
-                                </div>
+                    {/* LEFT SIDEBAR */}
+                    <aside className="space-y-8">
+                        {/* Free Resources Card */}
+                        <div className="bg-[#0F2E4B] rounded-xl p-8 text-white relative overflow-hidden group shadow-xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+                            <h2 className="text-2xl font-extrabold mb-4 leading-tight relative z-10 uppercase tracking-tighter">Free Resources</h2>
+                            <p className="text-white/70 text-sm mb-6 leading-relaxed font-medium relative z-10">Our resources section will help you bag your dream job.</p>
+                            <button className="w-full bg-white text-[#0F2E4B] py-3.5 rounded-lg font-extrabold text-[13px] uppercase tracking-widest hover:bg-[#317CD7] hover:text-white transition-all shadow-lg relative z-10">
+                                Browse Resources
+                            </button>
+                            <FileText size={80} className="absolute -bottom-4 -right-4 text-white/5 rotate-12" />
+                        </div>
+
+                        {/* Search Filter Card */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="pl-2 pr-4 py-5 border-b border-gray-50 flex items-center justify-between">
+                                <h3 className="font-extrabold text-[#0F2E4B] uppercase tracking-tight text-[15px]">Search Filters</h3>
+                                <ChevronDown size={18} className="text-gray-400" />
                             </div>
 
-                            <FilterSection title="Search by Keyword" isOpen={activeFilters.includes('keyword')} onToggle={() => toggleFilter('keyword')}>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        placeholder="What are you looking for"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="w-full pl-10 pr-4 py-3 bg-[#f9fafb] border border-[#eee] rounded-none text-sm focus:outline-none focus:border-primary font-['Poppins']"
-                                    />
-                                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#888]" />
+                            <div className="px-4 py-6 space-y-8">
+                                {/* Keyword */}
+                                <div>
+                                    <label className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-3">Search</label>
+                                    <div className="relative">
+                                        <input type="text" placeholder="Search Jobs..." className="w-full bg-gray-50 border border-gray-100 h-12 pl-10 pr-4 rounded-lg text-sm focus:outline-none focus:border-[#317CD7] transition-all" />
+                                        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                                    </div>
                                 </div>
-                            </FilterSection>
 
-                            <FilterSection title="Category" isOpen={activeFilters.includes('categories')} onToggle={() => toggleFilter('categories')}>
-                                <div className="space-y-3">
-                                    {["Development", "Design", "Marketing", "Writing", "Admin Support"].map(cat => (
-                                        <label key={cat} className="flex items-center gap-3 cursor-pointer group">
-                                            <input type="checkbox" className="hidden" checked={selectedCategories.includes(cat)} onChange={() => toggleCategory(cat)} />
-                                            <div className={`w-4 h-4 border flex items-center justify-center transition-all ${selectedCategories.includes(cat) ? 'border-primary bg-primary' : 'border-gray-200 group-hover:border-primary'}`}>
-                                                {selectedCategories.includes(cat) && <div className="w-1.5 h-1.5 bg-white"></div>}
+                                {/* Vacancy Type */}
+                                <FilterSection title="Vacancy Type">
+                                    <div className="space-y-3 pt-2">
+                                        {dynamicTypes.length === 0 ? (
+                                            <p className="text-[12px] text-gray-400 italic">No types found</p>
+                                        ) : dynamicTypes.map(item => (
+                                            <div
+                                                key={item.label}
+                                                className="flex items-center justify-between group cursor-pointer"
+                                                onClick={() => {
+                                                    setSelectedTypes(prev =>
+                                                        prev.includes(item.label)
+                                                            ? prev.filter(t => t !== item.label)
+                                                            : [...prev, item.label]
+                                                    );
+                                                }}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-5 h-5 rounded-sm border-2 transition-all flex items-center justify-center ${selectedTypes.includes(item.label) ? 'bg-[#317CD7] border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                                        {selectedTypes.includes(item.label) && <Check size={14} strokeWidth={4} className="text-white" />}
+                                                    </div>
+                                                    <span className={`text-[14px] font-medium transition-colors ${selectedTypes.includes(item.label) ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{item.label}</span>
+                                                </div>
+                                                <span className="text-[11px] text-gray-300 font-bold">({item.count})</span>
                                             </div>
-                                            <span className={`text-[13px] ${selectedCategories.includes(cat) ? 'text-primary font-bold' : 'text-gray-500'}`}>{cat}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </FilterSection>
+                                        ))}
+                                    </div>
+                                </FilterSection>
 
-                            <FilterSection title="Job Type" isOpen={activeFilters.includes('type')} onToggle={() => toggleFilter('type')}>
-                                <div className="space-y-3">
-                                    {["Full Time", "Part Time", "Contract", "Freelance"].map(type => (
-                                        <label key={type} className="flex items-center gap-3 cursor-pointer group">
-                                            <input type="checkbox" className="hidden" />
-                                            <div className="w-4 h-4 border border-gray-200 group-hover:border-primary flex items-center justify-center"></div>
-                                            <span className="text-[13px] text-gray-500 group-hover:text-primary transition-colors">{type}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </FilterSection>
-
-                            <FilterSection title="Location Type" isOpen={activeFilters.includes('location')} onToggle={() => toggleFilter('location')}>
-                                <div className="space-y-3">
-                                    {["Remote", "On-site", "Hybrid"].map(loc => (
-                                        <label key={loc} className="flex items-center gap-3 cursor-pointer group">
-                                            <input type="checkbox" className="hidden" />
-                                            <div className="w-4 h-4 border border-gray-200 group-hover:border-primary flex items-center justify-center"></div>
-                                            <span className="text-[13px] text-gray-500 group-hover:text-primary transition-colors">{loc}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </FilterSection>
-
-                            <FilterSection title="Experience Level" isOpen={activeFilters.includes('experience')} onToggle={() => toggleFilter('experience')}>
-                                <div className="space-y-3">
-                                    {["Fresher", "Intermediate", "Senior", "Lead"].map(lvl => (
-                                        <label key={lvl} className="flex items-center gap-3 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                className="hidden"
-                                                checked={selectedLevels.includes(lvl)}
-                                                onChange={() => toggleLevel(lvl)}
-                                            />
-                                            <div className={`w-4 h-4 border flex items-center justify-center transition-all ${selectedLevels.includes(lvl) ? 'border-primary bg-primary' : 'border-gray-200 group-hover:border-primary'}`}>
-                                                {selectedLevels.includes(lvl) && <div className="w-1.5 h-1.5 bg-white"></div>}
+                                {/* Sectors */}
+                                <FilterSection title="Sectors">
+                                    <div className="space-y-3 pt-2">
+                                        {dynamicCategories.length === 0 ? (
+                                            <p className="text-[12px] text-gray-400 italic">No sectors found</p>
+                                        ) : dynamicCategories.map(item => (
+                                            <div
+                                                key={item.label}
+                                                className="flex items-center justify-between group cursor-pointer"
+                                                onClick={() => {
+                                                    setSelectedCategories(prev =>
+                                                        prev.includes(item.label)
+                                                            ? prev.filter(c => c !== item.label)
+                                                            : [...prev, item.label]
+                                                    );
+                                                }}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className={`w-5 h-5 rounded-sm border-2 transition-all flex items-center justify-center ${selectedCategories.includes(item.label) ? 'bg-[#317CD7] border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                                        {selectedCategories.includes(item.label) && <Check size={14} strokeWidth={4} className="text-white" />}
+                                                    </div>
+                                                    <span className={`text-[14px] font-medium transition-colors ${selectedCategories.includes(item.label) ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{item.label}</span>
+                                                </div>
+                                                <span className="text-[11px] text-gray-300 font-bold">({item.count})</span>
                                             </div>
-                                            <span className={`text-[13px] ${selectedLevels.includes(lvl) ? 'text-primary font-bold' : 'text-gray-500'}`}>{lvl}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </FilterSection>
+                                        ))}
+                                    </div>
+                                </FilterSection>
 
-                            <FilterSection title="Top Skills" isOpen={activeFilters.includes('skills')} onToggle={() => toggleFilter('skills')}>
-                                <div className="flex flex-wrap gap-2">
-                                    {["React", "Node.js", "Java", "Python", "Figma", "AWS"].map(skill => (
-                                        <button key={skill} className="px-3 py-1.5 border border-gray-100 text-[11px] font-bold text-gray-500 hover:border-primary hover:text-primary transition-all rounded-none">
-                                            {skill}
-                                        </button>
-                                    ))}
-                                </div>
-                            </FilterSection>
+                                {/* Date Posted */}
+                                <FilterSection title="Date Posted">
+                                    <div className="space-y-3 pt-2">
+                                        {["Last 24 Hours", "Last 7 Days", "Last 30 Days", "All Time"].map(item => (
+                                            <div
+                                                key={item}
+                                                className="flex items-center gap-3 group cursor-pointer"
+                                                onClick={() => setSelectedDate(item)}
+                                            >
+                                                <div className={`w-4 h-4 rounded-full border-2 transition-all flex items-center justify-center ${selectedDate === item ? 'border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                                    <div className={`w-1.5 h-1.5 rounded-full transition-all ${selectedDate === item ? 'bg-[#317CD7]' : 'bg-transparent'}`}></div>
+                                                </div>
+                                                <span className={`text-[14px] transition-colors ${selectedDate === item ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{item}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </FilterSection>
 
-                            <FilterSection title="Date Posted" isOpen={activeFilters.includes('date')} onToggle={() => toggleFilter('date')}>
-                                <div className="space-y-3">
-                                    {["Last 24 Hours", "Last 7 Days", "Last 30 Days", "Any Time"].map(date => (
-                                        <label key={date} className="flex items-center gap-3 cursor-pointer group">
-                                            <input type="radio" name="date_posted" className="accent-primary" />
-                                            <span className="text-[13px] text-gray-500">{date}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </FilterSection>
+                                {/* Salary Range */}
+                                <FilterSection title="Salary">
+                                    <div className="pt-4 px-1">
+                                        <input
+                                            type="range"
+                                            min="0"
+                                            max="1000000"
+                                            step="1000"
+                                            value={priceRange}
+                                            onChange={(e) => setPriceRange(Number(e.target.value))}
+                                            className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-[#317CD7]"
+                                        />
+                                        <div className="flex items-center justify-between mt-3">
+                                            <span className="text-[12px] font-extrabold text-gray-400">₹0</span>
+                                            <span className="text-[12px] font-extrabold text-[#0F2E4B]">₹{priceRange.toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                </FilterSection>
+                            </div>
+                        </div>
 
-                            <FilterSection title="Price Range" isOpen={activeFilters.includes('price')} onToggle={() => toggleFilter('price')}>
-                                <input type="range" min="0" max="1000000" value={priceRange} onChange={(e) => setPriceRange(parseInt(e.target.value))} className="w-full accent-primary h-1.5 bg-gray-200 cursor-pointer mb-4" />
-                                <div className="flex items-center justify-between gap-4">
-                                    <div className="bg-[#f9fafb] border border-[#eee] px-4 py-2 text-[13px] font-bold">₹0</div>
-                                    <div className="bg-[#f9fafb] border border-[#eee] px-4 py-2 text-[13px] font-bold font-['Poppins']">₹{priceRange.toLocaleString()}</div>
-                                </div>
-                            </FilterSection>
+                        {/* Upload CV Card */}
+                        <div className="bg-[#317CD7] rounded-xl p-8 text-white relative overflow-hidden group shadow-xl">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
+                            <h2 className="text-2xl font-extrabold mb-4 leading-tight uppercase tracking-tighter">Upload Your CV</h2>
+                            <p className="text-white/80 text-sm mb-6 leading-relaxed font-medium">Upload your CV to apply for as many jobs as you like.</p>
+                            <button className="w-full bg-white text-[#317CD7] py-3.5 rounded-lg font-extrabold text-[13px] uppercase tracking-widest hover:bg-[#0F2E4B] hover:text-white transition-all shadow-lg">
+                                Upload Your CV
+                            </button>
+                        </div>
 
-                            <div className="p-6 border-t border-[#eee]">
-                                <button onClick={handleFilter} className="w-full bg-primary text-white py-4 rounded-none font-bold text-sm hover:bg-[#a11f27] transition-all shadow-lg shadow-primary/10 uppercase tracking-wide">
-                                    Apply All Filters
-                                </button>
+                        {/* Featured Jobs Mini List */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div className="px-4 py-5 border-b border-gray-50">
+                                <h3 className="font-extrabold text-[#0F2E4B] uppercase tracking-tight text-[15px]">Featured Jobs</h3>
+                            </div>
+                            <div className="p-0">
+                                {featuredJobs.length === 0 ? (
+                                    <div className="p-8 text-center text-gray-400 text-[13px] italic">No featured jobs currently</div>
+                                ) : featuredJobs.map(job => (
+                                    <div
+                                        key={job.id}
+                                        onClick={() => navigate(`/jobs/${job.id}`)}
+                                        className="px-4 py-6 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-all cursor-pointer group"
+                                    >
+                                        <h4 className="font-semibold text-[15px] text-[#0F2E4B] mb-1 group-hover:text-[#317CD7] truncate">{job.title}</h4>
+                                        <div className="flex items-center gap-2 text-[12px] text-gray-400 font-medium">
+                                            <MapPin size={12} />
+                                            <span>{job.location}</span>
+                                        </div>
+                                        <div className="mt-3 flex items-center justify-between">
+                                            <span className="text-[#317CD7] font-semibold text-[13px]">₹{job.price?.toLocaleString()}</span>
+                                            <span className="px-2 py-0.5 bg-blue-50 text-[#317CD7] rounded text-[10px] font-extrabold uppercase tracking-wider">{job.type}</span>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </aside>
 
-                    {/* Right Content - Job List */}
-                    <main className="space-y-6 font-['Poppins']">
-                        {/* Results Bar */}
-                        <div className="bg-white rounded-none px-4 sm:px-6 py-4 shadow-sm border border-[#eee] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <span className="text-sm font-bold text-[#242424] font-['Poppins']">Found {filteredJobs.length} Results</span>
-                            <div className="flex items-center justify-between sm:justify-end gap-3 font-['Poppins']">
-                                <span className="text-[12px] text-[#888] font-medium">Sort by</span>
-                                <div className="flex items-center gap-2 bg-[#f9fafb] border border-[#eee] px-4 py-2 rounded-none text-sm font-bold cursor-pointer hover:border-[#b5242c] transition-all whitespace-nowrap">
-                                    Newest First
-                                    <ChevronDown size={14} />
+                    {/* MAIN CONTENT AREA */}
+                    <main className="space-y-8">
+                        {/* Results Toolbar */}
+                        <div
+                            className="bg-white rounded-xl px-6 py-4 shadow-sm border border-gray-100 flex items-center justify-between"
+                            style={{
+                                fontFamily: '"Poppins", sans-serif',
+                                fontSize: '13px',
+                                lineHeight: '28px',
+                                color: '#212121',
+                                fontWeight: 500,
+                                WebkitFontSmoothing: 'antialiased'
+                            }}
+                        >
+                            <div className="flex items-center">
+                                {/* Sort */}
+                                <div className="flex items-center gap-2 text-[#0F2E4B] cursor-pointer hover:text-[#317CD7] transition-all pr-6 border-r border-gray-100">
+                                    <ArrowUpDown size={18} className="text-[#317CD7]" />
+                                    <span className="">Sort</span>
+                                    <ChevronDown size={14} className="text-gray-400" />
+                                </div>
+
+                                {/* View Options */}
+                                <div className="flex items-center gap-6 px-6 border-r border-gray-100">
+                                    <button
+                                        onClick={() => setViewMode('grid')}
+                                        className={`flex items-center gap-2 transition-all ${viewMode === 'grid' ? 'text-[#317CD7]' : 'text-gray-400 hover:text-[#0F2E4B]'}`}
+                                    >
+                                        <Grid size={18} />
+                                        <span className="">Grid</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setViewMode('list')}
+                                        className={`flex items-center gap-2 transition-all ${viewMode === 'list' ? 'text-[#317CD7]' : 'text-gray-400 hover:text-[#0F2E4B]'}`}
+                                    >
+                                        <ListIcon size={18} />
+                                        <span className="">List</span>
+                                    </button>
+                                </div>
+
+                                {/* Showing results */}
+                                <div className="px-6">
+                                    Showing <span className="font-bold">
+                                        {filteredResults.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}-
+                                        {Math.min(currentPage * itemsPerPage, filteredResults.length)}
+                                    </span> of <span className="font-bold">{filteredResults.length}</span> results
                                 </div>
                             </div>
+
+                            {/* Integrated Pagination */}
+                            <Pagination />
                         </div>
 
-                        {/* Job Alerts Banner */}
-                        <div className="bg-white rounded-none px-4 sm:px-6 py-6 shadow-sm border border-[#eee] flex flex-col md:flex-row items-center justify-between gap-6 font-['Poppins']">
-                            <div>
-                                <h4 className="font-bold text-[#242424] mb-1 font-['Poppins']">Job alerts</h4>
-                                <p className="text-[12px] text-[#888] font-['Poppins']">Receive emails for the latest jobs matching your search criteria</p>
-                            </div>
-                            <button className="bg-primary text-white px-8 py-3 rounded-none font-bold text-[13px] hover:bg-[#a11f27] transition-all flex items-center gap-2 font-['Poppins']">
-                                <Bell size={16} />
-                                Job Alerts
-                            </button>
-                        </div>
-
-                        {/* Jobs Loop */}
-                        <div className="space-y-6">
+                        {/* Job Listings Grid/List */}
+                        <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : 'space-y-4'}>
                             {loading ? (
-                                [1, 2, 3].map(i => (
-                                    <div key={i} className="bg-white rounded-none shadow-sm border border-[#eee] p-8 animate-pulse">
-                                        <div className="h-6 bg-gray-100 rounded w-1/2 mb-4"></div>
-                                        <div className="h-4 bg-gray-50 rounded w-full mb-2"></div>
-                                        <div className="h-4 bg-gray-50 rounded w-2/3"></div>
-                                    </div>
-                                ))
-                            ) : filteredResults.length === 0 ? (
-                                <div className="bg-white rounded-none shadow-sm border border-[#eee] p-20 text-center">
+                                [1, 2, 3, 4].map(i => <SkeletonLoader key={i} mode={viewMode} />)
+                            ) : paginatedJobs.length === 0 ? (
+                                <div className="bg-white rounded-2xl p-20 text-center border-2 border-dashed border-gray-100">
                                     <Search size={48} className="mx-auto text-gray-200 mb-4" />
-                                    <p className="text-gray-500 font-medium">No jobs found matching your criteria.</p>
+                                    <h3 className="text-xl font-bold text-[#0F2E4B] mb-2">No jobs found</h3>
+                                    <p className="text-gray-400">Try adjusting your filters to find what you're looking for.</p>
                                 </div>
                             ) : (
-                                filteredResults.map((job) => (
-                                    <motion.div
-                                        key={job.id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true }}
-                                        className="bg-white rounded-none shadow-sm border border-[#eee] overflow-hidden group hover:border-primary transition-all relative min-h-[180px] flex flex-col p-2"
-                                    >
-                                        {/* Featured Ribbon Corner */}
-                                        {job.featured && (
-                                            <div className="absolute top-0 left-0 w-10 h-10 overflow-hidden z-20">
-                                                <div className="absolute top-0 left-0 w-0 h-0 border-t-[40px] border-t-[#b5242c] border-r-[40px] border-r-transparent"></div>
-                                                <CheckCircle size={12} className="absolute top-1.5 left-1.5 text-white" />
-                                            </div>
-                                        )}
-
-                                        <div className="pt-5 px-4 sm:px-3 pb-3 flex-1">
-                                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-2 mb-1">
-                                                <div className="flex-1">
-                                                    <h3 className="text-[19px] font-bold text-[#242424] group-hover:text-[#b5242c] transition-colors leading-[24px] mb-2 font-['Poppins'] tracking-tight capitalize">
-                                                        {job.title}
-                                                    </h3>
-                                                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-2 text-[13px] text-gray-500 font-medium">
-                                                        <div className="flex items-center gap-1.5 shrink-0">
-                                                            <Briefcase size={14} className="text-gray-400" />
-                                                            <span className="capitalize">{job.role || job.company}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 shrink-0">
-                                                            <MapPin size={14} className="text-gray-400" />
-                                                            <span className="capitalize">{job.location}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 shrink-0">
-                                                            <Clock size={14} className="text-gray-400" />
-                                                            <span className="capitalize">{job.type}</span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 bg-green-50 text-green-600 rounded-none text-[11px] font-bold border border-green-100 shrink-0 capitalize">
-                                                            <span>{job.experience || 'Fresher'}</span>
-                                                        </div>
-                                                    </div>
-
-                                                    {job.description && (
-                                                        <p className="text-[13px] text-gray-500 line-clamp-2 mb-2 leading-snug">
-                                                            {job.description}
-                                                        </p>
-                                                    )}
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {job.tags?.slice(0, 5).map((tag: string) => (
-                                                            <span key={tag} className="px-3 py-1 bg-gray-50 text-gray-600 text-[11px] font-bold rounded-none border border-gray-100 hover:border-primary/30 transition-all font-['Poppins'] capitalize">
-                                                                {tag}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="text-right shrink-0">
-                                                    <div className="text-[18px] font-bold text-[#242424] font-['Poppins']">
-                                                        ₹{job.price?.toLocaleString('en-IN')}
-                                                    </div>
-                                                    <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">Salary</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* fr-right-information */}
-                                        <div className="px-3 py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                                                <div className="text-[12px] text-gray-500">
-                                                    <span className="font-bold text-[#242424]">{job.proposals}</span> applications
-                                                </div>
-                                                <div className="text-[12px] text-gray-500">
-                                                    Expires in <span className="font-bold text-[#242424]">{job.expiry}</span>
-                                                </div>
-                                            </div>
-
-                                            <div className="flex items-center gap-3">
-                                                <button className="h-10 w-10 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-none transition-all border border-gray-100">
-                                                    <Heart size={18} />
-                                                </button>
-                                                <button
-                                                    onClick={() => navigate(`/jobs/${job.id}`)}
-                                                    className="bg-primary text-white px-8 py-2.5 rounded-none font-bold text-[13px] hover:bg-[#a11f27] transition-all font-['Poppins'] shadow-sm shadow-primary/20 uppercase tracking-wider"
-                                                >
-                                                    View Details
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </motion.div>
+                                paginatedJobs.map((job) => (
+                                    <JobCard key={job.id} job={job} mode={viewMode} />
                                 ))
                             )}
                         </div>
 
-                        {/* Bottom Banner */}
-                        <div className="bg-[#242424] p-8 text-center relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-primary  transition-transform  opacity-10"></div>
-                            <h3 className="text-white text-xl font-bold mb-4 relative z-10 font-['Poppins']">Hire expert & get your any job done</h3>
-                            <button
-                                onClick={() => navigate('/post-job')}
-                                className="bg-primary text-white px-10 py-3 font-bold text-sm relative z-10 hover:scale-105 transition-transform font-['Poppins']"
+                        {/* Bottom Pagination */}
+                        <div className="flex justify-center pt-8 pb-4">
+                            <Pagination />
+                        </div>
+
+
+
+                        {/* 4. BROWSE BY SECTOR SECTION */}
+                        <div className="bg-white rounded-2xl p-10 shadow-sm border border-gray-100">
+                            <h3
+                                style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                    color: '#040e24',
+                                    fontWeight: 600,
+                                    fontSize: '24px',
+                                    marginBottom: '2rem'
+                                }}
                             >
-                                Post A Job
+                                Browse More Jobs by Sector
+                            </h3>
+                            <div className="flex flex-wrap gap-3">
+                                {allSectors.length === 0 ? (
+                                    <p className="text-gray-400 font-medium" style={{ fontFamily: '"Poppins", sans-serif' }}>No categories found in current listings</p>
+                                ) : allSectors.map(sector => (
+                                    <button
+                                        key={sector}
+                                        onClick={() => {
+                                            setSelectedCategories([sector]);
+                                            window.scrollTo({ top: 400, behavior: 'smooth' });
+                                        }}
+                                        className={`px-5 py-2.5 border rounded-full text-[13px] font-bold transition-all ${selectedCategories.includes(sector) ? 'bg-[#317CD7] border-[#317CD7] text-white' : 'bg-gray-50 border-gray-100 text-[#0F2E4B]/70 hover:border-[#317CD7] hover:text-[#317CD7] hover:bg-white'}`}
+                                    >
+                                        {sector}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() => setSelectedCategories([])}
+                                    className="bg-[#0F2E4B] text-white px-8 py-2.5 rounded-full font-extrabold text-[11px] uppercase tracking-widest hover:bg-[#317CD7] transition-all ml-auto"
+                                >
+                                    View All Sectors
+                                </button>
+                            </div>
+                        </div>
+
+                    </main>
+                </div>
+            </div>
+
+            {/* 5. NEWSLETTER SECTION - Wide Horizontal Layout */}
+            <div className="pb-24 pt-10">
+                <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-16">
+                    <div className="bg-white rounded-xl p-12 shadow-2xl shadow-gray-200/50 border border-gray-100 flex flex-col lg:flex-row items-center justify-between gap-12">
+                        <div className="max-w-[600px]">
+                            <h3
+                                style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                    color: '#040e24',
+                                    fontWeight: 700,
+                                    fontSize: '28px',
+                                    marginBottom: '1rem'
+                                }}
+                            >
+                                Join Our Free Newsletter
+                            </h3>
+                            <p
+                                style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                    fontSize: '15px',
+                                    lineHeight: '26px',
+                                    color: '#212121',
+                                    fontWeight: 500
+                                }}
+                            >
+                                Stay updated with the latest job opportunities and industry news delivered directly to your inbox.
+                            </p>
+                        </div>
+                        <div className="flex-1 w-full flex flex-col sm:flex-row gap-4 max-w-[500px]">
+                            <div className="flex-1 relative">
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    className="w-full bg-gray-50 border border-gray-100 h-[52px] pl-14 pr-6 rounded-xl focus:outline-none focus:border-[#317CD7] transition-all text-[14px] placeholder:text-gray-400"
+                                />
+                            </div>
+                            <button className="bg-[#317CD7] hover:bg-[#2866B1] text-white px-8 h-[52px] rounded-xl font-bold uppercase tracking-widest transition-all text-[12px]">
+                                Subscribe
                             </button>
                         </div>
-                    </main>
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
-const FilterSection = ({ title, children, isOpen, onToggle }: any) => (
-    <div className="border-t border-[#eee]">
-        <button
-            onClick={onToggle}
-            className="w-full px-6 py-4 flex items-center justify-between group bg-white hover:bg-gray-50/50 transition-colors"
-        >
-            <h4 className="text-[14px] font-bold text-[#242424] group-hover:text-primary transition-colors">{title}</h4>
-            <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : 'rotate-0'}`}>
-                <ChevronDown size={18} className="text-gray-400 group-hover:text-primary" />
-            </div>
-        </button>
-        <AnimatePresence>
-            {isOpen && (
-                <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
+const FilterSection = ({ title, children }: any) => {
+    const [isOpen, setIsOpen] = useState(true);
+    return (
+        <div>
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex items-center justify-between mb-[22px] group"
+            >
+                <span
+                    className="transition-all"
+                    style={{
+                        fontFamily: '"Poppins", sans-serif',
+                        fontSize: '17px',
+                        lineHeight: '1',
+                        color: '#000000',
+                        fontWeight: 600
+                    }}
                 >
-                    <div className="px-6 pb-6 pt-0">
-                        {children}
+                    {title}
+                </span>
+                <ChevronDown size={14} className={`text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                    >
+                        <div className="pl-2 pr-5 pb-6">
+                            {children}
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
+
+const JobCard = ({ job, mode }: any) => {
+    const navigate = useNavigate();
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={`bg-white border border-gray-100 hover:border-[#317CD7] hover:shadow-xl hover:shadow-[#317CD7]/5 transition-all relative group ${mode === 'grid' ? 'rounded-2xl p-6' : 'rounded-xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-6'
+                }`}
+        >
+            <div className="flex-1">
+                <div className="flex items-center gap-3 mb-1">
+                    <h3
+                        className="transition-all capitalize"
+                        style={{
+                            fontFamily: '"Poppins", sans-serif',
+                            fontSize: '18px',
+                            lineHeight: '32px',
+                            color: '#000000',
+                            fontWeight: 600
+                        }}
+                    >
+                        {job.title}
+                    </h3>
+                    {job.featured && <span className="px-2 py-0.5 bg-yellow-400 text-white text-[10px] font-extrabold rounded uppercase tracking-widest">Hot</span>}
+                </div>
+
+                <div className="flex items-center gap-2 mb-4 -mt-1">
+                    <span className="text-[13px] font-bold text-[#317CD7] uppercase tracking-wide">{job.company || 'Shinefiling'}</span>
+                    <span className="text-gray-300">•</span>
+                    <span className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">ID: 00{job.id}</span>
+                </div>
+
+                <div
+                    className="flex flex-wrap items-center gap-x-6 gap-y-3 font-medium"
+                    style={{
+                        fontSize: '14px',
+                        color: '#363636',
+                        letterSpacing: '0.005em'
+                    }}
+                >
+                    <div className="flex items-center gap-2">
+                        <MapPin size={16} className="text-gray-300" />
+                        <span>{job.location}</span>
                     </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
+                    <div className="flex items-center gap-2">
+                        <Briefcase size={16} className="text-gray-300" />
+                        <span>{job.experience || 'Not Specified'}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Clock size={16} className="text-gray-300" />
+                        <span>{job.type || 'Full Time'}</span>
+                    </div>
+                    <div className={`flex items-center gap-2 font-bold ${job.expiry?.toLowerCase().includes('expired') ? 'text-red-400' : 'text-green-500'}`}>
+                        <Calendar size={16} />
+                        <span>{job.expiry || 'Until Deactivated'}</span>
+                    </div>
+                </div>
+                <p
+                    className="line-clamp-1 mt-4 font-medium"
+                    style={{
+                        fontSize: '13px',
+                        color: '#000000',
+                        fontStyle: 'normal'
+                    }}
+                >
+                    {job.description?.replace(/Skills:|Responsibilities:|Overview:/g, '')}
+                </p>
+            </div>
+
+            <div className={`flex flex-col items-end gap-4 ${mode === 'grid' ? 'mt-6 pt-6 border-t border-gray-50' : 'min-w-[150px]'}`}>
+                <div className="text-right">
+                    <div
+                        style={{
+                            fontFamily: '"Poppins", sans-serif',
+                            fontWeight: 600,
+                            fontSize: '20px',
+                            color: '#000000'
+                        }}
+                    >
+                        ₹{job.price?.toLocaleString()}
+                    </div>
+                </div>
+                <button
+                    onClick={() => navigate(`/jobs/${job.id}`)}
+                    className="flex items-center gap-2 text-[#317CD7] font-bold text-[13px] uppercase tracking-widest transition-all group pb-1"
+                    style={{ fontFamily: '"Poppins", sans-serif' }}
+                >
+                    <span className="border-b-2 border-transparent group-hover:border-[#317CD7] transition-all">
+                        View More
+                    </span>
+                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+            </div>
+        </motion.div>
+    );
+};
+
+const SkeletonLoader = ({ mode }: any) => (
+    <div className={`bg-white border border-gray-100 rounded-xl p-8 animate-pulse ${mode === 'grid' ? 'h-[250px]' : 'h-[120px] flex items-center justify-between'}`}>
+        <div className="space-y-3 flex-1">
+            <div className="h-6 bg-gray-100 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-50 rounded w-1/3"></div>
+        </div>
+        <div className="w-32 h-10 bg-gray-100 rounded-lg"></div>
     </div>
 );
 

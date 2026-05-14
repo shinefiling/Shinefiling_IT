@@ -9,6 +9,7 @@ import BuildMarketplace from './components/BuildMarketplace';
 import Testimonials from './components/Testimonials';
 import ReadyToScale from './components/ReadyToScale';
 import SiteFooter from './components/SiteFooter';
+import HomeSEO from './components/HomeSEO';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Onboarding from './components/Onboarding';
@@ -38,9 +39,10 @@ const HomePage: React.FC = () => (
         <HeroBanner />
         <CtaCards />
         <GlobalFreelancers />
-        <Testimonials />
+        {/* <Testimonials /> */}
         <BuildMarketplace />
         <ReadyToScale />
+        <HomeSEO />
     </>
 );
 
@@ -89,7 +91,7 @@ const AppContent: React.FC = () => {
     }, []);
 
     return (
-        <main className="bg-[#fdfaf0] min-h-screen text-[#222] overflow-x-hidden selection:bg-[#b5242c]/20">
+        <main className="bg-[#F6F3EE] min-h-screen text-[#0F2E4B] overflow-x-hidden selection:bg-[#317CD7]/20">
             {!hideHeaderFooter && <Navbar />}
             <Routes>
                 <Route path="/" element={<HomePage />} />

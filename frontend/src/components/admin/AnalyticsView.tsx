@@ -55,7 +55,7 @@ const AnalyticsView = () => {
                             <div className="flex items-center justify-center h-44">
                                 <div className="w-32 h-32 rounded-full border-[10px] border-slate-50 dark:border-slate-900 border-t-orange-500 border-l-teal-500 flex items-center justify-center shadow-inner relative">
                                     <div className="text-center">
-                                        <span className="text-2xl font-black text-slate-800 dark:text-white font-poppins">82%</span>
+                                        <span className="text-2xl font-extrabold text-slate-800 dark:text-white font-poppins">82%</span>
                                         <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Dominance</p>
                                     </div>
                                 </div>
@@ -88,7 +88,7 @@ const AnalyticsView = () => {
                     </div>
 
                     <div className="shine-card p-6">
-                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Retention Stats</h3>
+                        <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] mb-6">Retention Stats</h3>
                         <div className="space-y-4">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm text-slate-500 dark:text-slate-400 font-medium">Freelancer Return Rate</span>

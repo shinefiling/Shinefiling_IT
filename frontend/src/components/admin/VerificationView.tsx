@@ -59,11 +59,11 @@ const VerificationView = () => {
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Approved Talent</p>
-                                <p className="text-3xl font-black font-poppins">429</p>
+                                <p className="text-3xl font-extrabold font-poppins">429</p>
                             </div>
                             <div>
                                 <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-1">Pass Rate</p>
-                                <p className="text-3xl font-black font-poppins">94.2%</p>
+                                <p className="text-3xl font-extrabold font-poppins">94.2%</p>
                             </div>
                         </div>
                         <div className="pt-6 border-t border-white/10">

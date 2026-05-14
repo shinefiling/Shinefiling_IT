@@ -22,6 +22,27 @@ const ProjectDetails: React.FC = () => {
     const [successMsg, setSuccessMsg] = useState<string | null>(null);
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+    const handleMessageClick = (freelancer: any) => {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+            navigate('/login');
+            return;
+        }
+        
+        // Open floating chat
+        const event = new CustomEvent('open-chat', { 
+            detail: { 
+                contact: {
+                    id: freelancer.id,
+                    fullName: freelancer.fullName,
+                    email: freelancer.email,
+                    profilePicture: freelancer.profilePicture
+                } 
+            } 
+        });
+        window.dispatchEvent(event);
+    };
+
     useEffect(() => {
         fetchProject();
     }, [id]);
@@ -126,14 +147,14 @@ const ProjectDetails: React.FC = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#fdfaf0] pt-[100px] lg:pt-[150px] pb-20 font-['Poppins']">
-            <div className="max-w-[1320px] mx-auto px-4 lg:px-8">
+        <div className="min-h-screen bg-[#f8f9fa] pt-[100px] lg:pt-[120px] pb-20" style={{ fontFamily: '"Poppins", sans-serif' }}>
+            <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-16">
                 
                 {/* Back Button */}
-                <div className="mb-4">
+                <div className="mb-6">
                     <button 
                         onClick={() => navigate('/projects')}
-                        className="flex items-center gap-2 text-[#555555] hover:text-[#b5242c] transition-colors font-medium text-[13px]"
+                        className="flex items-center gap-2 text-[#0F2E4B] hover:text-[#317CD7] transition-all font-bold text-[12px] uppercase tracking-wider"
                     >
                         <ChevronLeft size={16} /> Back to Projects
                     </button>
@@ -145,127 +166,163 @@ const ProjectDetails: React.FC = () => {
                     <div className="space-y-4">
                         
                         {/* Header Section */}
-                        <div className="bg-white rounded-md p-6 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-                            <div className="flex flex-wrap items-center gap-5 text-[12px] text-[#777777] font-normal leading-[24px] mb-3">
-                                <span className="flex items-center gap-1.5 text-[#b5242c]"><Folder size={14} /> {project.category || "General"}</span>
-                                <span className="flex items-center gap-1.5"><MapPin size={14} /> {project.location || "Remote"}</span>
-                                <span className="flex items-center gap-1.5"><Clock size={14} /> {new Date(project.postedAt).toLocaleDateString()}</span>
-                                <span className="flex items-center gap-1.5"><Eye size={14} /> 13,704 Views</span>
+                        <div className="bg-white rounded-xl px-7 py-6 border border-gray-100 shadow-sm">
+                            <div className="flex flex-wrap items-center gap-3 mb-4">
+                                <span className="px-3 py-1 bg-[#317CD7]/10 text-[#317CD7] text-[10px] font-extrabold rounded uppercase tracking-wider">
+                                    Shinefiling Project
+                                </span>
+                                <span className="text-gray-300">|</span>
+                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">ID: PR-00{project.id}</span>
                             </div>
 
-                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-5">
-                                <h1 className="text-[24px] lg:text-[30px] font-bold text-[#242424] leading-[32px] lg:leading-[42px] flex-1 break-words">
+                            <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+                                <h1 
+                                    className="text-[24px] lg:text-[28px] font-bold text-[#0F2E4B] leading-tight flex-1 capitalize"
+                                    style={{ letterSpacing: '-0.01em' }}
+                                >
                                     {project.title}
                                 </h1>
-                                <div className="flex items-center gap-3 shrink-0 w-full md:w-auto">
-                                    <button className="p-2.5 border border-gray-100 rounded-md text-gray-400 hover:text-[#b5242c] hover:border-[#b5242c]/20 transition-all bg-[#f9fafb]">
+                                <div className="flex items-center gap-2.5 shrink-0 w-full md:w-auto mt-4 md:mt-0">
+                                    <button className="p-2.5 border border-gray-100 rounded-lg text-gray-400 hover:text-[#317CD7] hover:border-[#317CD7]/20 transition-all bg-white shadow-sm">
                                         <Bookmark size={18} />
                                     </button>
                                     <button 
                                         onClick={scrollToForm}
-                                        className="flex-1 md:flex-none bg-[#b5242c] hover:bg-[#a11f27] text-white px-6 py-2.5 rounded-md font-bold transition-all shadow-lg shadow-[#b5242c]/20 flex items-center justify-center gap-2 text-sm"
+                                        className="flex-1 md:flex-none bg-[#317CD7] hover:bg-[#2563b5] text-white px-8 py-3 rounded-lg font-bold transition-all shadow-md shadow-[#317CD7]/20 flex items-center justify-center gap-2 text-[11px] uppercase tracking-widest"
                                     >
-                                        Send Proposal
+                                        Apply for this project
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 mt-6 pt-6 border-t border-gray-100">
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2.5 bg-[#fff0f0] text-[#b5242c] rounded-md"><Contact size={20} /></div>
-                                    <div>
-                                        <p className="text-[12px] text-[#777777] font-normal leading-[18px]">Freelancer Type</p>
-                                        <p className="text-[14px] text-[#242424] font-medium leading-[20px]">{project.experienceLevel || "Individual"}</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 mt-7 pt-6 border-t border-gray-50">
+                                <div className="flex flex-col gap-0.5">
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Experience</p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-lg bg-[#317CD7]/5 flex items-center justify-center text-[#317CD7]">
+                                            <BarChart size={14} />
+                                        </div>
+                                        <p className="text-[13px] text-[#0F2E4B] font-bold capitalize">{project.experienceLevel || "Expert"}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2.5 bg-[#fff0f0] text-[#b5242c] rounded-md"><Calendar size={20} /></div>
-                                    <div>
-                                        <p className="text-[12px] text-[#777777] font-normal leading-[18px]">Duration</p>
-                                        <p className="text-[14px] text-[#242424] font-medium leading-[20px]">{project.duration || "1-5 Days"}</p>
+                                <div className="flex flex-col gap-0.5">
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Category</p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-lg bg-[#317CD7]/5 flex items-center justify-center text-[#317CD7]">
+                                            <Folder size={14} />
+                                        </div>
+                                        <p className="text-[13px] text-[#0F2E4B] font-bold capitalize">{project.category || "Development"}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2.5 bg-[#fff0f0] text-[#b5242c] rounded-md"><BarChart size={20} /></div>
-                                    <div>
-                                        <p className="text-[12px] text-[#777777] font-normal leading-[18px]">Level</p>
-                                        <p className="text-[14px] text-[#242424] font-medium leading-[20px]">Moderate</p>
+                                <div className="flex flex-col gap-0.5">
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Duration</p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-lg bg-[#317CD7]/5 flex items-center justify-center text-[#317CD7]">
+                                            <Calendar size={14} />
+                                        </div>
+                                        <p className="text-[13px] text-[#0F2E4B] font-bold capitalize">{project.duration || "1-3 Months"}</p>
                                     </div>
                                 </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2.5 bg-[#fff0f0] text-[#b5242c] rounded-md"><Headphones size={20} /></div>
-                                    <div>
-                                        <p className="text-[12px] text-[#777777] font-normal leading-[18px]">English</p>
-                                        <p className="text-[14px] text-[#242424] font-medium leading-[20px]">Native</p>
+                                <div className="flex flex-col gap-0.5">
+                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Location</p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-7 h-7 rounded-lg bg-[#317CD7]/5 flex items-center justify-center text-[#317CD7]">
+                                            <MapPin size={14} />
+                                        </div>
+                                        <p className="text-[13px] text-[#0F2E4B] font-bold capitalize">{project.location || "Remote"}</p>
                                     </div>
-                                </div>
-                                <div className="flex items-start gap-3">
-                                    <div className="p-2.5 bg-[#fff0f0] text-[#b5242c] rounded-md"><Languages size={20} /></div>
-                                    <div>
-                                        <p className="text-[12px] text-[#777777] font-normal leading-[18px]">Languages</p>
-                                        <p className="text-[14px] text-[#242424] font-medium leading-[20px]">English, Hindi</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Banner Image Placeholder */}
-                        <div className="w-full h-[80px] bg-gradient-to-r from-blue-600 to-indigo-700 rounded-md relative overflow-hidden flex items-center px-10">
-                            <div className="relative z-10 text-white flex items-center gap-6">
-                                <div>
-                                    <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest">No Paid Plugins Required</p>
-                                    <h3 className="text-lg font-black">Freelance Marketplace</h3>
                                 </div>
                             </div>
                         </div>
 
                         {/* Description Section */}
-                        <div className="bg-white rounded-md p-6 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-                            <h3 className="text-[16px] font-bold text-[#242424] mb-4 border-b border-gray-50 pb-3">Description</h3>
-                            <div className="text-[14px] font-normal text-[#4b525e] leading-[24px] tracking-tight space-y-3">
-                                <p>{project.description}</p>
-                                <ul className="list-disc pl-5 space-y-1">
-                                    <li>Work on the existing codebase to improve performance.</li>
-                                    <li>Implement new features as per the requirement document.</li>
-                                    <li>Ensure the design is responsive and professional.</li>
-                                </ul>
+                        <div className="bg-white rounded-xl p-8 border border-gray-100 shadow-sm">
+                            <div className="flex items-center justify-between mb-6 border-b border-gray-50 pb-4">
+                                <h3 
+                                    className="text-[16px] font-bold uppercase tracking-widest"
+                                    style={{ color: 'rgb(33, 33, 33)' }}
+                                >
+                                    Project Description
+                                </h3>
+                                <span className="text-[11px] text-gray-400 font-medium">Posted {new Date(project.postedAt).toLocaleDateString()}</span>
+                            </div>
+                            <div 
+                                className="antialiased" 
+                                style={{ 
+                                    fontFamily: 'Poppins, sans-serif',
+                                    fontSize: '15px',
+                                    fontWeight: 500,
+                                    lineHeight: '26px',
+                                    color: 'rgb(33, 33, 33)'
+                                }}
+                            >
+                                <p className="mb-6">{project.description}</p>
+                                <div className="p-6 bg-gray-50 rounded-xl border border-gray-100">
+                                    <h4 className="text-[14px] font-bold text-[#0F2E4B] mb-3 uppercase tracking-widest">Deliverables & Requirements:</h4>
+                                    <ul className="list-disc pl-5 space-y-2 opacity-80">
+                                        <li>Execute tasks according to the specified technical guidelines.</li>
+                                        <li>Maintain consistent communication through the Shinefiling platform.</li>
+                                        <li>Submit work milestones within the agreed-upon timeframe.</li>
+                                        <li>Ensure high-quality output that meets the client's standards.</li>
+                                    </ul>
+                                </div>
                             </div>
 
-                            <div className="mt-8">
-                                <h4 className="text-[13px] font-bold text-[#242424] mb-3 uppercase tracking-wider">Skills Required</h4>
+                            <div className="mt-10">
+                                <h4 
+                                    className="text-[12px] font-bold mb-4 uppercase tracking-widest"
+                                    style={{ color: 'rgb(33, 33, 33)' }}
+                                >
+                                    Skills Required
+                                </h4>
                                 <div className="flex flex-wrap gap-2">
                                     {project.skills?.map((skill: string) => (
-                                        <span key={skill} className="px-3 py-1.5 bg-[#fdf0d5] text-[#4b525e] text-[13px] font-normal rounded-full">
+                                        <span key={skill} className="px-4 py-2 bg-gray-50 text-[#0F2E4B] text-[13px] font-bold rounded-lg border border-gray-100 transition-all hover:border-[#317CD7]/30">
                                             {skill}
                                         </span>
                                     ))}
                                 </div>
                             </div>
-
-                            <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-medium">
-                                <span>Address: {project.location || "Remote"}</span>
-                                <span>Project ID: {project.id.toString().padStart(4, '0')}</span>
+                            <div className="mt-10 pt-6 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+                                <span>Location: {project.location || "Remote"}</span>
+                                <span>Ref: SF-{project.id.toString().padStart(4, '0')}</span>
                             </div>
                         </div>
 
                         {/* Send Proposal Form */}
-                        <div ref={formRef} className="bg-white rounded-md p-8 border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] scroll-mt-24">
-                            <h3 className="text-[18px] font-bold text-[#242424] mb-6 flex items-center gap-2">
-                                <Send size={18} className="text-[#b5242c]" /> Send Your Proposal
-                            </h3>
+                        <div ref={formRef} className="bg-white rounded-xl p-10 border border-gray-100 shadow-sm scroll-mt-24">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 bg-[#317CD7]/10 rounded-xl flex items-center justify-center text-[#317CD7]">
+                                    <Send size={24} />
+                                </div>
+                                <div>
+                                    <h3 
+                                        style={{ 
+                                            fontFamily: 'Poppins, sans-serif',
+                                            fontSize: '18px',
+                                            fontWeight: 700,
+                                            lineHeight: '26px',
+                                            color: 'rgb(33, 33, 33)'
+                                        }}
+                                    >
+                                        Submit Your Proposal
+                                    </h3>
+                                    <p className="text-[12px] text-gray-400 font-medium uppercase tracking-widest">Connect with this client today</p>
+                                </div>
+                            </div>
                             
                             {!localStorage.getItem('user') ? (
-                                <div className="py-10 text-center bg-gray-50/50 border border-dashed border-gray-200 rounded-lg">
-                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
-                                        <Lock size={24} className="text-[#b5242c]" />
+                                <div className="py-12 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm border border-gray-100 text-[#317CD7]">
+                                        <Lock size={28} />
                                     </div>
-                                    <h4 className="text-[18px] font-bold text-[#242424] mb-2">Login Required</h4>
-                                    <p className="text-gray-500 text-[14px] mb-6 max-w-[300px] mx-auto">You must be logged in as a freelancer to submit a proposal for this project.</p>
+                                    <h4 className="text-[18px] font-bold text-[#0F2E4B] mb-2">Freelancer Login Required</h4>
+                                    <p className="text-gray-500 text-[14px] mb-8 max-w-[340px] mx-auto">To submit a proposal and start working on this project, you need to sign in with your freelancer account.</p>
                                     <button 
                                         onClick={() => navigate('/login')}
-                                        className="bg-[#b5242c] hover:bg-[#a11f27] text-white px-10 py-3 rounded-md font-bold transition-all shadow-lg shadow-[#b5242c]/20 inline-flex items-center gap-2"
+                                        className="bg-[#0F2E4B] hover:bg-black text-white px-10 py-3.5 rounded-lg font-bold transition-all shadow-md active:scale-95 flex items-center justify-center gap-2 mx-auto text-[12px] uppercase tracking-widest"
                                     >
-                                        Sign In Now <ChevronLeft size={18} className="rotate-180" />
+                                        Access Your Account <ChevronLeft size={16} className="rotate-180" />
                                     </button>
                                 </div>
                             ) : (
@@ -285,21 +342,32 @@ const ProjectDetails: React.FC = () => {
                                     <form onSubmit={handleSubmitProposal}>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                             <div className="space-y-2">
-                                                <label className="text-[13px] font-bold text-[#242424] uppercase tracking-wider">Your Bid Amount ({project.currency === 'USD' ? '$' : '₹'})</label>
+                                                <label 
+                                                    className="text-[12px] font-bold uppercase tracking-wider"
+                                                    style={{ fontFamily: 'Poppins, sans-serif', color: 'rgb(33, 33, 33)' }}
+                                                >
+                                                    Your Bid Amount (₹)
+                                                </label>
                                                 <div className="relative group">
-                                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">{project.currency === 'USD' ? '$' : '₹'}</span>
+                                                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">₹</span>
                                                     <input 
                                                         type="number" 
                                                         required
                                                         value={bidAmount}
                                                         onChange={(e) => setBidAmount(e.target.value)}
                                                         placeholder="0.00"
-                                                        className="w-full bg-[#f9fafb] border border-gray-100 rounded-md pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#b5242c]/20 transition-all font-medium text-[#242424]"
+                                                        className="w-full bg-[#f9fafb] border border-gray-100 rounded-md pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#317CD7]/20 transition-all font-medium"
+                                                        style={{ fontFamily: 'Poppins, sans-serif', color: 'rgb(33, 33, 33)' }}
                                                     />
                                                 </div>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[13px] font-bold text-[#242424] uppercase tracking-wider">Estimated Delivery</label>
+                                                <label 
+                                                    className="text-[12px] font-bold uppercase tracking-wider"
+                                                    style={{ fontFamily: 'Poppins, sans-serif', color: 'rgb(33, 33, 33)' }}
+                                                >
+                                                    Estimated Delivery
+                                                </label>
                                                 <div className="relative group">
                                                     <Clock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                                     <input 
@@ -308,28 +376,35 @@ const ProjectDetails: React.FC = () => {
                                                         value={deliveryTime}
                                                         onChange={(e) => setDeliveryTime(e.target.value)}
                                                         placeholder="e.g. 7 days"
-                                                        className="w-full bg-[#f9fafb] border border-gray-100 rounded-md pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#b5242c]/20 transition-all font-medium text-[#242424]"
+                                                        className="w-full bg-[#f9fafb] border border-gray-100 rounded-md pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#317CD7]/20 transition-all font-medium"
+                                                        style={{ fontFamily: 'Poppins, sans-serif', color: 'rgb(33, 33, 33)' }}
                                                     />
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="space-y-2 mb-8">
-                                            <label className="text-[13px] font-bold text-[#242424] uppercase tracking-wider">Proposal Message</label>
+                                            <label 
+                                                className="text-[12px] font-bold uppercase tracking-wider"
+                                                style={{ fontFamily: 'Poppins, sans-serif', color: 'rgb(33, 33, 33)' }}
+                                            >
+                                                Proposal Message
+                                            </label>
                                             <textarea 
                                                 required
                                                 value={message}
                                                 onChange={(e) => setMessage(e.target.value)}
                                                 rows={6}
                                                 placeholder="Describe your approach and experience for this project..."
-                                                className="w-full bg-[#f9fafb] border border-gray-100 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#b5242c]/20 transition-all font-medium text-[#242424] resize-none"
+                                                className="w-full bg-[#f9fafb] border border-gray-100 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#317CD7]/20 transition-all font-medium resize-none"
+                                                style={{ fontFamily: 'Poppins, sans-serif', fontSize: '15px', color: 'rgb(33, 33, 33)' }}
                                             ></textarea>
                                         </div>
                                         <button 
                                             type="submit"
                                             disabled={submitting}
-                                            className="bg-[#b5242c] hover:bg-[#a11f27] text-white px-10 py-3.5 rounded-md font-bold transition-all shadow-lg shadow-[#b5242c]/20 flex items-center justify-center gap-2 w-full md:w-fit disabled:opacity-50"
+                                            className="bg-[#317CD7] hover:bg-[#2563b5] text-white px-12 py-4 rounded-lg font-bold transition-all shadow-md shadow-[#317CD7]/20 flex items-center justify-center gap-2 w-full md:w-fit disabled:opacity-50 text-[12px] uppercase tracking-widest"
                                         >
-                                            {submitting ? "Submitting..." : <>Submit Proposal <Send size={18} /></>}
+                                            {submitting ? "Processing..." : <>Submit Proposal <Send size={18} /></>}
                                         </button>
                                     </form>
                                 </>
@@ -338,7 +413,18 @@ const ProjectDetails: React.FC = () => {
 
                         {/* Proposal List Section */}
                         <div className="space-y-4">
-                            <h3 className="text-[18px] font-bold text-[#242424] ml-2">Project Proposals ({proposals.length})</h3>
+                            <h3 
+                                className="ml-2 uppercase tracking-wider"
+                                style={{ 
+                                    fontFamily: 'Poppins, sans-serif',
+                                    fontSize: '18px',
+                                    fontWeight: 700,
+                                    lineHeight: '26px',
+                                    color: 'rgb(33, 33, 33)'
+                                }}
+                            >
+                                Recent Proposals - {proposals.length}
+                            </h3>
                             
                             {proposals.length === 0 ? (
                                 <div className="bg-white rounded-md p-10 border border-gray-100 text-center text-gray-500 italic">
@@ -346,27 +432,64 @@ const ProjectDetails: React.FC = () => {
                                 </div>
                             ) : (
                                 proposals.map((prop) => (
-                                    <div key={prop.id} className="bg-white rounded-md p-6 border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 hover:border-[#b5242c]/20 transition-all">
-                                        <div className="w-14 h-14 bg-gray-100 rounded-md overflow-hidden shrink-0">
-                                            <img src={prop.freelancer?.profilePicture || `https://i.pravatar.cc/150?u=${prop.freelancer?.id}`} alt="Avatar" className="w-full h-full object-cover" />
+                                    <div key={prop.id} className="bg-white rounded-xl p-8 border border-gray-100 shadow-sm flex flex-col md:flex-row gap-8 hover:border-[#317CD7]/30 transition-all group">
+                                        <div className="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden shrink-0 border border-gray-100 p-1">
+                                            {prop.freelancer?.profilePicture ? (
+                                                <img src={prop.freelancer.profilePicture} alt="Avatar" className="w-full h-full object-cover rounded-lg" />
+                                            ) : (
+                                                <div className="w-full h-full bg-[#317CD7]/10 flex items-center justify-center text-[#317CD7] font-bold text-xl rounded-lg">
+                                                    {(prop.freelancer?.fullName || prop.freelancer?.username || '??').substring(0, 2).toUpperCase()}
+                                                </div>
+                                            )}
                                         </div>
                                         <div className="flex-1">
-                                            <div className="flex items-start justify-between mb-3">
+                                            <div className="flex items-start justify-between mb-4">
                                                 <div>
-                                                    <h4 className="font-bold text-[#242424] hover:text-[#b5242c] cursor-pointer text-[15px]">{prop.freelancer?.fullName || prop.freelancer?.username}</h4>
-                                                    <div className="flex items-center gap-4 mt-1 text-[11px] text-gray-400 font-bold uppercase tracking-wider">
-                                                        <span className="flex items-center gap-1"><Clock size={12} /> {new Date(prop.createdAt).toLocaleDateString()}</span>
-                                                        <span className="flex items-center gap-1 text-[#b5242c]"><Star size={12} className="fill-[#b5242c]" /> Top Rated</span>
+                                                    <h4 
+                                                        className="capitalize transition-colors group-hover:text-[#317CD7]"
+                                                        style={{ 
+                                                            fontFamily: 'Poppins, sans-serif',
+                                                            fontSize: '16px',
+                                                            fontWeight: 700,
+                                                            color: 'rgb(33, 33, 33)'
+                                                        }}
+                                                    >
+                                                        {prop.freelancer?.fullName || prop.freelancer?.username}
+                                                    </h4>
+                                                    <div className="flex items-center gap-4 mt-1.5 text-[10px] text-gray-400 font-extrabold uppercase tracking-widest">
+                                                        <span className="flex items-center gap-1.5"><Clock size={12} className="text-[#317CD7]" /> {new Date(prop.createdAt).toLocaleDateString()}</span>
+                                                        <span className="flex items-center gap-1.5 text-[#317CD7]"><CheckCircle size={12} /> Verified Expert</span>
                                                     </div>
                                                 </div>
-                                                <div className="text-left md:text-right shrink-0">
-                                                    <p className="text-[20px] lg:text-[30px] font-bold text-[#242424] leading-tight mb-1">
-                                                        {project.currency === 'USD' ? '$' : '₹'}{prop.bidAmount}
+                                                <div className="text-right shrink-0">
+                                                    <p 
+                                                        className="text-[22px] font-bold leading-tight"
+                                                        style={{ 
+                                                            fontFamily: 'Poppins, sans-serif',
+                                                            color: 'rgb(33, 33, 33)'
+                                                        }}
+                                                    >
+                                                        ₹{prop.bidAmount}
                                                     </p>
-                                                    <p className="text-[12px] text-[#777777] font-normal uppercase tracking-wider">in {prop.deliveryTime}</p>
+                                                    <p className="text-[10px] text-gray-400 font-extrabold uppercase tracking-widest mt-1">in {prop.deliveryTime}</p>
+                                                    <button 
+                                                        onClick={() => handleMessageClick(prop.freelancer)}
+                                                        className="mt-4 px-4 py-1.5 bg-[#0F2E4B] text-white rounded-lg font-bold text-[10px] uppercase tracking-widest hover:bg-[#317CD7] transition-all flex items-center gap-2 justify-center w-full"
+                                                    >
+                                                        <Contact size={12} /> Message
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <p className="text-[16px] text-[#777777] leading-[30px] font-normal tracking-tight">
+                                            <p 
+                                                className="antialiased"
+                                                style={{ 
+                                                    fontFamily: 'Poppins, sans-serif',
+                                                    fontSize: '15px',
+                                                    fontWeight: 500,
+                                                    lineHeight: '26px',
+                                                    color: 'rgb(33, 33, 33)'
+                                                }}
+                                            >
                                                 {prop.coverLetter}
                                             </p>
                                         </div>
@@ -382,77 +505,54 @@ const ProjectDetails: React.FC = () => {
                     <div className="space-y-6">
                         
                         {/* Budget Card */}
-                        <div className="bg-white rounded-md p-6 border border-gray-100 shadow-sm">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <p className="text-[12px] text-[#777777] font-normal leading-[24px] mb-1 uppercase tracking-widest">Budget</p>
-                                    <h2 className="text-[24px] lg:text-[30px] font-bold text-[#242424] leading-tight">
-                                        {project.currency === 'USD' ? '$' : '₹'}
-                                        {project.budgetAmount?.toLocaleString()}
-                                    </h2>
-                                    <p className="text-[11px] text-[#b5242c] font-bold uppercase mt-4 tracking-tight flex items-center gap-1">
-                                        {project.paymentType || "Fixed"} <Clock size={10} />
-                                    </p>
-                                </div>
-                                <div className="bg-orange-50 text-orange-500 text-[10px] font-black uppercase px-2 py-1 rounded tracking-tighter">
-                                    Active
-                                </div>
-                            </div>
-                            <div className="w-14 h-14 bg-gray-100 rounded-md flex items-center justify-center ml-auto opacity-20">
-                                <Info size={32} />
+                        <div className="bg-[#0F2E4B] rounded-xl p-8 text-white shadow-lg relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+                            <p className="text-[11px] font-extrabold uppercase tracking-widest opacity-60 mb-2">Project Budget</p>
+                            <h2 className="text-[32px] font-bold leading-tight mb-4">
+                                ₹{project.budgetAmount?.toLocaleString()}
+                            </h2>
+                            <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
+                                <span className="px-3 py-1 bg-white/10 rounded text-[10px] font-extrabold uppercase tracking-widest">{project.paymentType || "Fixed Price"}</span>
+                                <span className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-[#317CD7]">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-[#317CD7] animate-pulse"></div> Active
+                                </span>
                             </div>
                         </div>
 
                         {/* Employer Card */}
-                        <div className="bg-white rounded-md overflow-hidden border border-gray-100 shadow-sm">
-                            <div className="h-24 bg-gray-100 relative">
-                                <img src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&q=80&w=400" alt="Office" className="w-full h-full object-cover opacity-50" />
-                                <div className="absolute bottom-[-24px] left-1/2 -translate-x-1/2 w-16 h-16 bg-white rounded-md p-1 shadow-md border border-gray-100 overflow-hidden">
-                                    <div className="w-full h-full bg-[#1e2329] flex items-center justify-center text-white font-black text-xl italic">
+                        <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm">
+                            <div className="h-28 bg-[#f8f9fa] relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-[#317CD7]/5 to-transparent"></div>
+                                <div className="absolute bottom-[-30px] left-1/2 -translate-x-1/2 w-20 h-20 bg-white rounded-2xl p-1.5 shadow-md border border-gray-100">
+                                    <div className="w-full h-full bg-[#0F2E4B] rounded-xl flex items-center justify-center text-white font-extrabold text-2xl">
                                         SF
                                     </div>
                                 </div>
                             </div>
-                            <div className="pt-10 pb-6 px-6 text-center">
-                                <h4 className="font-bold text-[#242424] flex items-center justify-center gap-1.5 text-[15px]">
-                                    Shinefiling Ltd <CheckCircle size={14} className="text-green-500" />
+                            <div className="pt-12 pb-8 px-8 text-center">
+                                <h4 className="font-bold text-[#0F2E4B] flex items-center justify-center gap-2 text-[16px]">
+                                    Shinefiling Ltd <CheckCircle size={16} className="text-[#317CD7]" />
                                 </h4>
-                                <p className="text-[11px] text-gray-400 font-medium mt-1 uppercase tracking-wider">Member since Jan 15, 2021</p>
-                                <button className="w-full mt-6 bg-[#78b13f] hover:bg-[#689b35] text-white py-2.5 rounded-md font-bold text-sm transition-all shadow-sm">
-                                    View Profile
-                                </button>
-                            </div>
-                        </div>
+                                <p className="text-[11px] text-gray-400 font-extrabold mt-1.5 uppercase tracking-widest">Premium Client</p>
+                                
+                                <div className="mt-8 space-y-4">
+                                    <div className="flex items-center justify-between text-[13px]">
+                                        <span className="text-gray-400 font-medium">Location</span>
+                                        <span className="text-[#0F2E4B] font-bold">United States</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-[13px]">
+                                        <span className="text-gray-400 font-medium">Projects</span>
+                                        <span className="text-[#0F2E4B] font-bold">12 Completed</span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-[13px]">
+                                        <span className="text-gray-400 font-medium">Member since</span>
+                                        <span className="text-[#0F2E4B] font-bold">Jan 2021</span>
+                                    </div>
+                                </div>
 
-                        {/* About Employer Card */}
-                        <div className="bg-white rounded-md p-6 border border-gray-100 shadow-sm">
-                            <h4 className="text-[14px] font-bold text-[#242424] mb-6">About The Employer</h4>
-                            <div className="space-y-4 relative pl-4 before:absolute before:left-[1.5px] before:top-2 before:bottom-2 before:w-[2px] before:bg-red-500">
-                                <div className="relative">
-                                    <div className="absolute left-[-17px] top-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></div>
-                                    <p className="text-[14px] text-[#4b525e] font-normal leading-[24px] tracking-tight">{project.location || "United States"}</p>
-                                </div>
-                                <div className="relative">
-                                    <div className="absolute left-[-17px] top-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></div>
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[14px] text-[#4b525e] font-normal leading-[24px] tracking-tight">12 Projects completed</p>
-                                        <CheckCircle size={12} className="text-green-500" />
-                                    </div>
-                                </div>
-                                <div className="relative">
-                                    <div className="absolute left-[-17px] top-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></div>
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[14px] text-[#4b525e] font-normal leading-[24px] tracking-tight">Payment Method</p>
-                                        <CheckCircle size={12} className="text-green-500" />
-                                    </div>
-                                </div>
-                                <div className="relative">
-                                    <div className="absolute left-[-17px] top-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></div>
-                                    <div className="flex items-center justify-between">
-                                        <p className="text-[14px] text-[#4b525e] font-normal leading-[24px] tracking-tight">Email Verified</p>
-                                        <CheckCircle size={12} className="text-green-500" />
-                                    </div>
-                                </div>
+                                <button className="w-full mt-8 bg-[#317CD7] hover:bg-[#2563b5] text-white py-3.5 rounded-lg font-bold text-[12px] uppercase tracking-widest transition-all shadow-md active:scale-95">
+                                    View Client Profile
+                                </button>
                             </div>
                         </div>
 
@@ -460,7 +560,7 @@ const ProjectDetails: React.FC = () => {
                         <div className="bg-[#fcfcfc] rounded-md overflow-hidden border border-gray-100 shadow-sm group cursor-pointer relative">
                             <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&q=80&w=400" alt="Banner" className="w-full h-auto group-hover:scale-105 transition-transform duration-700" />
                             <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center p-6">
-                                <h3 className="text-2xl font-black mb-2 italic">exertio</h3>
+                                <h3 className="text-2xl font-extrabold mb-2 italic">exertio</h3>
                                 <p className="text-xs font-bold uppercase tracking-widest leading-relaxed">Freelance Marketplace & Directory WordPress Theme</p>
                             </div>
                         </div>

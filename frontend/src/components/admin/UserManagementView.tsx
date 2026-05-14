@@ -76,12 +76,12 @@ const UserManagementView = ({ users, type }: { users: any[], type: 'FREELANCER' 
                                     <span className="text-[10px] text-slate-400">(24 Reviews)</span>
                                 </div>
                                 {type === 'FREELANCER' && (
-                                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-500/20">Verified</span>
+                                    <span className="text-[10px] font-extrabold text-emerald-600 uppercase tracking-widest bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-100 dark:border-emerald-500/20">Verified</span>
                                 )}
                             </div>
                         </div>
                         
-                        <button className="w-full py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:bg-orange-500 hover:text-white dark:hover:bg-orange-500 transition-all font-poppins">
+                        <button className="w-full py-3 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] hover:bg-orange-500 hover:text-white dark:hover:bg-orange-500 transition-all font-poppins">
                             View Full Profile
                         </button>
                     </div>

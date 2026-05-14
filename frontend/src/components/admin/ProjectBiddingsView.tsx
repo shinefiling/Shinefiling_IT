@@ -30,7 +30,7 @@ const ProjectBiddingsView = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
-                            <tr className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
+                            <tr className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
                                 <th className="px-8 py-5">Freelancer / Talent</th>
                                 <th className="px-8 py-5">Target Project</th>
                                 <th className="px-8 py-5">Bid Structure</th>
@@ -43,7 +43,7 @@ const ProjectBiddingsView = () => {
                                 <tr key={bid.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/40 transition-colors group">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center font-black text-sm text-orange-500 border border-orange-100 dark:border-orange-500/20">
+                                            <div className="w-10 h-10 rounded-xl bg-orange-50 dark:bg-orange-500/10 flex items-center justify-center font-extrabold text-sm text-orange-500 border border-orange-100 dark:border-orange-500/20">
                                                 {bid.freelancer.charAt(0)}
                                             </div>
                                             <span className="text-sm font-bold text-slate-800 dark:text-white font-poppins">{bid.freelancer}</span>
@@ -56,7 +56,7 @@ const ProjectBiddingsView = () => {
                                         </div>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <div className="flex items-center gap-1 text-slate-800 dark:text-white font-black font-poppins">
+                                        <div className="flex items-center gap-1 text-slate-800 dark:text-white font-extrabold font-poppins">
                                             <IndianRupee size={14} className="text-emerald-500" />
                                             <span>{bid.bid.toLocaleString()}</span>
                                         </div>
@@ -65,7 +65,7 @@ const ProjectBiddingsView = () => {
                                         </span>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-lg border ${
+                                        <span className={`text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-lg border ${
                                             bid.status === 'ACCEPTED' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 border-emerald-100 dark:border-emerald-500/20' :
                                             bid.status === 'REJECTED' ? 'bg-red-50 dark:bg-red-500/10 text-red-600 border-red-100 dark:border-red-500/20' :
                                             'bg-orange-50 dark:bg-orange-500/10 text-orange-600 border-orange-100 dark:border-orange-500/20'

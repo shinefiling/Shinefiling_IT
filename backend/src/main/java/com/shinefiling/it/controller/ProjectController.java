@@ -37,4 +37,15 @@ public class ProjectController {
     public ResponseEntity<List<Project>> getProjectsByClientId(@PathVariable Long clientId) {
         return ResponseEntity.ok(projectRepository.findByClientId(clientId));
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Project>> searchProjects(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) List<String> skills,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String experienceLevel) {
+        return ResponseEntity.ok(projectRepository.searchProjects(query, minPrice, maxPrice, skills, category, experienceLevel));
+    }
 }

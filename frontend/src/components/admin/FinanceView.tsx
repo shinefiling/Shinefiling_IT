@@ -36,7 +36,7 @@ const FinanceView = () => {
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
                                 <thead className="border-b border-slate-100 dark:border-slate-700">
-                                    <tr className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
+                                    <tr className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
                                         <th className="py-4 px-2">Identity</th>
                                         <th className="py-4 px-2">User / Entity</th>
                                         <th className="py-4 px-2">Amount</th>
@@ -50,9 +50,9 @@ const FinanceView = () => {
                                         <tr key={trx.id} className="text-sm hover:bg-slate-50/50 dark:hover:bg-slate-900/30 transition-colors">
                                             <td className="py-5 px-2 font-mono text-xs text-slate-400">{trx.id}</td>
                                             <td className="py-5 px-2 font-bold text-slate-800 dark:text-white font-poppins">{trx.user}</td>
-                                            <td className="py-5 px-2 font-black text-slate-800 dark:text-white font-poppins">₹{trx.amount.toLocaleString()}</td>
+                                            <td className="py-5 px-2 font-extrabold text-slate-800 dark:text-white font-poppins">₹{trx.amount.toLocaleString()}</td>
                                             <td className="py-5 px-2">
-                                                <span className={`text-[9px] font-black tracking-widest px-2 py-0.5 rounded uppercase ${
+                                                <span className={`text-[9px] font-extrabold tracking-widest px-2 py-0.5 rounded uppercase ${
                                                     trx.type === 'PAYMENT' ? 'bg-blue-50 dark:bg-blue-500/10 text-blue-600' :
                                                     trx.type === 'WITHDRAWAL' ? 'bg-orange-50 dark:bg-orange-500/10 text-orange-600' :
                                                     'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600'
@@ -78,7 +78,7 @@ const FinanceView = () => {
                         <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-500"></div>
                         <CreditCard className="mb-6 opacity-60" size={32} />
                         <p className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60 mb-2">Platform Treasury</p>
-                        <h2 className="text-3xl font-black mb-1 font-poppins">₹42,15,000</h2>
+                        <h2 className="text-3xl font-extrabold mb-1 font-poppins">₹42,15,000</h2>
                         <p className="text-[11px] opacity-60 mb-8 font-medium">Total volume processed in 2024</p>
                         
                         <div className="space-y-4 pt-6 border-t border-white/10 relative z-10">
@@ -91,7 +91,7 @@ const FinanceView = () => {
                                 <span className="text-xs font-bold">12 Hours</span>
                             </div>
                         </div>
-                        <button className="w-full mt-8 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border border-white/10">Withdrawal Logs</button>
+                        <button className="w-full mt-8 py-3 bg-white/10 hover:bg-white/20 rounded-xl text-[10px] font-extrabold uppercase tracking-widest transition-all border border-white/10">Withdrawal Logs</button>
                     </div>
                 </div>
             </div>

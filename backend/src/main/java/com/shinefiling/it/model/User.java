@@ -29,6 +29,11 @@ public class User {
     private String fullName;
     
     private String userRole; // FREELANCER, CLIENT, ADMIN
+    
+    private String companyName;
+    private String industry;
+    private String website;
+    private String clientType; // Individual or Company
 
     private String profilePicture;
 

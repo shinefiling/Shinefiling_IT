@@ -2,34 +2,58 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { API_BASE_URL } from '../config';
-import { 
-    Search, ChevronDown, ChevronUp, Star, Bookmark, Clock, 
+import {
+    Search, ChevronDown, ChevronUp, Star, Bookmark, Clock,
     CheckCircle2, ChevronRight, ChevronLeft, MapPin,
-    Lock, Info, AlertCircle, Filter, X
+    Lock, Info, AlertCircle, Filter, X, Mail, Check,
+    Zap, TrendingUp, Wallet, Briefcase, Calendar
 } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 
 const BrowseProjects: React.FC = () => {
     const navigate = useNavigate();
     const [searchQuery, setSearchQuery] = useState('');
+    const [locationQuery, setLocationQuery] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedExpLevel, setSelectedExpLevel] = useState('');
     const [projects, setProjects] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-    
+
+    // Filter logic
+    const toggleFilter = (filter: string) => {
+        setActiveFilters(prev =>
+            prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
+        );
+    };
+
     // Filter States
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
     const [priceRange, setPriceRange] = useState({ min: '', max: '' });
     const [selectedPaymentTypes, setSelectedPaymentTypes] = useState<string[]>([]);
+    const [activeFilters, setActiveFilters] = useState<string[]>(['query', 'price', 'skills', 'category', 'experience']);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     React.useEffect(() => {
-        fetchProjects();
+        handleFilter();
     }, []);
 
-    const fetchProjects = async () => {
+    const handleFilter = async () => {
         try {
             setLoading(true);
-            const response = await fetch(`${API_BASE_URL}/api/projects/all`, {
+            const params = new URLSearchParams();
+            if (searchQuery) params.append('query', searchQuery);
+            if (locationQuery) params.append('location', locationQuery);
+            if (selectedCategory) params.append('category', selectedCategory);
+            if (selectedExpLevel) params.append('experienceLevel', selectedExpLevel);
+            if (priceRange.min) params.append('minPrice', priceRange.min);
+            if (priceRange.max) params.append('maxPrice', priceRange.max);
+            if (selectedSkills.length > 0) {
+                selectedSkills.forEach(skill => params.append('skills', skill));
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/projects/search?${params.toString()}`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
             if (!response.ok) throw new Error('Failed to fetch projects');
@@ -37,42 +61,37 @@ const BrowseProjects: React.FC = () => {
             setProjects(data);
             setError(null);
         } catch (err: any) {
-            console.error("Error fetching projects:", err);
+            console.error("Error filtering projects:", err);
             setError("Could not load projects. Please try again later.");
         } finally {
             setLoading(false);
         }
     };
 
-    const filteredProjects = projects.filter(project => {
-        const matchesSearch = project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            project.description.toLowerCase().includes(searchQuery.toLowerCase());
-        
-        const matchesSkills = selectedSkills.length === 0 || 
-                             selectedSkills.some(s => project.skills?.includes(s));
-        
-        const matchesPrice = (!priceRange.min || project.budgetAmount >= parseFloat(priceRange.min)) &&
-                            (!priceRange.max || project.budgetAmount <= parseFloat(priceRange.max));
-
-        const matchesPaymentType = selectedPaymentTypes.length === 0 || 
-                                  selectedPaymentTypes.includes(project.paymentType === 'fixed' ? 'Fixed Price' : 'Hourly Rate');
-
-        return matchesSearch && matchesSkills && matchesPrice && matchesPaymentType;
-    });
+    const clearFilters = () => {
+        setSearchQuery('');
+        setLocationQuery('');
+        setSelectedCategory('');
+        setSelectedExpLevel('');
+        setPriceRange({ min: '', max: '' });
+        setSelectedSkills([]);
+        setSelectedPaymentTypes([]);
+        handleFilter();
+    };
 
     const itemsPerPage = 25;
 
     // Pagination Logic
-    const totalPages = Math.ceil(filteredProjects.length / itemsPerPage);
+    const totalPages = Math.ceil(projects.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const paginatedProjects = filteredProjects.slice(startIndex, startIndex + itemsPerPage);
+    const paginatedProjects = projects.slice(startIndex, startIndex + itemsPerPage);
 
     const getTimeAgo = (dateString: string) => {
         if (!dateString) return "Recently";
         const date = new Date(dateString);
         const now = new Date();
         const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-        
+
         if (diffInSeconds < 60) return "Just now";
         if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
         if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
@@ -80,481 +99,502 @@ const BrowseProjects: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#fdfaf0] pt-[80px]">
-            
-            {/* Top Search Section (Dark) */}
-            <div className="bg-[#1e2329] py-12 text-white">
-                <div className="max-w-[1320px] mx-auto px-4 lg:px-8">
-                    <div className="max-w-[1000px] mx-auto">
-                        <div className="flex flex-col gap-6">
-                            <h1 className="text-[30px] font-bold tracking-tight">Browse</h1>
-                            
-                            <div className="flex items-center gap-2">
-                                <div className="relative flex-1 group">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#ff0066] transition-colors" size={20} />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search for projects"
-                                        className="w-full bg-white text-[#242424] pl-12 pr-4 py-3.5 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff0066]/50 transition-all font-medium"
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                    />
-                                </div>
-                                <button className="bg-[#ff0066] hover:bg-[#e0005a] text-white px-10 py-3.5 rounded-md font-bold transition-all shadow-lg shadow-[#ff0066]/20">
-                                    Save
-                                </button>
-                            </div>
-                            
-                            <button className="text-[13px] text-gray-300 hover:text-white flex items-center gap-1.5 transition-colors w-fit">
-                                Show advanced options <ChevronDown size={14} />
-                            </button>
+        <div className="min-h-screen bg-[#f8f9fa] pt-[80px]" style={{ fontFamily: '"Poppins", sans-serif' }}>
 
+            {/* 1. COMPACT SEARCH HEADER */}
+            <div className="bg-[#0F2E4B] py-12 flex items-center justify-center">
+                {/* Search Overlay */}
+                <div className="w-full max-w-[900px] px-6">
+                    <div className="bg-[#1a3a5a] p-2 rounded-xl shadow-xl flex flex-col md:flex-row gap-2">
+                        <div className="flex-1 relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Search Projects"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-white h-[42px] pl-11 pr-4 rounded-lg focus:outline-none font-semibold text-[#0F2E4B] text-[14px] placeholder:text-gray-400"
+                            />
                         </div>
+                        <div className="flex-1 relative">
+                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                placeholder="Location (Optional)"
+                                className="w-full bg-white h-[42px] pl-11 pr-4 rounded-lg focus:outline-none font-semibold text-[#0F2E4B] text-[14px] placeholder:text-gray-400"
+                            />
+                        </div>
+                        <button
+                            onClick={handleFilter}
+                            className="bg-[#317CD7] hover:bg-[#2563b5] text-white px-8 h-[42px] rounded-lg font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shrink-0 text-[12px]"
+                        >
+                            <Search size={18} strokeWidth={3} />
+                            SEARCH
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div className="max-w-[1320px] mx-auto px-4 lg:px-8 py-4 lg:hidden">
-                <button 
+                <button
                     onClick={() => setIsFilterOpen(true)}
-                    className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 py-3 rounded-md font-bold text-[#242424] shadow-sm active:scale-[0.98] transition-all"
+                    className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 py-3 rounded-md font-bold text-[#0F2E4B] shadow-sm active:scale-[0.98] transition-all"
                 >
-                    <Filter size={18} className="text-[#ff0066]" />
+                    <Filter size={18} className="text-[#317CD7]" />
                     Search Filters
                 </button>
             </div>
 
-            <div className="max-w-[1320px] mx-auto px-4 lg:px-8 py-10">
-                <div className="flex flex-col lg:grid lg:grid-cols-[260px_1fr] gap-6">
-                    
-                    {/* Filter Sidebar - Mobile Overlay */}
-                    {isFilterOpen && (
-                        <div 
-                            className="fixed inset-0 bg-black/50 z-[2001] lg:hidden"
-                            onClick={() => setIsFilterOpen(false)}
-                        />
-                    )}
+            <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-16 py-12 flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-12">
 
-                    {/* Left Sidebar - Filters */}
-                    <aside className={`
-                        fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-auto lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible
-                        ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}
-                    `}>
-                        <div className="bg-white p-6 lg:rounded-md lg:border lg:border-gray-100 lg:shadow-sm min-h-full">
-                            <div className="flex items-center justify-between mb-6 lg:mb-8">
-                                <h3 className="text-[18px] font-bold text-[#242424] tracking-tight flex items-center gap-2">
-                                    <Filter size={18} className="text-[#ff0066]" />
-                                    Search Filters
-                                </h3>
-                                <button onClick={() => setIsFilterOpen(false)} className="lg:hidden text-gray-400 hover:text-black">
-                                    <X size={24} />
+                {/* Filter Sidebar - Mobile Overlay */}
+                {isFilterOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/50 z-[2001] lg:hidden"
+                        onClick={() => setIsFilterOpen(false)}
+                    />
+                )}
+
+                {/* Left Sidebar - Filters */}
+                <aside className={`
+                    fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-[320px] lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible
+                    ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}
+                `}>
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm min-h-full">
+                        <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+                            <h3 className="text-[#0F2E4B] flex items-center gap-2" style={{
+                                fontFamily: '"Poppins", sans-serif',
+                                fontSize: '15px',
+                                lineHeight: '1',
+                                fontWeight: 800,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.025em'
+                            }}>
+                                <Filter size={18} className="text-[#317CD7]" />
+                                Search Filters
+                            </h3>
+                            <div className="flex items-center gap-4">
+                                <button
+                                    onClick={clearFilters}
+                                    className="text-[11px] font-extrabold text-[#317CD7] uppercase tracking-wider hover:underline"
+                                >
+                                    Clear
+                                </button>
+                                <button onClick={() => setIsFilterOpen(false)} className="lg:hidden text-gray-400">
+                                    <X size={20} />
                                 </button>
                             </div>
+                        </div>
 
-                            <div className="space-y-6">
-
-                            {/* Project Type */}
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Project type</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
-                                </div>
-                                <div className="space-y-2.5">
-                                    <label className="flex items-center gap-2.5 cursor-pointer group">
-                                        <input 
-                                            type="checkbox" 
-                                            className="hidden" 
-                                            checked={selectedPaymentTypes.includes('Hourly Rate')}
-                                            onChange={(e) => {
-                                                const type = 'Hourly Rate';
-                                                setSelectedPaymentTypes(prev => e.target.checked ? [...prev, type] : prev.filter(t => t !== type));
-                                            }}
-                                        />
-                                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${selectedPaymentTypes.includes('Hourly Rate') ? 'bg-[#ff0066] border-[#ff0066]' : 'border-gray-300 group-hover:border-[#ff0066]'}`}>
-                                            {selectedPaymentTypes.includes('Hourly Rate') && <CheckCircle2 size={12} className="text-white" />}
-                                        </div>
-                                        <span className="text-[13px] text-[#555] tracking-tight">Hourly Rate</span>
-                                    </label>
-                                    <label className="flex items-center gap-2.5 cursor-pointer group">
-                                        <input 
-                                            type="checkbox" 
-                                            className="hidden" 
-                                            checked={selectedPaymentTypes.includes('Fixed Price')}
-                                            onChange={(e) => {
-                                                const type = 'Fixed Price';
-                                                setSelectedPaymentTypes(prev => e.target.checked ? [...prev, type] : prev.filter(t => t !== type));
-                                            }}
-                                        />
-                                        <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${selectedPaymentTypes.includes('Fixed Price') ? 'bg-[#ff0066] border-[#ff0066]' : 'border-gray-300 group-hover:border-[#ff0066]'}`}>
-                                            {selectedPaymentTypes.includes('Fixed Price') && <CheckCircle2 size={12} className="text-white" />}
-                                        </div>
-                                        <span className="text-[13px] text-[#242424] font-medium tracking-tight">Fixed Price</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            {/* Fixed Price */}
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Fixed price</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
-                                </div>
-                                <div className="space-y-3">
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className="text-[11px] text-gray-400 font-bold uppercase">min</span>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 w-8 border-r border-gray-100 flex items-center justify-center text-gray-400 text-[11px] font-bold">₹</div>
-                                            <input 
-                                                type="text" 
-                                                placeholder="0" 
-                                                className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" 
-                                                value={priceRange.min}
-                                                onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                                            />
-                                            <div className="absolute inset-y-0 right-0 px-3 flex items-center gap-1 border-l border-gray-100 text-gray-400 text-[11px] font-bold uppercase">
-                                                INR
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className="text-[11px] text-gray-400 font-bold uppercase">max</span>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 w-8 border-r border-gray-100 flex items-center justify-center text-gray-400 text-[11px] font-bold">₹</div>
-                                            <input 
-                                                type="text" 
-                                                placeholder="1500+" 
-                                                className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" 
-                                                value={priceRange.max}
-                                                onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                                            />
-                                            <div className="absolute inset-y-0 right-0 px-3 flex items-center gap-1 border-l border-gray-100 text-gray-400 text-[11px] font-bold uppercase">
-                                                INR
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Hourly Rate */}
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Hourly rate</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
-                                </div>
-                                <div className="space-y-3">
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className="text-[11px] text-gray-400 font-bold uppercase">min</span>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 w-8 border-r border-gray-100 flex items-center justify-center text-gray-400 text-[11px] font-bold">₹</div>
-                                            <input type="text" placeholder="0" className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" />
-                                            <div className="absolute inset-y-0 right-0 px-3 flex items-center gap-1 border-l border-gray-100 text-gray-400 text-[11px] font-bold uppercase">
-                                                INR
-                                                <div className="flex flex-col scale-75 opacity-50">
-                                                    <ChevronUp size={10} />
-                                                    <ChevronDown size={10} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col gap-1.5">
-                                        <span className="text-[11px] text-gray-400 font-bold uppercase">max</span>
-                                        <div className="relative">
-                                            <div className="absolute inset-y-0 left-0 w-8 border-r border-gray-100 flex items-center justify-center text-gray-400 text-[11px] font-bold">₹</div>
-                                            <input type="text" placeholder="80+" className="w-full pl-10 pr-16 py-2 bg-white border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" />
-                                            <div className="absolute inset-y-0 right-0 px-3 flex items-center gap-1 border-l border-gray-100 text-gray-400 text-[11px] font-bold uppercase">
-                                                INR
-                                                <div className="flex flex-col scale-75 opacity-50">
-                                                    <ChevronUp size={10} />
-                                                    <ChevronDown size={10} />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Skills */}
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Skills</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
-                                </div>
+                        <div className="space-y-0">
+                            {/* Keyword Filter */}
+                            <FilterSection
+                                title="Search by Keyword"
+                                isOpen={activeFilters.includes('keyword')}
+                                onToggle={() => toggleFilter('keyword')}
+                            >
                                 <div className="relative mb-4">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                                    <input 
-                                        type="text" 
-                                        placeholder="Search skills" 
-                                        className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-full text-[12px] focus:outline-none focus:border-[#ff0066] shadow-sm"
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                    <input
+                                        type="text"
+                                        placeholder="Search by keyword..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full h-[40px] pl-11 pr-4 bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:border-[#317CD7] transition-all text-[13px] placeholder:text-gray-400"
                                     />
                                 </div>
-                                <div className="space-y-2.5 max-h-[180px] overflow-y-auto pr-2 custom-scrollbar">
-                                    {['Java', 'MySQL', 'AngularJS', 'React.js', 'Payment Gateway Integration', 'AWS Lambda', 'Flutter', 'GitHub', 'Microservices', 'Spring Boot'].map((skill) => (
-                                        <label key={skill} className="flex items-center gap-2.5 cursor-pointer group">
-                                            <input 
-                                                type="checkbox" 
-                                                className="hidden" 
-                                                checked={selectedSkills.includes(skill)}
-                                                onChange={(e) => {
-                                                    setSelectedSkills(prev => e.target.checked ? [...prev, skill] : prev.filter(s => s !== skill));
-                                                }}
-                                            />
-                                            <div className={`w-4 h-4 border rounded-sm flex items-center justify-center transition-all ${selectedSkills.includes(skill) ? 'bg-[#ff0066] border-[#ff0066]' : 'border-gray-300 group-hover:border-[#ff0066]'}`}>
-                                                {selectedSkills.includes(skill) && <CheckCircle2 size={12} className="text-white" />}
-                                            </div>
-                                            <span className={`text-[12px] tracking-tight ${selectedSkills.includes(skill) ? 'text-[#242424] font-medium' : 'text-[#555]'}`}>{skill}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                                <button className="text-[12px] text-[#0066ff] font-bold mt-4 hover:underline block w-full text-center">View all (12)</button>
-                            </div>
+                            </FilterSection>
 
-                            {/* Listing Type */}
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Listing type</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
-                                </div>
+                            {/* Project Type Filter */}
+                            <FilterSection
+                                title="Project Type"
+                                isOpen={activeFilters.includes('experience')}
+                                onToggle={() => toggleFilter('experience')}
+                            >
                                 <div className="space-y-2.5">
-                                    {['Featured', 'Sealed', 'NDA', 'Urgent', 'Recruiter', 'IP Agreement'].map(type => (
-                                        <label key={type} className="flex items-center gap-2.5 cursor-pointer group">
-                                            <input type="checkbox" className="hidden" />
-                                            <div className="w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center group-hover:border-[#ff0066] transition-all">
-                                                <div className="w-2.5 h-2.5 bg-[#ff0066] rounded-sm opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                                    {['Fixed Price', 'Hourly Rate'].map(type => (
+                                        <label key={type} className="flex items-center gap-3 group cursor-pointer" onClick={() => {
+                                            setSelectedPaymentTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
+                                        }}>
+                                            <div className={`w-5 h-5 rounded-sm border-2 transition-all flex items-center justify-center ${selectedPaymentTypes.includes(type) ? 'bg-[#317CD7] border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                                {selectedPaymentTypes.includes(type) && <Check size={14} strokeWidth={4} className="text-white" />}
                                             </div>
-                                            <span className="text-[13px] text-[#555] tracking-tight">{type}</span>
+                                            <span className={`text-[14px] font-medium transition-colors ${selectedPaymentTypes.includes(type) ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{type}</span>
                                         </label>
                                     ))}
                                 </div>
-                            </div>
+                            </FilterSection>
 
-                            {/* Project Location */}
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Project location</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
-                                </div>
-                                <div className="relative">
-                                    <input type="text" placeholder="Enter a location" className="w-full pl-4 pr-10 py-2 border border-gray-200 rounded-md text-[13px] focus:outline-none focus:border-[#ff0066]" />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-gray-50 text-[#242424] border border-gray-200">
-                                        <MapPin size={12} className="fill-[#242424]/10" />
+                            {/* Budget Filter */}
+                            <FilterSection
+                                title="Budget Range"
+                                isOpen={activeFilters.includes('price')}
+                                onToggle={() => toggleFilter('price')}
+                            >
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex-1">
+                                            <label className="text-[10px] text-gray-400 font-bold uppercase mb-1 block">Min</label>
+                                            <input
+                                                type="number"
+                                                value={priceRange.min}
+                                                onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded text-[13px] outline-none focus:border-[#317CD7] placeholder:text-gray-400"
+                                                placeholder="₹ 0"
+                                            />
+                                        </div>
+                                        <span className="text-gray-400 mt-5">-</span>
+                                        <div className="flex-1">
+                                            <label className="text-[10px] text-gray-400 font-bold uppercase mb-1 block">Max</label>
+                                            <input
+                                                type="number"
+                                                value={priceRange.max}
+                                                onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
+                                                className="w-full px-3 py-2 bg-gray-50 border border-gray-100 rounded text-[13px] outline-none focus:border-[#317CD7] placeholder:text-gray-400"
+                                                placeholder="₹ 5k+"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </FilterSection>
 
-                            {/* Client's Country */}
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Client's country</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
+                            {/* Skills Filter */}
+                            <FilterSection
+                                title="Skills"
+                                isOpen={activeFilters.includes('skills')}
+                                onToggle={() => toggleFilter('skills')}
+                            >
+                                <div className="space-y-2.5 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                                    {['Java', 'MySQL', 'AngularJS', 'React.js', 'Payment Gateway Integration', 'AWS Lambda', 'Flutter', 'GitHub', 'Microservices', 'Spring Boot'].map(skill => (
+                                        <label key={skill} className="flex items-center gap-3 group cursor-pointer" onClick={() => {
+                                            setSelectedSkills(prev => prev.includes(skill) ? prev.filter(s => s !== skill) : [...prev, skill]);
+                                        }}>
+                                            <div className={`w-5 h-5 rounded-sm border-2 transition-all flex items-center justify-center ${selectedSkills.includes(skill) ? 'bg-[#317CD7] border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                                {selectedSkills.includes(skill) && <Check size={14} strokeWidth={4} className="text-white" />}
+                                            </div>
+                                            <span className={`text-[14px] font-medium transition-colors ${selectedSkills.includes(skill) ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{skill}</span>
+                                        </label>
+                                    ))}
                                 </div>
-                                <div className="relative">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                                    <input type="text" placeholder="Search countries" className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full text-[13px] focus:outline-none focus:border-[#ff0066]" />
-                                </div>
-                            </div>
+                            </FilterSection>
 
-                            {/* Languages */}
-                            <div className="mb-0">
-                                <div className="flex items-center justify-between mb-3">
-                                    <label className="text-[13px] font-bold text-[#242424] tracking-tight">Languages</label>
-                                    <button className="text-[11px] font-medium text-[#0066ff] hover:underline">Clear</button>
+                            {/* Category Filter */}
+                            <FilterSection
+                                title="Category"
+                                isOpen={activeFilters.includes('category')}
+                                onToggle={() => toggleFilter('category')}
+                            >
+                                <div className="space-y-2.5">
+                                    {Array.from(new Set(projects.map(p => p.category).filter(Boolean))).map(cat => (
+                                        <label key={cat} className="flex items-center gap-3 group cursor-pointer" onClick={() => setSelectedCategory(cat === selectedCategory ? '' : cat || '')}>
+                                            <div className={`w-5 h-5 rounded-sm border-2 transition-all flex items-center justify-center ${selectedCategory === cat ? 'bg-[#317CD7] border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                                {selectedCategory === cat && <Check size={14} strokeWidth={4} className="text-white" />}
+                                            </div>
+                                            <span className={`text-[14px] font-medium transition-colors ${selectedCategory === cat ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{cat}</span>
+                                        </label>
+                                    ))}
                                 </div>
-                                <div className="relative mb-3">
-                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                                    <input type="text" placeholder="Search languages" className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-full text-[13px] focus:outline-none focus:border-[#ff0066]" />
-                                </div>
-                                <label className="flex items-center gap-2.5 cursor-pointer group">
-                                    <input type="checkbox" className="hidden" defaultChecked />
-                                    <div className="w-4 h-4 border border-[#ff0066] bg-[#ff0066] rounded-sm flex items-center justify-center transition-all shadow-sm">
-                                        <CheckCircle2 size={12} className="text-white" />
-                                    </div>
-                                    <span className="text-[13px] text-[#242424] font-medium tracking-tight">English</span>
-                                </label>
-                            </div>
+                            </FilterSection>
+                        </div>
+
+                        <div className="p-5 bg-white border-t border-[#eee]">
+                            <p className="text-[11px] text-[#888] italic mb-4 leading-relaxed">select options and press the filter button to apply changes</p>
+                            <button
+                                onClick={handleFilter}
+                                className="w-full bg-[#0F2E4B] text-white py-3 rounded-lg font-bold text-[13px] uppercase tracking-widest hover:bg-[#317CD7] transition-all shadow-md shadow-gray-100"
+                            >
+                                Apply Filters
+                            </button>
                         </div>
                     </div>
                 </aside>
 
-                    {/* Right Content - Project List */}
-                    <main className="space-y-6">
-                        {/* Results Bar */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-gray-100">
-                            <span className="text-[14px] font-medium text-gray-500">
-                                {loading ? "Loading projects..." : `Top results ${startIndex + 1}-${Math.min(startIndex + itemsPerPage, filteredProjects.length)} of ${filteredProjects.length} results`}
-                            </span>
-                            
-                            <div className="flex flex-col xs:flex-row items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
-                                <label className="flex items-center gap-2 cursor-pointer group">
-                                    <div className="w-8 h-4 bg-gray-200 rounded-full relative transition-colors group-hover:bg-gray-300">
-                                        <div className="absolute left-1 top-1 w-2 h-2 bg-white rounded-full transition-all"></div>
-                                    </div>
-                                    <span className="text-[13px] font-medium text-gray-600">Receive alerts</span>
-                                </label>
-                                
-                                <div className="flex items-center gap-3">
-                                    <span className="text-[13px] text-gray-500">Sort by</span>
-                                    <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-md text-[13px] font-bold cursor-pointer hover:border-[#ff0066] transition-all group whitespace-nowrap">
-                                        Newest First
-                                        <ChevronDown size={14} className="text-gray-400 group-hover:text-[#ff0066]" />
-                                    </div>
+                {/* Right Content - Project List */}
+                <main className="space-y-6">
+                    {/* Results Bar */}
+                    <div
+                        className="bg-white rounded-xl px-6 py-4 shadow-sm border border-gray-100 flex items-center justify-between"
+                        style={{
+                            fontFamily: '"Poppins", sans-serif',
+                            fontSize: '13px',
+                            lineHeight: '28px',
+                            color: '#212121',
+                            fontWeight: 500,
+                            WebkitFontSmoothing: 'antialiased'
+                        }}
+                    >
+                        <span className="">
+                            {loading ? "Loading projects..." : `Showing results ${startIndex + 1}-${Math.min(startIndex + itemsPerPage, projects.length)} of ${projects.length} results`}
+                        </span>
+
+                        <div className="flex flex-col xs:flex-row items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+                            <label className="flex items-center gap-2 cursor-pointer group">
+                                <div className="w-8 h-4 bg-gray-200 rounded-full relative transition-colors group-hover:bg-gray-300">
+                                    <div className="absolute left-1 top-1 w-2 h-2 bg-white rounded-full transition-all"></div>
+                                </div>
+                                <span className="text-[13px] font-medium text-gray-600">Receive alerts</span>
+                            </label>
+
+                            <div className="flex items-center gap-3">
+                                <span className="text-[13px] text-gray-500">Sort by</span>
+                                <div className="flex items-center gap-2 bg-white border border-gray-200 px-4 py-2 rounded-md text-[13px] font-bold cursor-pointer hover:border-[#ff0066] transition-all group whitespace-nowrap">
+                                    Newest First
+                                    <ChevronDown size={14} className="text-gray-400 group-hover:text-[#ff0066]" />
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Projects Loop */}
-                        <div className="space-y-1">
-                            {loading ? (
-                                // Loading Shimmer
-                                [1,2,3].map(i => (
-                                    <div key={i} className="bg-white border-b border-gray-100 py-8 animate-pulse">
-                                        <div className="h-6 bg-gray-100 rounded w-1/3 mb-4"></div>
-                                        <div className="h-4 bg-gray-50 rounded w-full mb-2"></div>
-                                        <div className="h-4 bg-gray-50 rounded w-2/3"></div>
-                                    </div>
-                                ))
-                            ) : error ? (
-                                <div className="py-20 text-center">
-                                    <AlertCircle className="mx-auto text-red-500 mb-4" size={48} />
-                                    <p className="text-gray-500">{error}</p>
-                                    <button onClick={fetchProjects} className="mt-4 text-[#ff0066] font-bold hover:underline">Try Again</button>
+                    {/* Projects Loop */}
+                    <div className="space-y-1">
+                        {loading ? (
+                            // Loading Shimmer
+                            [1, 2, 3].map(i => (
+                                <div key={i} className="bg-white border-b border-gray-100 py-8 animate-pulse">
+                                    <div className="h-6 bg-gray-100 rounded w-1/3 mb-4"></div>
+                                    <div className="h-4 bg-gray-50 rounded w-full mb-2"></div>
+                                    <div className="h-4 bg-gray-50 rounded w-2/3"></div>
                                 </div>
-                            ) : filteredProjects.length === 0 ? (
-                                <div className="py-20 text-center">
-                                    <Search className="mx-auto text-gray-200 mb-4" size={48} />
-                                    <p className="text-gray-500">No projects found matching your search.</p>
-                                </div>
-                            ) : (
-                                 paginatedProjects.map((project) => (
-                                    <motion.div 
-                                        key={project.id}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="bg-white rounded-md p-4 border border-[#f0f0f0] shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.05)] transition-all relative mb-3 group"
-                                    >
-                                        <div className="flex flex-col lg:flex-row gap-3">
-                                            <div className="flex-1">
-                                                <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 gap-2">
-                                                    <h3 
-                                                        onClick={() => navigate(`/projects/${project.id}`)}
-                                                        className="text-[17px] font-bold text-[#242424] hover:text-[#0066ff] cursor-pointer tracking-tight leading-tight break-words flex-1"
-                                                    >
-                                                        {project.title}
-                                                    </h3>
-                                                    <div className="text-left sm:text-right shrink-0">
-                                                        <div className="text-[15px] font-bold text-[#242424]">{project.bidCount || 0} bids</div>
-                                                        <div className="text-[14px] font-bold text-[#242424] mt-0.5">
-                                                            ₹{project.budgetAmount?.toLocaleString('en-IN')}
-                                                        </div>
-                                                        <div className="text-[9px] text-gray-400 font-medium uppercase tracking-wider">average bid</div>
-                                                    </div>
-                                                </div>
+                            ))
+                        ) : error ? (
+                            <div className="py-20 text-center">
+                                <AlertCircle className="mx-auto text-red-500 mb-4" size={48} />
+                                <p className="text-gray-500">{error}</p>
+                                <button onClick={handleFilter} className="mt-4 text-[#317CD7] font-bold hover:underline">Try Again</button>
+                            </div>
+                        ) : projects.length === 0 ? (
+                            <div className="py-20 text-center">
+                                <Search className="mx-auto text-gray-200 mb-4" size={48} />
+                                <p className="text-gray-500">No projects found matching your search.</p>
+                            </div>
+                        ) : (
+                            paginatedProjects.map((project) => (
+                                <motion.div
+                                    key={project.id}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-white border border-gray-100 hover:border-[#317CD7] hover:shadow-xl hover:shadow-[#317CD7]/5 transition-all relative group rounded-xl p-8 flex flex-col md:flex-row md:items-center justify-between gap-6"
+                                >
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-1">
+                                            <h3
+                                                className="transition-all capitalize"
+                                                style={{
+                                                    fontFamily: '"Poppins", sans-serif',
+                                                    fontSize: '18px',
+                                                    lineHeight: '32px',
+                                                    color: '#000000',
+                                                    fontWeight: 600
+                                                }}
+                                            >
+                                                {project.title}
+                                            </h3>
+                                            {project.featured && <span className="px-2 py-0.5 bg-yellow-400 text-white text-[10px] font-extrabold rounded uppercase tracking-widest">Hot</span>}
+                                        </div>
 
-                                                <div className="text-[12px] font-bold text-[#242424] mb-1 uppercase">
-                                                    Budget INR {project.budgetAmount?.toLocaleString('en-IN')}
-                                                    <span className="ml-2 text-gray-400 font-medium lowercase">({project.paymentType || 'Fixed'})</span>
-                                                </div>
-                                                
-                                                <p className="text-[14px] text-[#555555] leading-[22px] tracking-tight mb-2 line-clamp-2">
-                                                    {project.description}
-                                                </p>
+                                        <div className="flex items-center gap-2 mb-4 -mt-1">
+                                            <span className="text-[13px] font-bold text-[#317CD7] uppercase tracking-wide">Shinefiling Project</span>
+                                            <span className="text-gray-300">•</span>
+                                            <span className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">ID: PR-00{project.id}</span>
+                                        </div>
 
-                                                <div className="flex flex-wrap gap-x-3 gap-y-1 mb-3">
-                                                    {project.skills?.map((skill: string) => (
-                                                        <span key={skill} className="text-[13px] text-[#0066ff] hover:underline cursor-pointer font-medium tracking-tight">
-                                                            {skill}
-                                                        </span>
-                                                    ))}
-                                                </div>
-
-                                                <div className="flex flex-wrap items-center gap-y-2 gap-x-4">
-                                                    <div className="flex items-center gap-1 shrink-0">
-                                                        {[1,2,3,4,5].map(star => (
-                                                            <Star 
-                                                                key={star} 
-                                                                size={12} 
-                                                                className="text-gray-200 fill-gray-200" 
-                                                            />
-                                                        ))}
-                                                        <span className="text-[12px] font-bold text-[#242424] ml-1">0.0</span>
-                                                        <span className="text-[12px] text-gray-400 ml-1">
-                                                            <Info size={12} className="inline mr-1" />
-                                                            0
-                                                        </span>
-                                                    </div>
-                                                    
-                                                    <div className="flex items-center gap-1.5 text-gray-400 text-[12px] font-medium shrink-0">
-                                                        <Clock size={12} />
-                                                        {getTimeAgo(project.postedAt)}
-                                                    </div>
-
-                                                    <button className="p-1.5 text-gray-300 hover:text-[#ff0066] transition-colors ml-auto">
-                                                        <Bookmark size={16} />
-                                                    </button>
-                                                </div>
-
-                                                <div className="flex items-center justify-between mt-2">
-                                                    <div className="flex gap-2">
-                                                        {project.upgrades?.includes('urgent') && <span className="px-2 py-0.5 bg-[#ff0066] text-white text-[10px] font-bold rounded-sm uppercase tracking-tighter shadow-sm">Urgent</span>}
-                                                        {project.upgrades?.includes('featured') && <span className="px-2 py-0.5 bg-blue-500 text-white text-[10px] font-bold rounded-sm uppercase tracking-tighter">Featured</span>}
-                                                        {project.upgrades?.includes('nda') && <span className="px-2 py-0.5 bg-gray-800 text-white text-[10px] font-bold rounded-sm uppercase tracking-tighter flex items-center gap-1"><Lock size={8} /> NDA</span>}
-                                                    </div>
-                                                </div>
+                                        <div
+                                            className="flex flex-wrap items-center gap-x-6 gap-y-3 font-medium"
+                                            style={{
+                                                fontSize: '14px',
+                                                color: '#363636',
+                                                letterSpacing: '0.005em'
+                                            }}
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <MapPin size={16} className="text-gray-300" />
+                                                <span>{project.client?.location || 'Remote'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Briefcase size={16} className="text-gray-300" />
+                                                <span>{project.experienceLevel || 'All Levels'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Clock size={16} className="text-gray-300" />
+                                                <span>{project.paymentType || 'Fixed Price'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-[#317CD7] font-bold">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                                <span>{project.bidCount || 0} Proposals</span>
                                             </div>
                                         </div>
-                                    </motion.div>
-                                ))
-                            )}
-                        </div>
+                                        <p
+                                            className="line-clamp-1 mt-4 font-medium"
+                                            style={{
+                                                fontSize: '13px',
+                                                color: '#000000',
+                                                fontStyle: 'normal'
+                                            }}
+                                        >
+                                            {project.description}
+                                        </p>
+                                    </div>
 
-                        {/* Pagination - Only show if count > 25 */}
-                        {filteredProjects.length > itemsPerPage && (
-                            <div className="flex items-center justify-center gap-2 mt-12 py-8 border-t border-gray-100">
-                                <button 
-                                    onClick={() => {
-                                        setCurrentPage(prev => Math.max(1, prev - 1));
-                                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                                    }}
-                                    disabled={currentPage === 1}
-                                    className={`p-2 transition-all ${currentPage === 1 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-[#ff0066]'}`}
-                                >
-                                    <ChevronLeft size={20} />
-                                </button>
-
-                                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                                    .filter(page => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 2)
-                                    .map((page, index, array) => (
-                                        <React.Fragment key={page}>
-                                            {index > 0 && array[index - 1] !== page - 1 && (
-                                                <span className="text-gray-400">...</span>
-                                            )}
-                                            <button 
-                                                onClick={() => {
-                                                    setCurrentPage(page);
-                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    <div className="flex flex-col items-end gap-4 min-w-[150px]">
+                                        <div className="text-right">
+                                            <div
+                                                style={{
+                                                    fontFamily: '"Poppins", sans-serif',
+                                                    fontWeight: 600,
+                                                    fontSize: '20px',
+                                                    color: '#000000'
                                                 }}
-                                                className={`w-10 h-10 rounded-md text-[14px] font-bold transition-all ${page === currentPage ? 'bg-[#ff0066] text-white shadow-lg shadow-[#ff0066]/20' : 'bg-white border border-gray-100 text-[#555] hover:border-[#ff0066] hover:text-[#ff0066]'}`}
                                             >
-                                                {page}
-                                            </button>
-                                        </React.Fragment>
-                                    ))
-                                }
-
-                                <button 
-                                    onClick={() => {
-                                        setCurrentPage(prev => Math.min(totalPages, prev + 1));
-                                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                                    }}
-                                    disabled={currentPage === totalPages || totalPages === 0}
-                                    className={`p-2 transition-all ${currentPage === totalPages || totalPages === 0 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-[#ff0066]'}`}
-                                >
-                                    <ChevronRight size={20} />
-                                </button>
-                            </div>
+                                                ₹{project.budgetAmount?.toLocaleString('en-IN')}
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => navigate(`/projects/${project.id}`)}
+                                            className="flex items-center gap-2 text-[#317CD7] font-bold text-[13px] uppercase tracking-widest transition-all group pb-1"
+                                            style={{ fontFamily: '"Poppins", sans-serif' }}
+                                        >
+                                            <span className="border-b-2 border-transparent group-hover:border-[#317CD7] transition-all">
+                                                View Details
+                                            </span>
+                                            <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))
                         )}
-                    </main>
+                    </div>
+
+                    {/* Pagination - Only show if count > 25 */}
+                    {projects.length > itemsPerPage && (
+                        <div className="flex items-center justify-center gap-2 mt-12 py-8 border-t border-gray-100">
+                            <button
+                                onClick={() => {
+                                    setCurrentPage(prev => Math.max(1, prev - 1));
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                disabled={currentPage === 1}
+                                className={`p-2 transition-all ${currentPage === 1 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-[#ff0066]'}`}
+                            >
+                                <ChevronLeft size={20} />
+                            </button>
+
+                            {Array.from({ length: totalPages }, (_, i) => i + 1)
+                                .filter(page => page === 1 || page === totalPages || Math.abs(page - currentPage) <= 2)
+                                .map((page, index, array) => (
+                                    <React.Fragment key={page}>
+                                        {index > 0 && array[index - 1] !== page - 1 && (
+                                            <span className="text-gray-400">...</span>
+                                        )}
+                                        <button
+                                            onClick={() => {
+                                                setCurrentPage(page);
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }}
+                                            className={`w-10 h-10 rounded-md text-[14px] font-extrabold transition-all ${page === currentPage ? 'bg-[#317CD7] text-white shadow-lg shadow-[#317CD7]/20' : 'bg-white border border-gray-100 text-[#0F2E4B] hover:border-[#317CD7] hover:text-[#317CD7]'}`}
+                                        >
+                                            {page}
+                                        </button>
+                                    </React.Fragment>
+                                ))
+                            }
+
+                            <button
+                                onClick={() => {
+                                    setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                }}
+                                disabled={currentPage === totalPages || totalPages === 0}
+                                className={`p-2 transition-all ${currentPage === totalPages || totalPages === 0 ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-[#ff0066]'}`}
+                            >
+                                <ChevronRight size={20} />
+                            </button>
+                        </div>
+                    )}
+                </main>
+            </div>
+
+
+            {/* Newsletter Section */}
+            <div className="bg-[#F9FAFB] py-16 border-t border-gray-100">
+                <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-16">
+                    <div className="bg-white rounded-xl p-12 shadow-2xl shadow-gray-200/50 border border-gray-100 flex flex-col lg:flex-row items-center justify-between gap-12">
+                        <div className="max-w-[600px]">
+                            <h3
+                                style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                    color: '#040e24',
+                                    fontWeight: 700,
+                                    fontSize: '28px',
+                                    marginBottom: '1rem'
+                                }}
+                            >
+                                Join Our Free Newsletter
+                            </h3>
+                            <p
+                                style={{
+                                    fontFamily: '"Poppins", sans-serif',
+                                    fontSize: '15px',
+                                    lineHeight: '26px',
+                                    color: '#212121',
+                                    fontWeight: 500
+                                }}
+                            >
+                                Stay updated with the latest job opportunities and industry news delivered directly to your inbox.
+                            </p>
+                        </div>
+                        <div className="flex-1 w-full flex flex-col sm:flex-row gap-4 max-w-[500px]">
+                            <div className="flex-1 relative">
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    className="w-full bg-gray-50 border border-gray-100 h-[44px] pl-14 pr-6 rounded-lg focus:outline-none focus:border-[#317CD7] transition-all text-[14px]"
+                                />
+                            </div>
+                            <button className="bg-[#317CD7] hover:bg-[#2866B1] text-white px-8 h-[44px] rounded-lg font-bold uppercase tracking-widest transition-all text-[12px]">
+                                Subscribe
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    );
+};
+
+const FilterSection = ({ title, isOpen, onToggle, children }: any) => {
+    return (
+        <div className="px-5 py-6 border-b border-gray-50 last:border-0">
+            <button
+                onClick={onToggle}
+                className="w-full flex items-center justify-between mb-4 group"
+            >
+                <span
+                    className="transition-all"
+                    style={{
+                        fontFamily: '"Poppins", sans-serif',
+                        fontSize: '17px',
+                        lineHeight: '1',
+                        color: '#000000',
+                        fontWeight: 600
+                    }}
+                >
+                    {title}
+                </span>
+                <ChevronDown size={14} className={`text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                    >
+                        {children}
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

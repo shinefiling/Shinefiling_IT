@@ -89,7 +89,8 @@ const Login: React.FC = () => {
                         name, 
                         googleId, 
                         profileImage,
-                        userRole: 'FREELANCER' // Default role for login if not exist
+                        userRole: 'FREELANCER', // Default role for login if not exist
+                        isSignup: false
                     })
                 });
                 
@@ -180,27 +181,35 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex flex-col lg:flex-row font-['Poppins'] bg-[#fdfaf0]">
+        <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50" style={{ fontFamily: 'Poppins, sans-serif' }}>
             {/* Left Side - Form Section */}
             <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 className="w-full lg:w-1/2 flex flex-col items-center justify-center p-6 lg:p-12 bg-white order-2 lg:order-2 relative"
             >
-                <Link 
-                    to="/" 
-                    className="absolute top-8 left-8 flex items-center gap-2 text-[13px] font-bold text-gray-400 hover:text-[#b5242c] transition-all group"
-                >
-                    <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                    Back to Home
-                </Link>
-
-                <div className="max-w-[420px] w-full">
+                <div className="max-w-[420px] lg:max-w-[540px] w-full">
+                    <Link 
+                        to="/" 
+                        className="inline-flex items-center gap-2 text-[17px] sm:text-[13px] font-bold text-gray-400 hover:text-[#0F2E4B] transition-all group mb-8"
+                    >
+                        <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+                        Back to Home
+                    </Link>
                     <div className="mb-6">
-                        <h1 className="text-[28px] font-bold text-[#242424] leading-tight">
-                            Welcome Back to <span className="text-[#b5242c]">Shinefiling</span>
+                        <h1 className="text-[30px] sm:text-[28px] font-bold text-[#0F2E4B] leading-tight uppercase tracking-tighter">
+                            Welcome Back to <span className="text-[#317CD7]">Shinefiling</span>
                         </h1>
-                        <p className="text-[#888] text-[13px] mt-2 leading-snug max-w-[280px]">
+                        <p 
+                            className="mt-2 leading-snug max-w-[400px]"
+                            style={{ 
+                                fontFamily: 'Poppins, sans-serif',
+                                fontSize: '15px',
+                                fontWeight: 500,
+                                lineHeight: '26px',
+                                color: 'rgb(33, 33, 33)'
+                            }}
+                        >
                             {step === 'login' 
                                 ? "Sign in to access your professional dashboard and projects."
                                 : `Verification code sent to ${formData.email}.`
@@ -217,7 +226,18 @@ const Login: React.FC = () => {
                     {step === 'login' ? (
                         <form onSubmit={handleSubmit} className="space-y-3">
                             <div className="space-y-1">
-                                <label className="text-[12px] font-bold text-[#242424] uppercase tracking-tight ml-1">Email Address</label>
+                                <label 
+                                    className="uppercase tracking-tight ml-1"
+                                    style={{ 
+                                        fontFamily: 'Poppins, sans-serif',
+                                        fontSize: '15px',
+                                        fontWeight: 500,
+                                        lineHeight: '26px',
+                                        color: 'rgb(33, 33, 33)'
+                                    }}
+                                >
+                                    Email Address
+                                </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                         <Mail size={18} />
@@ -228,13 +248,31 @@ const Login: React.FC = () => {
                                         value={formData.email}
                                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                                         placeholder="Enter your email" 
-                                        className="block w-full pl-12 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-sm focus:outline-none focus:border-[#b5242c] focus:ring-4 focus:ring-[#b5242c]/5 transition-all"
+                                        className="block w-full pl-12 pr-4 py-4 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] focus:ring-4 focus:ring-[#0F2E4B]/5 transition-all"
+                                        style={{ 
+                                            fontFamily: 'Poppins, sans-serif',
+                                            fontSize: '16px',
+                                            fontWeight: 400,
+                                            lineHeight: '22.4px',
+                                            color: 'rgb(15, 46, 75)'
+                                        }}
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[12px] font-bold text-[#242424] uppercase tracking-tight ml-1">Password</label>
+                                <label 
+                                    className="uppercase tracking-tight ml-1"
+                                    style={{ 
+                                        fontFamily: 'Poppins, sans-serif',
+                                        fontSize: '15px',
+                                        fontWeight: 500,
+                                        lineHeight: '26px',
+                                        color: 'rgb(33, 33, 33)'
+                                    }}
+                                >
+                                    Password
+                                </label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                         <Lock size={18} />
@@ -245,7 +283,14 @@ const Login: React.FC = () => {
                                         value={formData.password}
                                         onChange={(e) => setFormData({...formData, password: e.target.value})}
                                         placeholder="••••••••" 
-                                        className="block w-full pl-12 pr-12 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-sm focus:outline-none focus:border-[#b5242c] focus:ring-4 focus:ring-[#b5242c]/5 transition-all"
+                                        className="block w-full pl-12 pr-12 py-4 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] focus:ring-4 focus:ring-[#0F2E4B]/5 transition-all"
+                                        style={{ 
+                                            fontFamily: 'Poppins, sans-serif',
+                                            fontSize: '16px',
+                                            fontWeight: 400,
+                                            lineHeight: '22.4px',
+                                            color: 'rgb(15, 46, 75)'
+                                        }}
                                     />
                                     <button 
                                         type="button"
@@ -265,17 +310,17 @@ const Login: React.FC = () => {
                                         checked={formData.rememberMe}
                                         onChange={(e) => setFormData({...formData, rememberMe: e.target.checked})}
                                     />
-                                    <div className={`w-5 h-5 border border-[#eee] rounded-md flex items-center justify-center transition-all ${formData.rememberMe ? 'bg-[#b5242c] border-[#b5242c]' : 'group-hover:border-[#b5242c]'}`}>
+                                    <div className={`w-5 h-5 border border-[#eee] rounded-md flex items-center justify-center transition-all ${formData.rememberMe ? 'bg-[#0F2E4B] border-[#0F2E4B]' : 'group-hover:border-[#0F2E4B]'}`}>
                                         <div className={`w-2 h-2 bg-white rounded-sm transition-all ${formData.rememberMe ? 'scale-100' : 'scale-0'}`}></div>
                                     </div>
-                                    <span className="text-[#666] select-none">Remember me</span>
+                                    <span className="text-[#666] select-none text-[16px] sm:text-sm">Remember me</span>
                                 </label>
-                                <Link to="/forgot-password" className="text-[#b5242c] font-medium hover:underline">Forgot Password?</Link>
+                                <Link to="/forgot-password" className="text-[#0F2E4B] font-medium hover:underline text-[16px] sm:text-sm">Forgot Password?</Link>
                             </div>
 
                             <button 
                                 disabled={isLoading}
-                                className={`w-full bg-[#b5242c] text-white py-2.5 rounded-md font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#b5242c]/10 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#a11f27] hover:-translate-y-0.5 active:translate-y-0'}`}
+                                className={`w-full bg-[#317CD7] text-white py-4 sm:py-2.5 rounded-md font-extrabold uppercase tracking-widest text-[16px] sm:text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#317CD7]/10 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#2563b5] hover:-translate-y-0.5 active:translate-y-0'}`}
                             >
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -308,7 +353,7 @@ const Login: React.FC = () => {
 
                             <button 
                                 disabled={isLoading || otp.length !== 6}
-                                className={`w-full bg-[#b5242c] text-white py-2.5 rounded-md font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#b5242c]/10 ${(isLoading || otp.length !== 6) ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#a11f27] hover:-translate-y-0.5 active:translate-y-0'}`}
+                                className={`w-full bg-[#0F2E4B] text-white py-3.5 sm:py-2.5 rounded-md font-extrabold uppercase tracking-widest text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#0F2E4B]/10 ${(isLoading || otp.length !== 6) ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#317CD7] hover:-translate-y-0.5 active:translate-y-0'}`}
                             >
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -325,7 +370,7 @@ const Login: React.FC = () => {
                                     <button 
                                         type="button" 
                                         onClick={handleResendOtp}
-                                        className="text-[#b5242c] font-bold hover:underline"
+                                        className="text-[#0F2E4B] font-bold hover:underline"
                                     >
                                         Resend Code
                                     </button>
@@ -365,16 +410,22 @@ const Login: React.FC = () => {
                         </div>
                     )}
 
-                    {step === 'login' && (
-                        <p className="mt-4 text-center text-sm text-[#888]">
-                            Don't have an account? <Link to="/signup" className="text-[#b5242c] font-bold hover:underline">Register Now</Link>
+                        <p 
+                            className="mt-4 text-center"
+                            style={{ 
+                                fontFamily: 'Poppins, sans-serif',
+                                fontSize: '15px',
+                                fontWeight: 500,
+                                color: 'rgb(33, 33, 33)'
+                            }}
+                        >
+                            Don't have an account? <Link to="/signup" className="text-[#317CD7] font-bold hover:underline">Register Now</Link>
                         </p>
-                    )}
                 </div>
             </motion.div>
 
             {/* Left Side - Branding/Visual */}
-            <div className="w-full lg:w-1/2 relative overflow-hidden order-1 lg:order-1 min-h-[500px]">
+            <div className="hidden lg:block w-full lg:w-1/2 relative overflow-hidden order-1 lg:order-1 min-h-[500px]">
                 {/* Image as background */}
                 <img 
                     src="loginimage.png" 

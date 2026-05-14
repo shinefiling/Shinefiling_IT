@@ -106,14 +106,16 @@ public class AuthController {
             String googleId = (String) payload.get("googleId");
             String role = (String) payload.get("userRole");
             String profileImage = (String) payload.get("profileImage");
+            Object isSignupObj = payload.get("isSignup");
+            boolean isSignup = isSignupObj != null && (boolean) isSignupObj;
 
             User user;
             if (token != null && !token.isEmpty()) {
                 // Secure path: verify ID token
-                user = authService.googleLogin(token, role);
+                user = authService.googleLogin(token, role, isSignup);
             } else if (email != null && googleId != null) {
                 // Fallback path: trust raw info (similar to shinefiling-web)
-                user = authService.processGoogleLoginRaw(email, name, googleId, role, profileImage);
+                user = authService.processGoogleLoginRaw(email, name, googleId, role, profileImage, isSignup);
             } else {
                 throw new RuntimeException("Invalid Google login request");
             }

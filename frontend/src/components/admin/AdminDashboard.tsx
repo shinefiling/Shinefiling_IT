@@ -338,7 +338,7 @@ const SidebarItem = ({ icon: Icon, label, id, hot, activeTab, setActiveTab }: an
                 <Icon size={18} className={`${isActive ? 'text-orange-500' : 'text-slate-400'}`} />
                 <span className={`text-[13px] font-medium tracking-tight font-poppins ${isActive ? 'font-bold' : ''}`}>{label}</span>
             </div>
-            {hot && <span className="bg-red-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase">Hot</span>}
+            {hot && <span className="bg-red-500 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-md uppercase">Hot</span>}
         </button>
     );
 };

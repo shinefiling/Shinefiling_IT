@@ -313,7 +313,7 @@ const Settings: React.FC = () => {
                                                     <p className="text-[12px] text-gray-500">For two-step verification and account recovery</p>
                                                 </div>
                                             </div>
-                                            <span className="bg-green-100 text-green-700 text-[10px] font-black uppercase px-2 py-0.5 rounded flex items-center gap-1">
+                                            <span className="bg-green-100 text-green-700 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded flex items-center gap-1">
                                                 Verified <CheckCircle size={10} />
                                             </span>
                                         </div>

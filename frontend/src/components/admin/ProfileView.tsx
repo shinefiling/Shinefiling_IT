@@ -22,8 +22,8 @@ const ProfileView = ({ user }: any) => {
 
                     <div className="flex-1 text-center md:text-left">
                         <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                            <h2 className="text-3xl font-black text-slate-800 dark:text-white uppercase tracking-tight font-poppins">{user?.fullName || 'Administrator'}</h2>
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 dark:bg-orange-500/10 text-orange-600 text-[10px] font-black uppercase rounded-full border border-orange-200 dark:border-orange-500/20 tracking-widest">
+                            <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white uppercase tracking-tight font-poppins">{user?.fullName || 'Administrator'}</h2>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-100 dark:bg-orange-500/10 text-orange-600 text-[10px] font-extrabold uppercase rounded-full border border-orange-200 dark:border-orange-500/20 tracking-widest">
                                 <Shield size={10} /> Verified Admin
                             </span>
                         </div>
@@ -48,8 +48,8 @@ const ProfileView = ({ user }: any) => {
                     </div>
 
                     <div className="flex flex-col gap-3">
-                        <button className="px-6 py-2.5 bg-[#003d4d] text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#002d38] transition-all shadow-lg shadow-[#003d4d]/20">Manage Access</button>
-                        <button className="px-6 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm">Audit Trail</button>
+                        <button className="px-6 py-2.5 bg-[#003d4d] text-white rounded-xl text-[10px] font-extrabold uppercase tracking-widest hover:bg-[#002d38] transition-all shadow-lg shadow-[#003d4d]/20">Manage Access</button>
+                        <button className="px-6 py-2.5 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-[10px] font-extrabold uppercase tracking-widest hover:bg-slate-50 dark:hover:bg-slate-900 transition-all shadow-sm">Audit Trail</button>
                     </div>
                 </div>
             </div>
@@ -89,16 +89,16 @@ const ProfileView = ({ user }: any) => {
                     <div className="bg-[#003d4d] p-8 rounded-[20px] shadow-xl text-white relative overflow-hidden group">
                         <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-all duration-700"></div>
                         <Shield className="mb-8 opacity-60" size={32} />
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-8">System Authority</h3>
+                        <h3 className="text-[10px] font-extrabold uppercase tracking-[0.2em] opacity-60 mb-8">System Authority</h3>
                         <div className="space-y-8 relative z-10">
                             <div className="flex justify-between items-end">
                                 <div>
                                     <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Access Level</p>
-                                    <p className="text-3xl font-black font-poppins">Tier 1</p>
+                                    <p className="text-3xl font-extrabold font-poppins">Tier 1</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[10px] font-bold uppercase tracking-widest opacity-60 mb-2">Power</p>
-                                    <p className="text-3xl font-black font-poppins">Full</p>
+                                    <p className="text-3xl font-extrabold font-poppins">Full</p>
                                 </div>
                             </div>
                             <div>
@@ -111,15 +111,15 @@ const ProfileView = ({ user }: any) => {
                     </div>
 
                     <div className="shine-card p-6">
-                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-6">Engagement Statistics</h3>
+                        <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] mb-6">Engagement Statistics</h3>
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-5 bg-orange-50 dark:bg-orange-500/5 rounded-2xl border border-orange-100 dark:border-orange-500/10 text-center">
-                                <p className="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Decisions</p>
-                                <p className="text-2xl font-black text-orange-600 font-poppins">1.2k</p>
+                                <p className="text-[9px] font-extrabold text-slate-400 uppercase mb-2 tracking-widest">Decisions</p>
+                                <p className="text-2xl font-extrabold text-orange-600 font-poppins">1.2k</p>
                             </div>
                             <div className="p-5 bg-teal-50 dark:bg-teal-500/5 rounded-2xl border border-teal-100 dark:border-teal-500/10 text-center">
-                                <p className="text-[9px] font-black text-slate-400 uppercase mb-2 tracking-widest">Users</p>
-                                <p className="text-2xl font-black text-teal-600 font-poppins">429</p>
+                                <p className="text-[9px] font-extrabold text-slate-400 uppercase mb-2 tracking-widest">Users</p>
+                                <p className="text-2xl font-extrabold text-teal-600 font-poppins">429</p>
                             </div>
                         </div>
                     </div>

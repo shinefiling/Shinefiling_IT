@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { 
     Search, Star, Heart, 
     Filter, ChevronDown, ChevronUp, 
-    Check, ArrowRight, UserCheck, Activity, X
+    Check, ArrowRight, UserCheck, Activity, X,
+    MapPin, Mail, ChevronRight, Zap, TrendingUp, Wallet
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { API_BASE_URL } from '../config';
@@ -20,6 +21,7 @@ interface Freelancer {
     profilePicture?: string;
     skills?: string[];
     userRole?: string;
+    industry?: string;
     createdAt: string;
 }
 
@@ -29,18 +31,29 @@ const BrowseFreelancers: React.FC = () => {
     const [filteredFreelancers, setFilteredFreelancers] = useState<Freelancer[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
+    const [locationQuery, setLocationQuery] = useState('');
+    const [selectedIndustry, setSelectedIndustry] = useState('');
     const [priceRange, setPriceRange] = useState({ min: 0, max: 10000 });
     const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+    const [invitingJobId, setInvitingJobId] = useState<number | null>(null);
+    const [inviteSuccess, setInviteSuccess] = useState(false);
+    const [jobSearchQuery, setJobSearchQuery] = useState('');
     const [clientJobs, setClientJobs] = useState<any[]>([]);
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
     const [selectedFreelancer, setSelectedFreelancer] = useState<Freelancer | null>(null);
     
     // UI States
-    const [activeFilters, setActiveFilters] = useState<string[]>(['keyword', 'price', 'skills']);
+    const [activeFilters, setActiveFilters] = useState<string[]>(['keyword', 'price', 'skills', 'location', 'industry']);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+    const filteredClientJobs = clientJobs.filter(job => 
+        job.title.toLowerCase().includes(jobSearchQuery.toLowerCase()) ||
+        job.category?.toLowerCase().includes(jobSearchQuery.toLowerCase())
+    );
 
     useEffect(() => {
         fetchFreelancers();
+        fetchClientJobs();
     }, []);
 
     const fetchFreelancers = async () => {
@@ -50,7 +63,6 @@ const BrowseFreelancers: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                // Show if it's explicitly FREELANCER or if userRole is missing (legacy data)
                 const onlyFreelancers = data.filter((f: any) => f.userRole === 'FREELANCER' || !f.userRole);
                 setFreelancers(onlyFreelancers);
                 setFilteredFreelancers(onlyFreelancers);
@@ -60,8 +72,9 @@ const BrowseFreelancers: React.FC = () => {
         } finally {
             setLoading(false);
         }
+    };
 
-        // Fetch client jobs for invitation
+    const fetchClientJobs = async () => {
         const userStr = localStorage.getItem('user');
         if (userStr) {
             const user = JSON.parse(userStr);
@@ -74,11 +87,23 @@ const BrowseFreelancers: React.FC = () => {
         }
     };
 
+    const handleInviteClick = (freelancer: Freelancer) => {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+            navigate('/login');
+            return;
+        }
+        setSelectedFreelancer(freelancer);
+        setIsInviteModalOpen(true);
+    };
+
     const handleFilter = async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
             if (searchQuery) params.append('query', searchQuery);
+            if (locationQuery) params.append('location', locationQuery);
+            if (selectedIndustry) params.append('industry', selectedIndustry);
             if (priceRange.min > 0) params.append('minRate', priceRange.min.toString());
             if (priceRange.max < 10000) params.append('maxRate', priceRange.max.toString());
             if (selectedSkills.length > 0) {
@@ -90,8 +115,7 @@ const BrowseFreelancers: React.FC = () => {
             });
             if (response.ok) {
                 const data = await response.json();
-                const onlyFreelancers = data.filter((f: any) => f.userRole === 'FREELANCER' || !f.userRole);
-                setFilteredFreelancers(onlyFreelancers);
+                setFilteredFreelancers(data);
             }
         } catch (error) {
             console.error("Error filtering freelancers:", error);
@@ -102,6 +126,8 @@ const BrowseFreelancers: React.FC = () => {
 
     const clearFilters = () => {
         setSearchQuery('');
+        setLocationQuery('');
+        setSelectedIndustry('');
         setPriceRange({ min: 0, max: 10000 });
         setSelectedSkills([]);
         setFilteredFreelancers(freelancers);
@@ -133,22 +159,62 @@ const BrowseFreelancers: React.FC = () => {
         { name: 'Python Expert', count: 0 }
     ];
 
+    const handleMessageClick = (freelancer: Freelancer) => {
+        const userStr = localStorage.getItem('user');
+        if (!userStr) {
+            navigate('/login');
+            return;
+        }
+        
+        // Open floating chat
+        const event = new CustomEvent('open-chat', { 
+            detail: { 
+                contact: {
+                    id: freelancer.id,
+                    fullName: freelancer.fullName,
+                    email: freelancer.email,
+                    profilePicture: freelancer.profilePicture
+                } 
+            } 
+        });
+        window.dispatchEvent(event);
+    };
+
     return (
-        <div className="min-h-screen bg-[#fcfcfc] font-['Poppins'] pt-[80px]">
+        <div className="min-h-screen bg-[#f8f9fa] pt-[80px]" style={{ fontFamily: '"Poppins", sans-serif' }}>
             
-            {/* Header Banner */}
-            <div className="relative h-[240px] w-full overflow-hidden flex items-center justify-center bg-[#242424]">
-                <img 
-                    src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=2000" 
-                    className="absolute inset-0 w-full h-full object-cover opacity-30" 
-                    alt="Freelancer Search Banner"
-                />
-                <div className="relative z-10 text-center">
-                    <h1 className="text-[36px] font-black text-white tracking-tight mb-2 uppercase">Freelancer Search</h1>
-                    <div className="flex items-center justify-center gap-2 text-white/70 text-sm font-medium">
-                        <span className="hover:text-white cursor-pointer transition-colors">Home</span>
-                        <span className="text-white/30">/</span>
-                        <span className="text-white">Freelancer Search</span>
+            {/* 1. COMPACT SEARCH HEADER */}
+            <div className="bg-[#0F2E4B] py-12 flex items-center justify-center">
+                {/* Search Overlay */}
+                <div className="w-full max-w-[900px] px-6">
+                    <div className="bg-[#1a3a5a] p-2 rounded-xl shadow-xl flex flex-col md:flex-row gap-2">
+                        <div className="flex-1 relative">
+                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input 
+                                type="text" 
+                                placeholder="Geo Location"
+                                value={locationQuery}
+                                onChange={(e) => setLocationQuery(e.target.value)}
+                                className="w-full bg-white h-[42px] pl-11 pr-4 rounded-lg focus:outline-none font-semibold text-[#0F2E4B] text-[14px] placeholder:text-gray-400"
+                            />
+                        </div>
+                        <div className="flex-1 relative">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input 
+                                type="text" 
+                                placeholder="Keyword"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-white h-[42px] pl-11 pr-4 rounded-lg focus:outline-none font-semibold text-[#0F2E4B] text-[14px] placeholder:text-gray-400"
+                            />
+                        </div>
+                        <button 
+                            onClick={handleFilter}
+                            className="bg-[#317CD7] hover:bg-[#2563b5] text-white px-8 h-[42px] rounded-lg font-bold uppercase tracking-widest transition-all flex items-center justify-center gap-2 shrink-0 text-[12px]"
+                        >
+                            <Search size={18} strokeWidth={3} />
+                            SEARCH
+                        </button>
                     </div>
                 </div>
             </div>
@@ -163,7 +229,7 @@ const BrowseFreelancers: React.FC = () => {
                 </button>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-4 lg:px-8 py-12 flex flex-col lg:flex-row gap-8">
+            <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-16 py-12 flex flex-col lg:grid lg:grid-cols-[320px_1fr] gap-12">
                 
                 {/* Filter Sidebar - Mobile Overlay */}
                 {isFilterOpen && (
@@ -175,19 +241,26 @@ const BrowseFreelancers: React.FC = () => {
 
                 {/* Left Sidebar - Filters */}
                 <aside className={`
-                    fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-auto lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible
+                    fixed inset-y-0 left-0 w-[300px] bg-white z-[2002] transition-transform duration-300 lg:static lg:w-[320px] lg:z-0 lg:translate-x-0 overflow-y-auto lg:overflow-visible
                     ${isFilterOpen ? 'translate-x-0' : '-translate-x-full'}
                 `}>
-                    <div className="bg-white lg:rounded-none lg:border lg:border-[#eee] overflow-hidden lg:shadow-sm min-h-full">
-                        <div className="px-5 py-4 border-b border-[#eee] flex items-center justify-between">
-                            <h3 className="font-bold text-[#242424] text-[15px] flex items-center gap-2">
-                                <Filter size={18} className="text-primary" />
+                    <div className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm min-h-full">
+                        <div className="px-5 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/30">
+                            <h3 className="text-[#0F2E4B] flex items-center gap-2" style={{ 
+                                fontFamily: '"Poppins", sans-serif',
+                                fontSize: '15px',
+                                lineHeight: '1',
+                                fontWeight: 800,
+                                textTransform: 'uppercase',
+                                letterSpacing: '0.025em'
+                            }}>
+                                <Filter size={18} className="text-[#317CD7]" />
                                 Search Filters
                             </h3>
                             <div className="flex items-center gap-4">
                                 <button 
                                     onClick={clearFilters}
-                                    className="text-[11px] font-black text-primary uppercase tracking-wider hover:underline"
+                                    className="text-[11px] font-extrabold text-primary uppercase tracking-wider hover:underline"
                                 >
                                     Clear
                                 </button>
@@ -203,14 +276,14 @@ const BrowseFreelancers: React.FC = () => {
                             isOpen={activeFilters.includes('keyword')} 
                             onToggle={() => toggleFilter('keyword')}
                         >
-                            <div className="relative">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                            <div className="relative mb-4">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                                 <input 
-                                    type="text"
-                                    placeholder="Keywords..."
+                                    type="text" 
+                                    placeholder="Search by keyword..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-[13px] outline-none focus:border-[#b5242c] transition-all"
+                                    className="w-full h-[40px] pl-11 pr-4 bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:border-[#317CD7] transition-all text-[13px] placeholder:text-gray-400"
                                 />
                             </div>
                         </FilterSection>
@@ -254,33 +327,65 @@ const BrowseFreelancers: React.FC = () => {
                         >
                             <div className="space-y-2.5 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
                                 {skillsList.map(skill => (
-                                    <label key={skill.name} className="flex items-center gap-3 group cursor-pointer">
-                                        <div 
-                                            onClick={() => toggleSkill(skill.name)}
-                                            className={`w-4 h-4 border-2 rounded flex items-center justify-center transition-all ${selectedSkills.includes(skill.name) ? 'border-[#b5242c] bg-[#b5242c]' : 'border-[#eee] group-hover:border-[#b5242c]'}`}
-                                        >
-                                            <Check size={10} className={`text-white transition-all ${selectedSkills.includes(skill.name) ? 'scale-100' : 'scale-0'}`} />
+                                    <label key={skill.name} className="flex items-center justify-between group cursor-pointer" onClick={() => toggleSkill(skill.name)}>
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded-sm border-2 transition-all flex items-center justify-center ${selectedSkills.includes(skill.name) ? 'bg-[#317CD7] border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                                {selectedSkills.includes(skill.name) && <Check size={14} strokeWidth={4} className="text-white" />}
+                                            </div>
+                                            <span className={`text-[14px] font-medium transition-colors ${selectedSkills.includes(skill.name) ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{skill.name}</span>
                                         </div>
-                                        <span className={`text-[13px] transition-colors ${selectedSkills.includes(skill.name) ? 'text-[#b5242c] font-bold' : 'text-[#555] group-hover:text-[#242424]'}`}>{skill.name} ({skill.count})</span>
+                                        <span className="text-[11px] text-gray-300 font-bold">({skill.count})</span>
                                     </label>
                                 ))}
                             </div>
                         </FilterSection>
 
-                        {['Level', 'Languages', 'Location'].map(filter => (
-                            <div key={filter} className="px-5 py-4 border-t border-[#eee] flex items-center justify-between cursor-pointer group">
-                                <h4 className="text-[14px] font-bold text-[#242424] group-hover:text-[#b5242c] transition-colors">{filter}</h4>
-                                <ChevronDown size={18} className="text-gray-400" />
+                        {/* Location Filter */}
+                        <FilterSection 
+                            title="Location" 
+                            isOpen={activeFilters.includes('location')} 
+                            onToggle={() => toggleFilter('location')}
+                        >
+                            <div className="relative mb-4">
+                                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                                <input 
+                                    type="text" 
+                                    placeholder="Search by location..."
+                                    value={locationQuery}
+                                    onChange={(e) => setLocationQuery(e.target.value)}
+                                    className="w-full h-[40px] pl-11 pr-4 bg-gray-50 border border-gray-100 rounded-lg focus:outline-none focus:border-[#317CD7] transition-all text-[13px] placeholder:text-gray-400"
+                                />
                             </div>
-                        ))}
+                        </FilterSection>
+
+                        {/* Industry/Sector Filter */}
+                        <FilterSection 
+                            title="Sectors" 
+                            isOpen={activeFilters.includes('industry')} 
+                            onToggle={() => toggleFilter('industry')}
+                        >
+                            <div className="space-y-2.5 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                                {Array.from(new Set(freelancers.map(f => f.industry).filter(Boolean))).map(industry => (
+                                    <label key={industry} className="flex items-center gap-3 group cursor-pointer" onClick={() => setSelectedIndustry(industry === selectedIndustry ? '' : industry || '')}>
+                                        <div className={`w-5 h-5 rounded-sm border-2 transition-all flex items-center justify-center ${selectedIndustry === industry ? 'bg-[#317CD7] border-[#317CD7]' : 'border-gray-200 group-hover:border-[#317CD7]'}`}>
+                                            {selectedIndustry === industry && <Check size={14} strokeWidth={4} className="text-white" />}
+                                        </div>
+                                        <span className={`text-[14px] font-medium transition-colors ${selectedIndustry === industry ? 'text-[#0F2E4B] font-bold' : 'text-gray-600 group-hover:text-[#0F2E4B]'}`}>{industry}</span>
+                                    </label>
+                                ))}
+                                {Array.from(new Set(freelancers.map(f => f.industry).filter(Boolean))).length === 0 && (
+                                    <p className="text-[12px] text-gray-400 italic">No sectors found in current data</p>
+                                )}
+                            </div>
+                        </FilterSection>
 
                         <div className="p-5 bg-white border-t border-[#eee]">
                             <p className="text-[11px] text-[#888] italic mb-4 leading-relaxed">select options and press the filter button to apply changes</p>
                             <button 
                                 onClick={handleFilter}
-                                className="w-full bg-primary text-white py-3 rounded-none font-bold text-[14px] uppercase tracking-wider hover:bg-[#a11f27] transition-all shadow-lg shadow-primary/10"
+                                className="w-full bg-[#0F2E4B] text-white py-3 rounded-lg font-bold text-[13px] uppercase tracking-widest hover:bg-[#317CD7] transition-all shadow-md shadow-gray-100"
                             >
-                                Filter Result
+                                Apply Filters
                             </button>
                         </div>
                     </div>
@@ -290,17 +395,26 @@ const BrowseFreelancers: React.FC = () => {
                 <div className="flex-1 space-y-6">
                     
                     {/* Results Toolbar */}
-                    <div className="bg-white p-4 rounded-none border border-[#eee] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <h2 className="font-bold text-[#242424] text-[15px]">Found {filteredFreelancers.length} Results</h2>
-                        <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
-                            <div className="flex items-center bg-gray-50 rounded-none p-1 border border-[#eee]">
-                                <button className="p-1.5 bg-primary text-white rounded-none"><Filter size={16} /></button>
-                                <button className="p-1.5 text-gray-400 hover:text-primary"><Activity size={16} /></button>
-                            </div>
-                            <select className="bg-gray-50 border border-[#eee] text-[13px] px-4 py-1.5 rounded-none outline-none focus:border-primary flex-1 sm:flex-none">
-                                <option>Sort by: Newest</option>
-                                <option>Sort by: Price (Low to High)</option>
-                                <option>Sort by: Rating</option>
+                    <div 
+                        className="bg-white rounded-xl px-6 py-4 shadow-sm border border-gray-100 flex items-center justify-between"
+                        style={{ 
+                            fontFamily: '"Poppins", sans-serif',
+                            fontSize: '13px',
+                            lineHeight: '28px',
+                            color: '#212121',
+                            fontWeight: 500,
+                            WebkitFontSmoothing: 'antialiased'
+                        }}
+                    >
+                        <div className="pr-6 border-r border-gray-100 font-bold text-[#0F2E4B]">
+                            Found <span className="text-[#317CD7]">{filteredFreelancers.length}</span> results
+                        </div>
+                        <div className="px-6 flex items-center gap-4">
+                            <span className="text-gray-400">Sort by:</span>
+                            <select className="bg-transparent border-none outline-none font-bold text-[#0F2E4B] cursor-pointer">
+                                <option>Newest</option>
+                                <option>Price (Low to High)</option>
+                                <option>Rating</option>
                             </select>
                         </div>
                     </div>
@@ -309,8 +423,8 @@ const BrowseFreelancers: React.FC = () => {
                     <div className="space-y-4">
                         {loading ? (
                             <div className="py-20 text-center">
-                                <div className="w-10 h-10 border-4 border-[#b5242c]/20 border-t-[#b5242c] rounded-full animate-spin mx-auto mb-4"></div>
-                                <p className="text-gray-500 font-medium">Scanning for available freelancers...</p>
+                                <div className="w-10 h-10 border-4 border-[#317CD7]/10 border-t-[#317CD7] rounded-full animate-spin mx-auto mb-4"></div>
+                                <p className="text-gray-400 font-bold uppercase tracking-widest text-[11px]">Scanning for available freelancers...</p>
                             </div>
                         ) : filteredFreelancers.length === 0 ? (
                             <div className="bg-white p-12 text-center rounded-none border border-[#eee]">
@@ -324,15 +438,10 @@ const BrowseFreelancers: React.FC = () => {
                                     key={freelancer.id}
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    className="bg-white p-6 rounded-none border border-[#eee] shadow-[0_2px_15px_rgba(0,0,0,0.02)] flex flex-col md:flex-row gap-6 relative group overflow-hidden"
+                                    className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-500 flex flex-col md:flex-row gap-6 relative group"
                                 >
-                                    {/* Top Right Tag - Placeholder for Premium/Hot */}
-                                    <div className="absolute top-0 right-0 p-1 bg-primary text-white rotate-45 translate-x-3 -translate-y-3 px-6 shadow-md">
-                                        <Star size={10} fill="currentColor" />
-                                    </div>
-
                                     {/* Image Section */}
-                                    <div className="shrink-0 w-full md:w-[120px] h-[120px] rounded-none overflow-hidden border border-[#eee]">
+                                    <div className="shrink-0 w-full md:w-[80px] h-[80px] rounded-xl overflow-hidden border border-gray-100 shadow-inner">
                                         <img 
                                             src={freelancer.profilePicture || `https://ui-avatars.com/api/?name=${freelancer.fullName}&background=random&color=fff&size=200`} 
                                             className="w-full h-full object-cover"
@@ -341,81 +450,76 @@ const BrowseFreelancers: React.FC = () => {
                                     </div>
 
                                     {/* Info Section */}
-                                    <div className="flex-1 flex flex-col justify-between">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <UserCheck size={14} className="text-blue-500" />
-                                                <span className="text-[11px] text-gray-400 font-medium uppercase tracking-widest">{freelancer.username}</span>
+                                    <div className="flex-1">
+                                        <div className="flex items-center gap-3 mb-1.5">
+                                            <span className="px-2.5 py-0.5 bg-blue-50 text-[#317CD7] text-[9px] font-bold rounded-full uppercase tracking-widest border border-blue-100">
+                                                Verified Expert
+                                            </span>
+                                            <div className="flex items-center gap-1 text-[#FFB800]">
+                                                <Star size={11} fill="currentColor" />
+                                                <span className="text-[11px] font-bold text-[#0F2E4B]">5.0</span>
                                             </div>
-                                            <h3 className="text-[15px] font-bold text-[#242424] leading-[24px] group-hover:text-primary transition-colors">{freelancer.fullName}</h3>
-                                            <p className="text-primary font-bold text-[14px] mt-0.5">
-                                                ₹{freelancer.hourlyRate?.toLocaleString() || '0.00'} 
-                                                <span className="text-gray-400 text-[13px] font-normal">/ hr</span>
-                                            </p>
-                                            <p className="text-[13px] font-normal text-[#555] leading-[20px] mt-1 italic">
-                                                {freelancer.professionalHeadline || 'Professional Freelancer'}
-                                            </p>
-                                            <p className="text-[#888] text-[12px] mt-1">Member since {freelancer.createdAt ? new Date(freelancer.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently'}</p>
                                         </div>
                                         
-                                        <div className="mt-4 flex items-center gap-1 text-primary">
-                                            <Star size={14} fill="currentColor" />
-                                            <span className="text-[12px] font-bold text-gray-400 uppercase tracking-tighter">No Reviews</span>
+                                        <h3 className="text-[17px] font-bold text-[#0F2E4B] mb-1 group-hover:text-[#317CD7] transition-colors leading-tight">
+                                            {freelancer.fullName}
+                                        </h3>
+                                        
+                                        <p className="text-[#212121] text-[13px] font-medium leading-snug mb-3 line-clamp-1">
+                                            {freelancer.professionalHeadline || 'Experienced Professional Freelancer'}
+                                        </p>
+
+                                        <div className="flex flex-wrap gap-1.5 mb-3">
+                                            {freelancer.skills?.slice(0, 4).map(skill => (
+                                                <span key={skill} className="px-2 py-0.5 bg-gray-50 text-gray-500 text-[10px] font-semibold rounded-md border border-gray-100">
+                                                    {skill}
+                                                </span>
+                                            ))}
+                                            {freelancer.skills && freelancer.skills.length > 4 && (
+                                                <span className="text-[10px] text-gray-400 font-bold flex items-center">+ {freelancer.skills.length - 4}</span>
+                                            )}
                                         </div>
 
-                                        {/* Portfolio Preview */}
-                                        {(freelancer as any).portfolio?.length > 0 && (
-                                            <div className="mt-4 flex gap-2 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
-                                                {(freelancer as any).portfolio.map((item: any, idx: number) => (
-                                                    <div key={idx} className="w-16 h-12 bg-gray-100 rounded-sm overflow-hidden shrink-0 border border-[#eee]">
-                                                        <img src={item.imageUrl || 'https://via.placeholder.com/150'} className="w-full h-full object-cover" />
-                                                    </div>
-                                                ))}
+                                        <div className="flex items-center gap-6">
+                                            <div className="flex items-center gap-2 text-gray-400 text-[12px]">
+                                                {freelancer.hourlyRate && freelancer.hourlyRate > 2500 ? (
+                                                    <Zap size={13} className="text-[#FFB800]" />
+                                                ) : freelancer.hourlyRate && freelancer.hourlyRate >= 1000 ? (
+                                                    <TrendingUp size={13} className="text-[#317CD7]" />
+                                                ) : (
+                                                    <Wallet size={13} className="text-[#2DD4BF]" />
+                                                )}
+                                                <span className="font-semibold text-[#0F2E4B]">₹{freelancer.hourlyRate?.toLocaleString()}/hr</span>
                                             </div>
-                                        )}
+                                            <button 
+                                                onClick={() => navigate(`/profile/${freelancer.username}`)}
+                                                className="group/btn flex items-center gap-2 text-[#317CD7] text-[12px] font-bold relative"
+                                            >
+                                                <span className="relative z-10 border-b border-transparent group-hover/btn:border-[#317CD7] transition-all duration-300">
+                                                    View Profile
+                                                </span>
+                                                <ChevronRight size={14} strokeWidth={3} />
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {/* Action Section */}
-                                    <div className="flex flex-col justify-between md:items-end gap-4 min-w-0 md:min-w-[200px] z-10">
+                                    <div className="flex flex-col justify-between items-end gap-3 min-w-[150px]">
+                                        <button className="p-2.5 bg-gray-50 text-gray-300 rounded-full hover:bg-red-50 hover:text-red-500 transition-all border border-gray-100">
+                                            <Heart size={16} />
+                                        </button>
                                         <div className="w-full space-y-2">
-                                            <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full">
-                                                <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        setSelectedFreelancer(freelancer);
-                                                        setIsInviteModalOpen(true);
-                                                    }}
-                                                    className="flex-1 min-w-[80px] px-3 py-2.5 bg-white border border-[#b5242c] text-[#b5242c] rounded-sm font-bold text-[11px] uppercase tracking-wider hover:bg-[#b5242c] hover:text-white transition-all duration-300"
-                                                >
-                                                    Invite
-                                                </button>
-                                                <button 
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        navigate(`/messages?with=${freelancer.id}`);
-                                                    }}
-                                                    className="flex-1 min-w-[80px] px-3 py-2.5 bg-[#b5242c] text-white rounded-sm font-bold text-[11px] uppercase tracking-wider shadow-lg shadow-[#b5242c]/20 hover:bg-[#920218] transition-all duration-300"
-                                                >
-                                                    Message
-                                                </button>
-                                            </div>
                                             <button 
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(`/hire-me?id=${freelancer.id}`);
-                                                }}
-                                                className="w-full py-2.5 bg-[#261817] text-white rounded-sm font-bold text-[11px] uppercase tracking-widest hover:bg-black transition-all duration-300 flex items-center justify-center gap-2"
+                                                onClick={() => handleInviteClick(freelancer)}
+                                                className="w-full py-2 bg-[#0F2E4B] text-white rounded-lg font-bold text-[11px] uppercase tracking-widest hover:bg-[#317CD7] transition-all"
                                             >
-                                                Hire & Contract <ArrowRight size={14} />
+                                                Invite to Job
                                             </button>
-                                        </div>
-                                        
-                                        <div className="flex items-center gap-4 w-full justify-between md:justify-end px-1">
-                                            <button className="text-[12px] font-bold text-[#888] hover:text-[#b5242c] flex items-center gap-1.5 transition-colors group/follow">
-                                                <Heart size={14} className="group-hover/follow:fill-[#b5242c] transition-all" /> Follow
-                                            </button>
-                                            <button className="p-2 bg-[#fff0ef] text-[#b5242c] rounded-full hover:bg-[#b5242c] hover:text-white transition-all border border-[#e2bebc]/30">
-                                                <Heart size={16} />
+                                            <button 
+                                                onClick={() => handleMessageClick(freelancer)}
+                                                className="w-full py-2 bg-white border border-gray-100 text-[#0F2E4B] rounded-lg font-bold text-[11px] uppercase tracking-widest hover:border-[#317CD7] hover:text-[#317CD7] transition-all"
+                                            >
+                                                Message
                                             </button>
                                         </div>
                                     </div>
@@ -426,131 +530,278 @@ const BrowseFreelancers: React.FC = () => {
                 </div>
 
             </div>
-
             {/* Invite Modal */}
             <AnimatePresence>
                 {isInviteModalOpen && selectedFreelancer && (
-                    <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                    <div className="fixed inset-0 z-[3000] flex items-center justify-center p-4">
                         <motion.div 
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white w-full max-w-lg rounded-none shadow-2xl overflow-hidden"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsInviteModalOpen(false)}
+                            className="absolute inset-0 bg-[#0F2E4B]/60 backdrop-blur-sm"
+                        ></motion.div>
+                        <motion.div 
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="relative w-full max-w-[500px] bg-white rounded-2xl overflow-hidden shadow-2xl font-['Poppins']"
                         >
-                            <div className="bg-primary p-6 text-white flex justify-between items-center">
-                                <div>
-                                    <h3 className="text-xl font-bold uppercase tracking-tight">Invite to Project</h3>
-                                    <p className="text-white/70 text-xs mt-1">Inviting <span className="font-bold text-white">{selectedFreelancer.fullName}</span></p>
-                                </div>
-                                <button onClick={() => setIsInviteModalOpen(false)} className="hover:rotate-90 transition-transform"><X size={24} /></button>
+                            {/* Modal Header */}
+                            <div className="bg-[#317CD7] p-8 text-white relative">
+                                <button 
+                                    onClick={() => setIsInviteModalOpen(false)}
+                                    className="absolute top-6 right-6 text-white/80 hover:text-white transition-all"
+                                >
+                                    <X size={24} />
+                                </button>
+                                <h2 className="uppercase tracking-tight mb-1" style={{ fontFamily: 'Poppins, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: '32px' }}>Invite to Project</h2>
+                                <p className="text-white/80" style={{ fontFamily: 'Poppins, sans-serif', fontSize: '14px', fontWeight: 400 }}>Inviting <span className="font-bold text-white">{selectedFreelancer.fullName}</span></p>
                             </div>
-                            <div className="p-6">
-                                <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-widest mb-4">Select One of Your Active Jobs</h4>
-                                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                                    {clientJobs.length === 0 ? (
-                                        <div className="text-center py-10 bg-gray-50 border border-dashed border-gray-200">
-                                            <p className="text-sm text-gray-500 font-medium">No active jobs found.</p>
-                                            <button onClick={() => navigate('/post-job')} className="text-primary font-bold text-xs mt-2 hover:underline">Post a Job First</button>
+
+                            {/* Modal Content */}
+                            <div className="p-8">
+                                {inviteSuccess ? (
+                                    <motion.div 
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="py-12 text-center"
+                                    >
+                                        <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-100 shadow-sm">
+                                            <Check size={40} strokeWidth={3} />
                                         </div>
-                                    ) : (
-                                        clientJobs.map(job => (
-                                            <div 
-                                                key={job.id} 
-                                                className="p-4 border border-[#eee] hover:border-primary hover:bg-primary/5 cursor-pointer transition-all flex justify-between items-center group"
-                                                onClick={async () => {
-                                                    try {
-                                                        const user = JSON.parse(localStorage.getItem('user') || '{}');
-                                                        
-                                                        // 1. Create a "Job Application" with INVITED status
-                                                        const invitationData = {
-                                                            jobId: job.id,
-                                                            jobTitle: job.title,
-                                                            company: user.fullName || 'Strategic Client',
-                                                            clientEmail: user.email,
-                                                            clientId: user.id,
-                                                            freelancerId: selectedFreelancer.id,
-                                                            email: selectedFreelancer.email,
-                                                            fullName: selectedFreelancer.fullName,
-                                                            status: 'INVITED',
-                                                            skills: selectedFreelancer.skills?.join(', ') || '',
-                                                            experience: 'Invitation based on profile'
-                                                        };
-
-                                                        const inviteRes = await fetch(`${API_BASE_URL}/api/job-applications/apply`, {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify(invitationData)
-                                                        });
-
-                                                        // 2. Send an automated Chat Message
-                                                        const invitationMessage = {
-                                                            senderEmail: user.email,
-                                                            receiverEmail: selectedFreelancer.email,
-                                                            content: `Hello ${selectedFreelancer.fullName}! I'm impressed by your profile and would like to invite you to work on my project: "${job.title}". Please check the details in your profile invitations!`,
-                                                        };
-                                                        
-                                                        const msgRes = await fetch(`${API_BASE_URL}/api/messages/send`, {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify(invitationMessage)
-                                                        });
-
-                                                        if (inviteRes.ok && msgRes.ok) {
-                                                            alert(`Successfully invited ${selectedFreelancer.fullName} to ${job.title}!`);
-                                                            setIsInviteModalOpen(false);
-                                                        } else {
-                                                            alert('Something went wrong. Please try again.');
-                                                        }
-                                                    } catch (e) { 
-                                                        console.error(e);
-                                                        alert('Connection error. Please try again.');
-                                                    }
+                                        <h3 style={{ fontFamily: 'Poppins, sans-serif', fontSize: '20px', fontWeight: 700, color: '#0F2E4B', marginBottom: '8px' }}>Invitation Sent!</h3>
+                                        <p style={{ fontFamily: 'Poppins, sans-serif', fontSize: '14px', color: '#6B7280' }}>Your invite has been delivered to {selectedFreelancer.fullName}.</p>
+                                    </motion.div>
+                                ) : (
+                                    <>
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                                            <h3 
+                                                style={{ 
+                                                    fontFamily: 'Poppins, sans-serif', 
+                                                    fontSize: '15px', 
+                                                    fontWeight: 500, 
+                                                    lineHeight: '1', 
+                                                    color: 'rgb(33, 33, 33)',
+                                                    textTransform: 'uppercase',
+                                                    letterSpacing: '0.025em'
                                                 }}
                                             >
-                                                <div>
-                                                    <p className="font-bold text-[14px] text-[#242424]">{job.title}</p>
-                                                    <p className="text-[10px] text-gray-400 font-bold uppercase mt-0.5">Budget: ₹{job.salary || 'Negotiable'}</p>
-                                                </div>
-                                                <ArrowRight size={18} className="text-gray-200 group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                                                Select one of your active jobs
+                                            </h3>
+                                            <div className="relative flex-1 max-w-[200px]">
+                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
+                                                <input 
+                                                    type="text"
+                                                    placeholder="Search projects..."
+                                                    value={jobSearchQuery}
+                                                    onChange={(e) => setJobSearchQuery(e.target.value)}
+                                                    className="w-full pl-9 pr-3 py-1.5 bg-gray-50 border border-gray-100 rounded-lg text-[12px] outline-none focus:border-[#317CD7] transition-all font-['Poppins']"
+                                                />
                                             </div>
-                                        ))
-                                    )}
-                                </div>
+                                        </div>
+                                        
+                                        <div className="space-y-3 max-h-[340px] overflow-y-auto custom-scrollbar pr-2">
+                                            {filteredClientJobs.length === 0 ? (
+                                                <div className="py-12 text-center bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                                    <p className="text-gray-400 text-[13px] font-medium" style={{ fontFamily: 'Poppins, sans-serif' }}>{jobSearchQuery ? 'No matching projects found.' : 'No active jobs found.'}</p>
+                                                    {!jobSearchQuery && (
+                                                        <button 
+                                                            onClick={() => navigate('/post-job')}
+                                                            className="mt-4 text-[#317CD7] font-bold text-[12px] uppercase tracking-widest hover:underline"
+                                                            style={{ fontFamily: 'Poppins, sans-serif' }}
+                                                        >
+                                                            Post a new job
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                filteredClientJobs.map((job) => (
+                                                    <button 
+                                                        key={job.id}
+                                                        disabled={invitingJobId === job.id}
+                                                        onClick={async () => {
+                                                            setInvitingJobId(job.id);
+                                                            try {
+                                                                const res = await fetch(`${API_BASE_URL}/api/jobs/${job.id}/invite/${selectedFreelancer.id}`, {
+                                                                    method: 'POST',
+                                                                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                                                                });
+                                                                if (res.ok) {
+                                                                    setInviteSuccess(true);
+                                                                    setTimeout(() => {
+                                                                        setIsInviteModalOpen(false);
+                                                                        setInviteSuccess(false);
+                                                                    }, 2500);
+                                                                } else {
+                                                                    alert('Failed to send invitation.');
+                                                                }
+                                                            } catch (e) {
+                                                                console.error(e);
+                                                                alert('Error sending invitation.');
+                                                            } finally {
+                                                                setInvitingJobId(null);
+                                                            }
+                                                        }}
+                                                        className="w-full p-5 bg-white border border-gray-100 rounded-xl text-left hover:border-[#317CD7] hover:shadow-md transition-all group flex items-center justify-between"
+                                                    >
+                                                        <div className="flex-1">
+                                                            <div className="flex items-center gap-2 mb-1.5">
+                                                                <span className="px-2 py-0.5 bg-blue-50 text-[#317CD7] text-[9px] font-bold rounded uppercase tracking-wider border border-blue-100" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                                                    {job.type || 'Fixed'}
+                                                                </span>
+                                                                {job.category && (
+                                                                    <span className="px-2 py-0.5 bg-gray-50 text-gray-500 text-[9px] font-bold rounded uppercase tracking-wider border border-gray-100" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                                                                        {job.category}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <h4 
+                                                                className="mb-1 group-hover:text-[#317CD7] transition-colors"
+                                                                style={{
+                                                                    fontFamily: 'Poppins, sans-serif',
+                                                                    fontSize: '15px',
+                                                                    fontWeight: 500,
+                                                                    lineHeight: '22px',
+                                                                    color: 'rgb(33, 33, 33)'
+                                                                }}
+                                                            >
+                                                                {job.title}
+                                                            </h4>
+                                                            <p 
+                                                                style={{ 
+                                                                    fontFamily: 'Poppins, sans-serif', 
+                                                                    fontSize: '13px', 
+                                                                    fontWeight: 500, 
+                                                                    color: '#6B7280',
+                                                                }}
+                                                            >
+                                                                Budget: <span className="text-[#0F2E4B] font-bold">₹{job.price?.toLocaleString() || 'Negotiable'}</span>
+                                                            </p>
+                                                        </div>
+                                                        <div className="ml-4">
+                                                            {invitingJobId === job.id ? (
+                                                                <div className="w-5 h-5 border-2 border-[#317CD7] border-t-transparent rounded-full animate-spin"></div>
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#317CD7] group-hover:text-white transition-all">
+                                                                    <ArrowRight size={16} />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </button>
+                                                ))
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                            <div className="p-4 bg-gray-50 border-t border-[#eee] flex justify-end">
-                                <button onClick={() => setIsInviteModalOpen(false)} className="px-6 py-2 text-sm font-bold text-gray-500 hover:text-gray-700">Cancel</button>
+
+                            {/* Modal Footer */}
+                            <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end">
+                                <button 
+                                    onClick={() => setIsInviteModalOpen(false)}
+                                    className="px-8 py-3 uppercase tracking-widest hover:text-[#0F2E4B] transition-all"
+                                    style={{
+                                        fontFamily: 'Poppins, sans-serif',
+                                        fontSize: '15px',
+                                        fontWeight: 500,
+                                        lineHeight: '26px',
+                                        color: 'rgb(107, 114, 128)'
+                                    }}
+                                >
+                                    Cancel
+                                </button>
                             </div>
                         </motion.div>
                     </div>
+                )}
+            </AnimatePresence>
+
+            <NewsletterSection />
+        </div>
+    );
+};
+
+const FilterSection = ({ title, isOpen, onToggle, children }: any) => {
+    return (
+        <div className="px-5 py-6 border-b border-gray-50 last:border-0">
+            <button 
+                onClick={onToggle} 
+                className="w-full flex items-center justify-between mb-4 group"
+            >
+                <span 
+                    className="transition-all"
+                    style={{ 
+                        fontFamily: '"Poppins", sans-serif',
+                        fontSize: '17px',
+                        lineHeight: '1',
+                        color: '#000000',
+                        fontWeight: 600
+                    }}
+                >
+                    {title}
+                </span>
+                <ChevronDown size={14} className={`text-gray-300 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+            </button>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                    >
+                        {children}
+                    </motion.div>
                 )}
             </AnimatePresence>
         </div>
     );
 };
 
-const FilterSection = ({ title, children, isOpen, onToggle }: any) => (
-    <div className="border-t border-[#eee] first:border-t-0">
-        <button 
-            onClick={onToggle}
-            className="w-full px-5 py-4 flex items-center justify-between group"
-        >
-            <h4 className="text-[14px] font-bold text-[#242424] group-hover:text-[#b5242c] transition-colors">{title}</h4>
-            {isOpen ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
-        </button>
-        <AnimatePresence>
-            {isOpen && (
-                <motion.div 
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                >
-                    <div className="px-5 pb-5 pt-0">
-                        {children}
+const NewsletterSection = () => (
+    <div className="bg-[#F9FAFB] py-16 border-t border-gray-100">
+        <div className="max-w-[1440px] mx-auto px-6 lg:pl-4 lg:pr-16">
+            <div className="bg-white rounded-xl p-12 shadow-2xl shadow-gray-200/50 border border-gray-100 flex flex-col lg:flex-row items-center justify-between gap-12">
+                <div className="max-w-[600px]">
+                    <h3 
+                        style={{ 
+                            fontFamily: '"Poppins", sans-serif',
+                            color: '#040e24',
+                            fontWeight: 700,
+                            fontSize: '28px',
+                            marginBottom: '1rem'
+                        }}
+                    >
+                        Join Our Free Newsletter
+                    </h3>
+                    <p 
+                        style={{ 
+                            fontFamily: '"Poppins", sans-serif',
+                            fontSize: '15px',
+                            lineHeight: '26px',
+                            color: '#212121',
+                            fontWeight: 500
+                        }}
+                    >
+                        Stay updated with the latest job opportunities and industry news delivered directly to your inbox.
+                    </p>
+                </div>
+                <div className="flex-1 w-full flex flex-col sm:flex-row gap-4 max-w-[500px]">
+                    <div className="flex-1 relative">
+                        <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                        <input 
+                            type="email" 
+                            placeholder="Enter your email" 
+                            className="w-full bg-gray-50 border border-gray-100 h-[44px] pl-14 pr-6 rounded-lg focus:outline-none focus:border-[#317CD7] transition-all text-[14px]" 
+                        />
                     </div>
-                </motion.div>
-            )}
-        </AnimatePresence>
+                    <button className="bg-[#317CD7] hover:bg-[#2866B1] text-white px-8 h-[44px] rounded-lg font-bold uppercase tracking-widest transition-all text-[12px]">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 );
 

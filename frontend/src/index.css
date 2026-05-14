@@ -1,57 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-surface: #fff8f7;
-  --color-primary-fixed-dim: #ffb3af;
-  --color-secondary-fixed-dim: #77dd6a;
-  --color-on-secondary-fixed: #002201;
-  --color-surface-container: #ffe9e7;
-  --color-on-error-container: #93000a;
-  --color-outline-variant: #e2bebc;
-  --color-on-background: #261817;
-  --color-primary: #b5242c;
-  --color-surface-container-high: #fde2e0;
-  --color-surface-container-low: #fff0ef;
-  --color-surface-bright: #fff8f7;
-  --color-on-primary: #ffffff;
-  --color-tertiary-fixed-dim: #59dcb0;
-  --color-tertiary: #006c50;
-  --color-on-tertiary-container: #003425;
-  --color-surface-variant: #f8dcda;
-  --color-inverse-surface: #3d2c2b;
-  --color-on-tertiary-fixed-variant: #00513c;
-  --color-error-container: #ffdad6;
-  --color-primary-container: #b5242c;
-  --color-inverse-primary: #ffb3af;
-  --color-on-surface-variant: #5a403f;
-  --color-surface-dim: #efd4d2;
-  --color-on-primary-fixed-variant: #920218;
-  --color-tertiary-container: #00a87f;
-  --color-on-secondary: #ffffff;
-  --color-surface-container-lowest: #ffffff;
-  --color-on-tertiary-fixed: #002116;
-  --color-secondary-container: #8ff780;
-  --color-surface-container-highest: #f8dcda;
-  --color-tertiary-fixed: #78f9cb;
-  --color-on-error: #ffffff;
-  --color-primary-fixed: #ffdad7;
-  --color-on-primary-container: #61000c;
-  --color-on-secondary-container: #00730d;
-  --color-secondary-fixed: #92fa83;
-  --color-background: #fff8f7;
-  --color-outline: #8e706e;
-  --color-secondary: #006e0c;
-  --color-inverse-on-surface: #ffedeb;
-  --color-on-secondary-fixed-variant: #005307;
-  --color-on-tertiary: #ffffff;
-  --color-error: #ba1a1a;
-  --color-on-primary-fixed: #410005;
-  --color-surface-tint: #b5242c;
-  --color-on-surface: #261817;
+  --color-surface: #F6F3EE;
+  --color-primary: #317CD7;
+  --color-navy: #0F2E4B;
+  --color-on-background: #0F2E4B;
+  --color-primary-container: #317CD7;
+  --color-background: #F6F3EE;
+  --color-outline: #0F2E4B;
+  --color-surface-tint: #317CD7;
+  --color-on-surface: #0F2E4B;
 
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
@@ -64,19 +29,19 @@
   --spacing-stack-md: 16px;
   --spacing-stack-sm: 8px;
 
-  --font-display-lg: "Plus Jakarta Sans", sans-serif;
-  --font-body-sm: "Plus Jakarta Sans", sans-serif;
-  --font-label-sm: "Plus Jakarta Sans", sans-serif;
-  --font-label-md: "Plus Jakarta Sans", sans-serif;
-  --font-body-lg: "Plus Jakarta Sans", sans-serif;
-  --font-headline-md: "Plus Jakarta Sans", sans-serif;
-  --font-headline-lg: "Plus Jakarta Sans", sans-serif;
-  --font-body-md: "Plus Jakarta Sans", sans-serif;
+  --font-display-lg: "Montserrat", sans-serif;
+  --font-body-sm: "Montserrat", sans-serif;
+  --font-label-sm: "Montserrat", sans-serif;
+  --font-label-md: "Montserrat", sans-serif;
+  --font-body-lg: "Montserrat", sans-serif;
+  --font-headline-md: "Montserrat", sans-serif;
+  --font-headline-lg: "Montserrat", sans-serif;
+  --font-body-md: "Montserrat", sans-serif;
 
   --text-display-lg: 48px;
   --text-display-lg--line-height: 1.2;
   --text-display-lg--letter-spacing: -0.02em;
-  --text-display-lg--font-weight: 700;
+  --text-display-lg--font-weight: 600;
 
   --text-body-sm: 14px;
   --text-body-sm--line-height: 1.5;
@@ -129,19 +94,19 @@ body {
   margin: 0;
   overflow-x: hidden;
   background-color: var(--color-surface);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Montserrat', sans-serif;
   font-size: 16px;
   font-weight: 400;
-  line-height: 1.6;
-  color: var(--color-on-background);
+  line-height: 22.4px;
+  color: rgb(7, 36, 43);
 }
 
 .text-accent {
-  color: #b5242c;
+  color: #317CD7;
 }
 
 .bg-accent {
-  background-color: #b5242c;
+  background-color: #317CD7;
 }
 
 /* Custom Scrollbar */
@@ -159,7 +124,7 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #b5242c;
+  background: #317CD7;
 }
 
 /* Hide number input spinners */

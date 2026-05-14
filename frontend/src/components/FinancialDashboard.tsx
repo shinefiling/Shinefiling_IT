@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
     Wallet, ArrowUpRight, ArrowDownRight, 
     TrendingUp, CreditCard, History, 
-    Plus, Download, DollarSign, AlertCircle,
+    Plus, Download, IndianRupee, AlertCircle,
     CheckCircle2, Clock, Smartphone, MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -249,7 +249,7 @@ const FinancialDashboard: React.FC = () => {
                         <div className="bg-primary rounded-xl p-8 text-white relative overflow-hidden group shadow-xl shadow-primary/20">
                             <div className="relative z-10">
                                 <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center mb-6">
-                                    <DollarSign size={20} className="text-white" />
+                                    <IndianRupee size={20} className="text-white" />
                                 </div>
                                 <h3 className="text-[20px] font-bold mb-3 leading-tight">Financial Tip</h3>
                                 <p className="text-[13px] opacity-90 leading-relaxed mb-8">

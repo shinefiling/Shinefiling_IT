@@ -28,7 +28,7 @@ const AuditLogView = () => {
                         <input type="text" placeholder="Filter audit trail..." className="bg-transparent border-none outline-none text-sm text-slate-600 dark:text-slate-300 w-64 font-poppins" />
                     </div>
                     <div className="flex items-center gap-6">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Retention: 90 Days</span>
+                        <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-[0.2em]">Retention: 90 Days</span>
                         <button className="p-2 text-slate-400 hover:text-orange-500 transition-colors"><Filter size={18} /></button>
                     </div>
                 </div>
@@ -36,7 +36,7 @@ const AuditLogView = () => {
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
-                            <tr className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
+                            <tr className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">
                                 <th className="px-8 py-5">Log Identity</th>
                                 <th className="px-8 py-5">Administrator</th>
                                 <th className="px-8 py-5">Action Performed</th>
@@ -60,7 +60,7 @@ const AuditLogView = () => {
                                         <span className="text-sm text-slate-600 dark:text-slate-300 font-medium font-inter">{log.action}</span>
                                     </td>
                                     <td className="px-8 py-6">
-                                        <span className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded tracking-widest">{log.target}</span>
+                                        <span className="text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase bg-slate-100 dark:bg-slate-900 px-2 py-1 rounded tracking-widest">{log.target}</span>
                                     </td>
                                     <td className="px-8 py-6">
                                         <span className="text-[11px] text-slate-400 font-bold uppercase tracking-widest">{log.date}</span>

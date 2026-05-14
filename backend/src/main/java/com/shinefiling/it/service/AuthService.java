@@ -60,6 +60,11 @@ public class AuthService {
         profile.setEmail(user.getEmail());
         profile.setFullName(user.getFullName());
         profile.setUsername(user.getUsername());
+        profile.setUserRole(user.getUserRole());
+        profile.setCompanyName(user.getCompanyName());
+        profile.setIndustry(user.getIndustry());
+        profile.setWebsite(user.getWebsite());
+        profile.setClientType(user.getClientType());
         profile.setEmailVerified(false);
         profileRepository.save(profile);
 
@@ -160,7 +165,7 @@ public class AuthService {
     @Value("${google.client.id}")
     private String googleClientId;
 
-    public User googleLogin(String idTokenString, String requestedRole) {
+    public User googleLogin(String idTokenString, String requestedRole, boolean isSignup) {
         try {
             GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
                     .setAudience(Collections.singletonList(googleClientId))
@@ -176,6 +181,8 @@ public class AuthService {
                 Optional<User> userOpt = userRepository.findByEmail(email);
                 if (userOpt.isPresent()) {
                     return userOpt.get();
+                } else if (!isSignup) {
+                    throw new RuntimeException("Account not found. Please register first.");
                 } else {
                     // Create new user
                     User newUser = new User();
@@ -205,17 +212,18 @@ public class AuthService {
             throw new RuntimeException("Error verifying Google token: " + e.getMessage());
         }
     }
-    public User processGoogleLoginRaw(String email, String name, String googleId, String requestedRole, String profileImage) {
+    public User processGoogleLoginRaw(String email, String name, String googleId, String requestedRole, String profileImage, boolean isSignup) {
         try {
             Optional<User> userOpt = userRepository.findByEmail(email);
             User user;
             if (userOpt.isPresent()) {
                 user = userOpt.get();
-                // Update profile picture if it changed
                 if (profileImage != null) {
                     user.setProfilePicture(profileImage);
                     userRepository.save(user);
                 }
+            } else if (!isSignup) {
+                throw new RuntimeException("Account not found. Please register first.");
             } else {
                 // Create new user
                 user = new User();

@@ -71,7 +71,7 @@ const DashboardOverview = ({ stats, users, projects, loggedUser, onNavigate }: a
                     </div>
                     <div className="mb-6">
                         <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total Active Gigs</p>
-                        <h2 className="text-3xl font-black text-slate-800 dark:text-white font-poppins">{projects.length}</h2>
+                        <h2 className="text-3xl font-extrabold text-slate-800 dark:text-white font-poppins">{projects.length}</h2>
                     </div>
                     <div className="w-full h-2.5 bg-gray-100 dark:bg-slate-900 rounded-full flex overflow-hidden mb-6">
                         <div className="w-1/2 bg-orange-500"></div>
@@ -94,7 +94,7 @@ const DashboardOverview = ({ stats, users, projects, loggedUser, onNavigate }: a
                         <div className="w-32 h-32 rounded-full border-[10px] border-slate-50 dark:border-slate-900 border-t-orange-500 border-l-teal-500 flex items-center justify-center shadow-inner">
                             <div className="text-center">
                                 <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Total</p>
-                                <h2 className="text-2xl font-black text-slate-800 dark:text-white font-poppins">{stats.totalFreelancers}</h2>
+                                <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white font-poppins">{stats.totalFreelancers}</h2>
                             </div>
                         </div>
                     </div>
@@ -135,7 +135,7 @@ const DashboardOverview = ({ stats, users, projects, loggedUser, onNavigate }: a
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs font-bold text-emerald-600 leading-none mb-1">₹{p.budget?.toLocaleString()}</p>
-                                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">Verified</p>
+                                    <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-tighter">Verified</p>
                                 </div>
                             </div>
                         ))}

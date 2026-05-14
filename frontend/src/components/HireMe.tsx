@@ -78,7 +78,7 @@ const HireMe: React.FC = () => {
                                 className="w-20 h-20 rounded-full border border-[#eee]"
                             />
                             <div>
-                                <h1 className="text-2xl font-black text-[#261817]">Hiring {freelancer?.fullName}</h1>
+                                <h1 className="text-2xl font-extrabold text-[#261817]">Hiring {freelancer?.fullName}</h1>
                                 <p className="text-[#b5242c] font-bold">{freelancer?.professionalHeadline || 'Elite Freelancer'}</p>
                                 <div className="flex items-center gap-4 mt-2 text-xs text-slate-400 font-bold uppercase tracking-widest">
                                     <span className="flex items-center gap-1"><Clock size={12}/> {freelancer?.location}</span>
@@ -89,7 +89,7 @@ const HireMe: React.FC = () => {
 
                         {/* Project Selection */}
                         <div className="bg-white border border-[#eee] p-8 rounded-sm shadow-sm">
-                            <h2 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <h2 className="text-sm font-extrabold uppercase tracking-widest mb-6 flex items-center gap-2">
                                 <Briefcase size={16} className="text-[#b5242c]"/> 1. Select Project
                             </h2>
                             <div className="space-y-3">
@@ -118,12 +118,12 @@ const HireMe: React.FC = () => {
 
                         {/* Terms */}
                         <div className="bg-white border border-[#eee] p-8 rounded-sm shadow-sm">
-                            <h2 className="text-sm font-black uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <h2 className="text-sm font-extrabold uppercase tracking-widest mb-6 flex items-center gap-2">
                                 <Calendar size={16} className="text-[#b5242c]"/> 2. Contract Terms
                             </h2>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-2">Duration</label>
+                                    <label className="block text-[10px] font-extrabold text-slate-400 uppercase mb-2">Duration</label>
                                     <select 
                                         className="w-full p-3 bg-slate-50 border border-[#eee] rounded-sm outline-none focus:border-[#b5242c] font-bold text-sm"
                                         value={orderData.duration}
@@ -136,7 +136,7 @@ const HireMe: React.FC = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase mb-2">Payment Method</label>
+                                    <label className="block text-[10px] font-extrabold text-slate-400 uppercase mb-2">Payment Method</label>
                                     <div className="p-3 bg-slate-50 border border-[#eee] rounded-sm font-bold text-sm flex items-center gap-2">
                                         <Lock size={14} className="text-green-500" /> Secure Milestone
                                     </div>
@@ -148,7 +148,7 @@ const HireMe: React.FC = () => {
                     {/* Sidebar Summary */}
                     <div className="space-y-6">
                         <div className="bg-[#261817] p-8 text-white rounded-sm shadow-xl sticky top-[120px]">
-                            <h3 className="text-center font-black uppercase tracking-[3px] text-xs mb-8 border-b border-white/10 pb-4">Hiring Summary</h3>
+                            <h3 className="text-center font-extrabold uppercase tracking-[3px] text-xs mb-8 border-b border-white/10 pb-4">Hiring Summary</h3>
                             
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between items-center">
@@ -163,12 +163,12 @@ const HireMe: React.FC = () => {
 
                             <div className="bg-white/5 p-4 rounded-sm mb-8">
                                 <p className="text-[10px] font-bold text-white/30 uppercase mb-2">Estimated Total</p>
-                                <p className="text-3xl font-black">₹{(selectedJob?.salary || 0).toLocaleString()}</p>
+                                <p className="text-3xl font-extrabold">₹{(selectedJob?.salary || 0).toLocaleString()}</p>
                             </div>
 
                             <button 
                                 disabled={!selectedJob}
-                                className={`w-full py-4 rounded-sm font-black uppercase tracking-widest text-xs shadow-lg transition-all ${selectedJob ? 'bg-[#b5242c] hover:bg-[#920218] text-white shadow-[#b5242c]/20' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
+                                className={`w-full py-4 rounded-sm font-extrabold uppercase tracking-widest text-xs shadow-lg transition-all ${selectedJob ? 'bg-[#b5242c] hover:bg-[#920218] text-white shadow-[#b5242c]/20' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
                             >
                                 Confirm & Hire
                             </button>
@@ -180,7 +180,7 @@ const HireMe: React.FC = () => {
 
                         <div className="bg-white border border-[#eee] p-6 rounded-sm text-center">
                             <ShieldCheck className="mx-auto text-green-500 mb-2" size={24} />
-                            <h4 className="text-[11px] font-black uppercase tracking-widest">Escrow Protected</h4>
+                            <h4 className="text-[11px] font-extrabold uppercase tracking-widest">Escrow Protected</h4>
                             <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">Payment is held securely and only released when you approve the work.</p>
                         </div>
                     </div>

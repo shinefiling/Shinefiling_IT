@@ -29,7 +29,8 @@ const JobApply: React.FC = () => {
         portfolio: '',
         linkedin: '',
         coverLetter: '',
-        resume: null as File | null
+        resume: null as File | null,
+        resumeUrl: ''
     });
 
     useEffect(() => {
@@ -68,14 +69,36 @@ const JobApply: React.FC = () => {
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
             if (file.size > 5 * 1024 * 1024) {
                 showError("File size exceeds 5MB limit");
                 return;
             }
-            setFormData(prev => ({ ...prev, resume: file }));
+
+            setLoading(true);
+            const formDataUpload = new FormData();
+            formDataUpload.append('file', file);
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/upload/resume`, {
+                    method: 'POST',
+                    body: formDataUpload,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                if (response.ok) {
+                    const fileUrl = await response.text();
+                    setFormData(prev => ({ ...prev, resume: file, resumeUrl: fileUrl }));
+                } else {
+                    showError("Failed to upload resume to server.");
+                }
+            } catch (err) {
+                console.error("Upload error:", err);
+                showError("Connection error during upload.");
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -133,7 +156,8 @@ const JobApply: React.FC = () => {
                 portfolio: formData.portfolio,
                 linkedin: formData.linkedin,
                 coverLetter: formData.coverLetter,
-                resumeFileName: formData.resume ? formData.resume.name : 'No file uploaded'
+                resumeFileName: formData.resume ? formData.resume.name : 'No file uploaded',
+                resumeUrl: (formData as any).resumeUrl || ''
             };
 
             const response = await fetch(`${API_BASE_URL}/api/job-applications`, {
