@@ -365,7 +365,7 @@ const BrowseProjects: React.FC = () => {
                         ) : projects.length === 0 ? (
                             <div className="py-20 text-center">
                                 <Search className="mx-auto text-gray-200 mb-4" size={48} />
-                                <p className="text-gray-500">No projects found matching your search.</p>
+                                <p className="text-gray-500">No projects found.</p>
                             </div>
                         ) : (
                             paginatedProjects.map((project) => (

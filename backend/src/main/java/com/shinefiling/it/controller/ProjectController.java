@@ -46,6 +46,10 @@ public class ProjectController {
             @RequestParam(required = false) List<String> skills,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String experienceLevel) {
-        return ResponseEntity.ok(projectRepository.searchProjects(query, minPrice, maxPrice, skills, category, experienceLevel));
+        
+        // Fix for 400 error: if skills is empty, set to null to avoid "IN ()" SQL error
+        List<String> skillsToSearch = (skills != null && skills.isEmpty()) ? null : skills;
+        
+        return ResponseEntity.ok(projectRepository.searchProjects(query, minPrice, maxPrice, skillsToSearch, category, experienceLevel));
     }
 }
