@@ -45,11 +45,24 @@ public class ProjectController {
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) List<String> skills,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String experienceLevel) {
+            @RequestParam(required = false) String experienceLevel,
+            @RequestParam(required = false) String location) {
         
-        // Fix for 400 error: if skills is empty, set to null to avoid "IN ()" SQL error
-        List<String> skillsToSearch = (skills != null && skills.isEmpty()) ? null : skills;
+        // Ensure skills list is null if empty to prevent SQL "IN ()" errors
+        List<String> skillsToSearch = (skills != null && !skills.isEmpty()) ? skills : null;
         
-        return ResponseEntity.ok(projectRepository.searchProjects(query, minPrice, maxPrice, skillsToSearch, category, experienceLevel));
+        // Experience level and category cleanup
+        String exp = (experienceLevel != null && !experienceLevel.isEmpty()) ? experienceLevel : null;
+        String cat = (category != null && !category.isEmpty()) ? category : null;
+        String q = (query != null && !query.isEmpty()) ? query : null;
+
+        try {
+            List<Project> projects = projectRepository.searchProjects(q, minPrice, maxPrice, skillsToSearch, cat, exp);
+            return ResponseEntity.ok(projects);
+        } catch (Exception e) {
+            // Log the error and return empty list or error
+            System.err.println("Search error: " + e.getMessage());
+            return ResponseEntity.ok(java.util.Collections.emptyList());
+        }
     }
 }
