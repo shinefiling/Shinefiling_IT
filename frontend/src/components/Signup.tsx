@@ -313,33 +313,33 @@ const Signup: React.FC = () => {
                                 <div className="space-y-1">
                                     <label className="form-label">Full Name</label>
                                     <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                            <User size={16} />
-                                        </div>
                                         <input 
                                             required
                                             type="text" 
                                             value={signupData.fullName}
                                             onChange={(e) => setSignupData({...signupData, fullName: e.target.value})}
                                             placeholder="John Doe" 
-                                            className="form-input-field pl-11"
+                                            className="form-input-field !pl-11"
                                         />
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                            <User size={16} />
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="space-y-1">
                                     <label className="form-label">Username</label>
                                     <div className="relative">
-                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                            <User size={16} />
-                                        </div>
                                         <input 
                                             required
                                             type="text" 
                                             value={signupData.username}
                                             onChange={(e) => setSignupData({...signupData, username: e.target.value})}
                                             placeholder="johndoe" 
-                                            className="form-input-field pl-11"
+                                            className="form-input-field !pl-11"
                                         />
+                                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                            <User size={16} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -483,24 +483,17 @@ const Signup: React.FC = () => {
                                     Email Address
                                 </label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                        <Mail size={16} />
-                                    </div>
                                     <input 
                                         required
                                         type="email" 
                                         value={signupData.email}
                                         onChange={(e) => setSignupData({...signupData, email: e.target.value})}
                                         placeholder="your@email.com" 
-                                        className="block w-full pl-11 pr-4 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
-                                        style={{ 
-                                            fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '15px',
-                                            fontWeight: 500,
-                                            lineHeight: '26px',
-                                            color: 'rgb(33, 33, 33)'
-                                        }}
+                                        className="form-input-field !pl-11"
                                     />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                        <Mail size={16} />
+                                    </div>
                                 </div>
                             </div>
 
@@ -518,24 +511,17 @@ const Signup: React.FC = () => {
                                     Password
                                 </label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                        <Lock size={16} />
-                                    </div>
                                     <input 
                                         required
                                         type={showPassword ? "text" : "password"} 
                                         value={signupData.password}
                                         onChange={(e) => setSignupData({...signupData, password: e.target.value})}
                                         placeholder="••••••••" 
-                                        className="block w-full pl-11 pr-12 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
-                                        style={{ 
-                                            fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '15px',
-                                            fontWeight: 500,
-                                            lineHeight: '26px',
-                                            color: 'rgb(33, 33, 33)'
-                                        }}
+                                        className="form-input-field !pl-11 pr-12"
                                     />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                        <Lock size={16} />
+                                    </div>
                                     <button 
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
@@ -549,17 +535,17 @@ const Signup: React.FC = () => {
                             <div className="space-y-1">
                                 <label className="text-[11px] font-bold text-[#242424] uppercase tracking-tight ml-1">Confirm Password</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                        <Lock size={16} />
-                                    </div>
                                     <input 
                                         required
                                         type={showPassword ? "text" : "password"} 
                                         value={signupData.confirmPassword}
                                         onChange={(e) => setSignupData({...signupData, confirmPassword: e.target.value})}
                                         placeholder="••••••••" 
-                                        className="block w-full pl-11 pr-12 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md text-[15px] sm:text-sm focus:outline-none focus:border-[#0F2E4B] transition-all"
+                                        className="form-input-field !pl-11 pr-12"
                                     />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                        <Lock size={16} />
+                                    </div>
                                 </div>
                             </div>
 

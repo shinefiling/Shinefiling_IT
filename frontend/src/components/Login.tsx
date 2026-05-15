@@ -228,17 +228,17 @@ const Login: React.FC = () => {
                             <div className="space-y-1">
                                 <label className="form-label">Email Address</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                        <Mail size={18} />
-                                    </div>
                                     <input 
                                         required
                                         type="email" 
                                         value={formData.email}
                                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                                         placeholder="Enter your email" 
-                                        className="form-input-field pl-12"
+                                        className="form-input-field !pl-12"
                                     />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                        <Mail size={18} />
+                                    </div>
                                 </div>
                             </div>
 
@@ -250,17 +250,17 @@ const Login: React.FC = () => {
                                     </Link>
                                 </div>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                        <Lock size={18} />
-                                    </div>
                                     <input 
                                         required
                                         type={showPassword ? "text" : "password"} 
                                         value={formData.password}
                                         onChange={(e) => setFormData({...formData, password: e.target.value})}
                                         placeholder="Enter your password" 
-                                        className="form-input-field pl-12"
+                                        className="form-input-field !pl-12"
                                     />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                        <Lock size={18} />
+                                    </div>
                                     <button 
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
@@ -284,7 +284,7 @@ const Login: React.FC = () => {
                                     </div>
                                     <span className="text-[#666] select-none text-[16px] sm:text-sm">Remember me</span>
                                 </label>
-                                <Link to="/forgot-password" className="text-[#0F2E4B] font-medium hover:underline text-[16px] sm:text-sm">Forgot Password?</Link>
+
                             </div>
 
                             <button 
@@ -305,9 +305,6 @@ const Login: React.FC = () => {
                             <div className="space-y-1">
                                 <label className="text-[11px] font-bold text-[#242424] uppercase tracking-wider ml-1 text-center block">Verification Code</label>
                                 <div className="relative">
-                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
-                                        <ShieldCheck size={18} />
-                                    </div>
                                     <input 
                                         required
                                         type="text"
@@ -315,8 +312,11 @@ const Login: React.FC = () => {
                                         value={otp}
                                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                         placeholder="000000" 
-                                        className="block w-full pl-12 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-2xl tracking-[0.5em] font-mono text-center focus:outline-none focus:border-[#317CD7] transition-all"
+                                        className="block w-full !pl-12 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-2xl tracking-[0.5em] font-mono text-center focus:outline-none focus:border-[#317CD7] transition-all"
                                     />
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#999]">
+                                        <ShieldCheck size={18} />
+                                    </div>
                                 </div>
                             </div>
 

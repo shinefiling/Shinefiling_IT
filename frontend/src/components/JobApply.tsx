@@ -297,7 +297,7 @@ const JobApply: React.FC = () => {
                                                             value={formData.fullName}
                                                             onChange={handleInputChange}
                                                             placeholder="Enter your full name"
-                                                            className="form-input-field pl-12"
+                                                            className="form-input-field !pl-12"
                                                         />
                                                     </div>
                                                 </div>
@@ -311,7 +311,7 @@ const JobApply: React.FC = () => {
                                                             value={formData.email}
                                                             readOnly
                                                             placeholder="your.email@example.com"
-                                                            className="form-input-field pl-12 bg-gray-50 text-gray-500 cursor-not-allowed"
+                                                            className="form-input-field !pl-12 bg-gray-50 text-gray-500 cursor-not-allowed"
                                                         />
                                                     </div>
                                                 </div>
@@ -325,7 +325,7 @@ const JobApply: React.FC = () => {
                                                             value={formData.phone}
                                                             onChange={handleInputChange}
                                                             placeholder="+91 00000 00000"
-                                                            className="form-input-field pl-12"
+                                                            className="form-input-field !pl-12"
                                                         />
                                                     </div>
                                                 </div>
@@ -339,7 +339,7 @@ const JobApply: React.FC = () => {
                                                             value={formData.location}
                                                             onChange={handleInputChange}
                                                             placeholder="City, Country"
-                                                            className="form-input-field pl-12"
+                                                            className="form-input-field !pl-12"
                                                         />
                                                     </div>
                                                 </div>
@@ -394,7 +394,7 @@ const JobApply: React.FC = () => {
                                                                 value={formData.portfolio}
                                                                 onChange={handleInputChange}
                                                                 placeholder="https://portfolio.com"
-                                                                className="form-input-field pl-12"
+                                                                className="form-input-field !pl-12"
                                                             />
                                                         </div>
                                                     </div>
@@ -408,7 +408,7 @@ const JobApply: React.FC = () => {
                                                                 value={formData.linkedin}
                                                                 onChange={handleInputChange}
                                                                 placeholder="https://linkedin.com/in/username"
-                                                                className="form-input-field pl-12"
+                                                                className="form-input-field !pl-12"
                                                             />
                                                         </div>
                                                     </div>
