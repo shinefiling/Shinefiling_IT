@@ -28,7 +28,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
 
@@ -39,7 +39,18 @@ jobs:
         npm run build
 
     # 3. Deploy to Server
-    - name: Deploy to Server
+    - name: Deploy Artifacts to Server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: ${{ secrets.SERVER_PORT }}
+        source: "backend/target/*.jar,frontend/dist/*"
+        target: "~/deploy_temp"
+        strip_components: 0
+
+    - name: Execute Remote SSH Commands
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SERVER_IP }}
@@ -47,23 +58,21 @@ jobs:
         key: ${{ secrets.SERVER_SSH_KEY }}
         port: ${{ secrets.SERVER_PORT }}
         script: |
-          # Go to project directory
-          cd ~/Shinefiling_IT
+          # Create directories if they don't exist
+          mkdir -p ~/Shinefiling_IT/backend/target
           
-          # Pull latest code (to sync any non-build files)
-          git pull origin main
+          # Move JAR to the correct location
+          cp ~/deploy_temp/backend/target/*.jar ~/Shinefiling_IT/backend/target/
           
-          # Rebuild Backend on server (Safer for database dependencies and specific environment)
-          # Alternatively, we could scp the jar, but building on server is easier for now
-          cd backend
-          mvn clean package -DskipTests
+          # Move Frontend files to web directory
+          sudo rm -rf /var/www/it-freelancers/*
+          sudo cp -r ~/deploy_temp/frontend/dist/* /var/www/it-freelancers/
+          
+          # Restart Backend Service
           sudo systemctl restart shinefiling-it-backend
-          
-          # Build Frontend on server
-          cd ../frontend
-          npm install
-          npm run build
-          sudo cp -r dist/* /var/www/it-freelancers/
           
           # Restart Apache
           sudo systemctl restart apache2
+          
+          # Clean up temp folder
+          rm -rf ~/deploy_temp
