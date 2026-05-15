@@ -226,18 +226,7 @@ const Login: React.FC = () => {
                     {step === 'login' ? (
                         <form onSubmit={handleSubmit} className="space-y-3">
                             <div className="space-y-1">
-                                <label 
-                                    className="uppercase tracking-tight ml-1"
-                                    style={{ 
-                                        fontFamily: 'Poppins, sans-serif',
-                                        fontSize: '15px',
-                                        fontWeight: 500,
-                                        lineHeight: '26px',
-                                        color: 'rgb(33, 33, 33)'
-                                    }}
-                                >
-                                    Email Address
-                                </label>
+                                <label className="form-label">Email Address</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                         <Mail size={18} />
@@ -248,31 +237,18 @@ const Login: React.FC = () => {
                                         value={formData.email}
                                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                                         placeholder="Enter your email" 
-                                        className="block w-full pl-12 pr-4 py-4 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] focus:ring-4 focus:ring-[#0F2E4B]/5 transition-all"
-                                        style={{ 
-                                            fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '16px',
-                                            fontWeight: 400,
-                                            lineHeight: '22.4px',
-                                            color: 'rgb(15, 46, 75)'
-                                        }}
+                                        className="form-input-field pl-12"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-1">
-                                <label 
-                                    className="uppercase tracking-tight ml-1"
-                                    style={{ 
-                                        fontFamily: 'Poppins, sans-serif',
-                                        fontSize: '15px',
-                                        fontWeight: 500,
-                                        lineHeight: '26px',
-                                        color: 'rgb(33, 33, 33)'
-                                    }}
-                                >
-                                    Password
-                                </label>
+                                <div className="flex items-center justify-between">
+                                    <label className="form-label">Password</label>
+                                    <Link to="/forgot-password" title="Forgot Password" className="text-[12px] font-bold text-[#317CD7] hover:underline mb-2">
+                                        Forgot Password?
+                                    </Link>
+                                </div>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                         <Lock size={18} />
@@ -282,15 +258,8 @@ const Login: React.FC = () => {
                                         type={showPassword ? "text" : "password"} 
                                         value={formData.password}
                                         onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                        placeholder="••••••••" 
-                                        className="block w-full pl-12 pr-12 py-4 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] focus:ring-4 focus:ring-[#0F2E4B]/5 transition-all"
-                                        style={{ 
-                                            fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '16px',
-                                            fontWeight: 400,
-                                            lineHeight: '22.4px',
-                                            color: 'rgb(15, 46, 75)'
-                                        }}
+                                        placeholder="Enter your password" 
+                                        className="form-input-field pl-12"
                                     />
                                     <button 
                                         type="button"
@@ -346,7 +315,7 @@ const Login: React.FC = () => {
                                         value={otp}
                                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                         placeholder="000000" 
-                                        className="block w-full pl-12 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-2xl tracking-[0.5em] font-mono text-center focus:outline-none focus:border-[#b5242c] transition-all"
+                                        className="block w-full pl-12 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-2xl tracking-[0.5em] font-mono text-center focus:outline-none focus:border-[#317CD7] transition-all"
                                     />
                                 </div>
                             </div>

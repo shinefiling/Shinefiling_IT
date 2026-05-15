@@ -130,34 +130,34 @@ const PostProject: React.FC = () => {
                         <SectionHeading num="01" title="Project Identity" />
                         <div className="space-y-4 mt-6">
                             <div>
-                                <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Project title</label>
+                                <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Project title</label>
                                 <input 
                                     type="text"
                                     value={formData.title}
                                     onChange={(e) => setFormData({...formData, title: e.target.value})}
-                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] outline-none text-[15px] font-medium text-[#0F2E4B] transition-all bg-white tracking-tight placeholder:text-gray-400"
-                                    style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] outline-none text-[15px] font-medium text-[rgb(33,33,33)] transition-all bg-white tracking-tight placeholder:text-gray-400"
+                                    style={{ lineHeight: '26px' }}
                                     placeholder="Ex: Senior Full Stack Developer for Fintech App"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Primary role needed</label>
+                                <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Primary role needed</label>
                                 <input 
                                     type="text"
                                     value={formData.role}
                                     onChange={(e) => setFormData({...formData, role: e.target.value})}
-                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] outline-none text-[15px] font-medium text-[#0F2E4B] transition-all bg-white tracking-tight placeholder:text-gray-400"
-                                    style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] outline-none text-[15px] font-medium text-[rgb(33,33,33)] transition-all bg-white tracking-tight placeholder:text-gray-400"
+                                    style={{ lineHeight: '26px' }}
                                     placeholder="Ex: React Architect, UI Designer"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Category</label>
+                                <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Category</label>
                                 <select 
                                     value={formData.category}
                                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[#0F2E4B] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
-                                    style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[rgb(33,33,33)] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
+                                    style={{ lineHeight: '26px' }}
                                 >
                                     <option value="Web Development">Web Development</option>
                                     <option value="Mobile App">Mobile App</option>
@@ -169,13 +169,13 @@ const PostProject: React.FC = () => {
                             </div>
                             <div>
                                 <div className="flex justify-between items-center mb-2">
-                                    <label className="block text-[15px] font-medium text-[#0F2E4B] tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Requirements description</label>
+                                    <label className="block text-[16px] font-bold text-[rgb(33,33,33)] tracking-tight" style={{ lineHeight: '22.4px' }}>Requirements description</label>
                                 </div>
                                 <textarea 
                                     value={formData.description}
                                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] outline-none text-[15px] font-medium text-[#0F2E4B] min-h-[140px] bg-white tracking-tight placeholder:text-gray-400"
-                                    style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] focus:ring-1 focus:ring-[#317CD7] outline-none text-[15px] font-medium text-[rgb(33,33,33)] min-h-[140px] bg-white tracking-tight placeholder:text-gray-400"
+                                    style={{ lineHeight: '26px' }}
                                     placeholder="Briefly describe the professional requirements and goals..."
                                 />
                             </div>
@@ -186,12 +186,12 @@ const PostProject: React.FC = () => {
                         <SectionHeading num="02" title="Professional Context" />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
                             <div>
-                                <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Experience level</label>
+                                <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Experience level</label>
                                 <select 
                                     value={formData.experienceLevel}
                                     onChange={(e) => setFormData({...formData, experienceLevel: e.target.value})}
-                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[#0F2E4B] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
-                                    style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[rgb(33,33,33)] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
+                                    style={{ lineHeight: '26px' }}
                                 >
                                     <option value="entry">Entry Level</option>
                                     <option value="intermediate">Intermediate</option>
@@ -199,12 +199,12 @@ const PostProject: React.FC = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Project duration</label>
+                                <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Project duration</label>
                                 <select 
                                     value={formData.duration}
                                     onChange={(e) => setFormData({...formData, duration: e.target.value})}
-                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[#0F2E4B] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
-                                    style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                    className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[rgb(33,33,33)] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
+                                    style={{ lineHeight: '26px' }}
                                 >
                                     <option value="less-than-1">Less than 1 month</option>
                                     <option value="1-3 months">1 to 3 months</option>
@@ -260,12 +260,12 @@ const PostProject: React.FC = () => {
                                 onClick={() => setFormData({...formData, paymentType: 'fixed'})}
                                 className={`relative flex items-center gap-4 p-4 rounded-md border-2 transition-all ${formData.paymentType === 'fixed' ? 'border-[#317CD7] bg-[#317CD7]/5' : 'border-[#e5e7eb] bg-white hover:border-gray-300'}`}
                             >
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${formData.paymentType === 'fixed' ? 'bg-[#317CD7] text-white shadow-md shadow-[#317CD7]/20' : 'bg-gray-100 text-gray-400'}`}>
+                                <div className={`w-10 h-10 rounded-md flex items-center justify-center ${formData.paymentType === 'fixed' ? 'bg-[#317CD7] text-white shadow-md shadow-[#317CD7]/20' : 'bg-gray-100 text-gray-400'}`}>
                                     <IndianRupee size={20} />
                                 </div>
                                 <div className="text-left">
-                                    <h4 className="text-[15px] font-medium text-[#0F2E4B] tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Fixed Price</h4>
-                                    <p className="text-[15px] text-[#555] font-normal leading-[24px] tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>One-time payment</p>
+                                    <h4 className="text-[16px] font-bold text-[rgb(33,33,33)] tracking-tight" style={{ lineHeight: '22.4px' }}>Fixed Price</h4>
+                                    <p className="text-[15px] text-[#555] font-medium leading-[24px] tracking-tight">One-time payment</p>
                                 </div>
                                 {formData.paymentType === 'fixed' && <div className="absolute top-3 right-4 text-[#317CD7]"><CheckCircle2 size={16} /></div>}
                             </button>
@@ -273,12 +273,12 @@ const PostProject: React.FC = () => {
                                 onClick={() => setFormData({...formData, paymentType: 'hourly'})}
                                 className={`relative flex items-center gap-4 p-4 rounded-md border-2 transition-all ${formData.paymentType === 'hourly' ? 'border-[#317CD7] bg-[#317CD7]/5' : 'border-[#e5e7eb] bg-white hover:border-gray-300'}`}
                             >
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${formData.paymentType === 'hourly' ? 'bg-[#317CD7] text-white shadow-md shadow-[#317CD7]/20' : 'bg-gray-100 text-gray-400'}`}>
+                                <div className={`w-10 h-10 rounded-md flex items-center justify-center ${formData.paymentType === 'hourly' ? 'bg-[#317CD7] text-white shadow-md shadow-[#317CD7]/20' : 'bg-gray-100 text-gray-400'}`}>
                                     <Clock size={20} />
                                 </div>
                                 <div className="text-left">
-                                    <h4 className="text-[15px] font-medium text-[#0F2E4B] tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Hourly Rate</h4>
-                                    <p className="text-[15px] text-[#555] font-normal leading-[24px] tracking-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>Pay for hours worked</p>
+                                    <h4 className="text-[16px] font-bold text-[rgb(33,33,33)] tracking-tight" style={{ lineHeight: '22.4px' }}>Hourly Rate</h4>
+                                    <p className="text-[15px] text-[#555] font-medium leading-[24px] tracking-tight">Pay for hours worked</p>
                                 </div>
                                 {formData.paymentType === 'hourly' && <div className="absolute top-3 right-4 text-[#317CD7]"><CheckCircle2 size={16} /></div>}
                             </button>
@@ -287,26 +287,26 @@ const PostProject: React.FC = () => {
                         <div className="mt-6 pt-6 border-t border-[#f0f0f0]">
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div>
-                                    <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Currency</label>
+                                    <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Currency</label>
                                     <select 
                                         value={formData.currency}
                                         onChange={(e) => setFormData({...formData, currency: e.target.value})}
-                                        className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[#0F2E4B] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
-                                        style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                        className="w-full px-5 py-3 border border-[#e5e7eb] rounded-md outline-none text-[15px] font-medium text-[rgb(33,33,33)] focus:border-[#317CD7] bg-white appearance-none tracking-tight"
+                                        style={{ lineHeight: '26px' }}
                                     >
                                         {currencies.map(c => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                 </div>
                                 <div className="md:col-span-2">
-                                    <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Estimated price (Budget amount)</label>
+                                    <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Estimated price (Budget amount)</label>
                                     <div className="relative">
                                         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">{formData.currency === 'USD' ? '$' : '₹'}</span>
                                         <input 
                                             type="number"
                                             value={formData.budgetAmount}
                                             onChange={(e) => setFormData({...formData, budgetAmount: e.target.value})}
-                                            className="w-full pl-10 pr-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] outline-none text-[15px] font-medium text-[#0F2E4B] bg-white tracking-tight placeholder:text-gray-400"
-                                            style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                            className="w-full pl-10 pr-5 py-3 border border-[#e5e7eb] rounded-md focus:border-[#317CD7] outline-none text-[15px] font-medium text-[rgb(33,33,33)] bg-white tracking-tight placeholder:text-gray-400"
+                                            style={{ lineHeight: '26px' }}
                                             placeholder="Ex: 5000"
                                         />
                                     </div>

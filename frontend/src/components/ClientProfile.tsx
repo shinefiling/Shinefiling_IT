@@ -3,18 +3,22 @@ import {
     Calendar, ShieldCheck, 
     Mail, Plus, 
     ExternalLink, Briefcase, 
-    MessageSquare, AlertCircle,
+    MessageSquare, AlertCircle, FileText,
     X, CheckCircle2,
     Building2, Users, Edit2,
     LifeBuoy, ArrowLeft, ChevronRight,
-    MapPin, Globe, History, Star, Image as ImageIcon, Trash2,
+    MapPin, Globe, History, Star, Image as ImageIcon, Trash2, Linkedin,
     TrendingUp, Award, Verified, Wallet, CreditCard, LayoutDashboard,
     Search, Bell, LogOut, Settings, Check, Clock, UserPlus,
     PlusCircle, ChevronDown, User, Activity, CheckSquare, History as HistoryIcon
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, RAZORPAY_KEY_ID } from '../config';
+import RecruiterTerminal from './RecruiterTerminal';
+import ProjectTerminal from './ProjectTerminal';
+import ApplicationDetailsModal from './ApplicationDetailsModal';
+import AddFundsModal from './AddFundsModal';
 
 const ClientProfile: React.FC = () => {
     const location = useLocation();
@@ -36,11 +40,11 @@ const ClientProfile: React.FC = () => {
     const [proposals, setProposals] = useState<any[]>([]);
     const [transactions, setTransactions] = useState<any[]>([]);
     const [escrows, setEscrows] = useState<any[]>([]);
-    const [operationalMetrics, setOperationalMetrics] = useState({
-        monthlySpend: 0,
-        activeEscrow: 0,
-        auditScore: 88
-    });
+    const [selectedJobId, setSelectedJobId] = useState<number | null>(null);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [isAppManagementOpen, setIsAppManagementOpen] = useState(false);
+    const [isProjectTerminalOpen, setIsProjectTerminalOpen] = useState(false);
+    const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -137,29 +141,52 @@ const ClientProfile: React.FC = () => {
         }
     };
 
-    const handleAddFunds = async () => {
-        const amount = prompt('Enter amount to deposit:');
-        if (!amount || isNaN(Number(amount))) return;
-        
-        try {
-            const response = await fetch(`${API_BASE_URL}/api/wallet/deposit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: user.id,
-                    amount: Number(amount),
-                    referenceId: 'MANUAL-' + Date.now()
-                })
-            });
-            if (response.ok) {
-                alert('Funds added successfully!');
-                fetchDynamicData(user);
-                // Also update user state balance
-                setUser({ ...user, walletBalance: (user.walletBalance || 0) + Number(amount) });
+    const handleAddFunds = () => {
+        setIsAddFundsOpen(true);
+    };
+
+    const initiateRazorpayPayment = async (amount: number) => {
+        const options = {
+            key: RAZORPAY_KEY_ID,
+            amount: amount * 100, // Amount in paise
+            currency: "INR",
+            name: "Shinefiling IT Freelancer",
+            description: "Wallet Deposit",
+            image: "https://shinefiling.com/favicon.png",
+            handler: async function (response: any) {
+                try {
+                    const depositResponse = await fetch(`${API_BASE_URL}/api/wallet/deposit`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: user.id,
+                            amount: amount,
+                            referenceId: response.razorpay_payment_id
+                        })
+                    });
+                    
+                    if (depositResponse.ok) {
+                        alert('Funds added successfully! Payment ID: ' + response.razorpay_payment_id);
+                        fetchDynamicData(user);
+                        setUser((prev: any) => ({ ...prev, walletBalance: (prev.walletBalance || 0) + amount }));
+                    }
+                } catch (err) {
+                    console.error("Error finalizing deposit:", err);
+                    alert("Payment was successful but balance update failed. Please contact support.");
+                }
+            },
+            prefill: {
+                name: user.fullName || user.username,
+                email: user.email,
+                contact: user.phone || ""
+            },
+            theme: {
+                color: "#0F2E4B"
             }
-        } catch (err) {
-            console.error("Error adding funds:", err);
-        }
+        };
+
+        const rzp = new (window as any).Razorpay(options);
+        rzp.open();
     };
 
     const handleSaveProfile = async () => {
@@ -216,6 +243,7 @@ const ClientProfile: React.FC = () => {
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+    const [selectedApplication, setSelectedApplication] = useState<any>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [editForm, setEditForm] = useState<any>({});
@@ -291,7 +319,10 @@ const ClientProfile: React.FC = () => {
                                         <p className="text-[11px] font-bold text-white/50 uppercase tracking-[0.2em] mb-2">Strategic Reserves</p>
                                         <h2 className="text-[42px] font-bold tracking-tight mb-8">₹{user?.walletBalance?.toLocaleString() || '0.00'}</h2>
                                         <div className="flex gap-4">
-                                            <button className="bg-[#317CD7] text-white px-8 py-3 rounded-md font-bold text-[13px] hover:bg-[#2563b5] transition-all flex items-center gap-2   uppercase tracking-widest">
+                                            <button 
+                                                onClick={handleAddFunds}
+                                                className="bg-[#317CD7] text-white px-8 py-3 rounded-md font-bold text-[13px] hover:bg-[#2563b5] transition-all flex items-center gap-2   uppercase tracking-widest"
+                                            >
                                                 <PlusCircle size={18} /> Deposit Funds
                                             </button>
                                             <button className="bg-white/10 text-white border border-white/20 px-8 py-3 rounded-md font-bold text-[13px] hover:bg-white/20 transition-all uppercase tracking-widest">
@@ -496,12 +527,12 @@ const ClientProfile: React.FC = () => {
                             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden  mb-10">
                                 <table className="w-full text-left border-collapse table-fixed">
                                     <thead>
-                                        <tr className="bg-gray-50/50 text-[#0F2E4B] text-[11px] font-bold uppercase tracking-widest border-b border-gray-100">
-                                            <th className="py-4 px-6 w-[15%]">Request Date</th>
-                                            <th className="py-4 px-6 w-[20%]">Freelancer</th>
-                                            <th className="py-4 px-6 w-[35%]">Project Details</th>
-                                            <th className="py-4 px-6 w-[15%]">Budget</th>
-                                            <th className="py-4 px-6 w-[15%] text-right">Actions</th>
+                                        <tr className="bg-gray-50/50 border-b border-gray-100">
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-left">Engagement Date</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-left">Partner</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-left">Project Scope</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-left">Budget Allocation</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-right">Control</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
@@ -511,8 +542,8 @@ const ClientProfile: React.FC = () => {
                                             myProjects.map((project, idx) => (
                                                 <tr key={project.id} className="transition-all hover:bg-gray-50/50 group">
                                                     <td className="py-4 px-6 align-top">
-                                                        <p className="text-[13px] font-semibold text-gray-700">12 May 2024</p>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">10:30 AM</p>
+                                                        <p className="text-[13px] font-bold text-[#0F2E4B]">12 May 2024</p>
+                                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">10:30 AM</p>
                                                     </td>
                                                     <td className="py-4 px-6 align-top">
                                                         <div className="flex items-center gap-3">
@@ -526,20 +557,23 @@ const ClientProfile: React.FC = () => {
                                                         </div>
                                                     </td>
                                                     <td className="py-4 px-6 align-top">
-                                                        <p className="text-[16px] font-semibold text-[#0F2E4B] leading-[28px] line-clamp-2">{project.title}</p>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] mt-1">{project.category || 'Development'}</p>
+                                                        <p className="text-[15px] font-bold text-[#0F2E4B] leading-tight line-clamp-2">{project.title}</p>
+                                                        <p className="text-[11px] text-[#317CD7] font-bold uppercase tracking-wider mt-1">{project.category || 'Development'}</p>
                                                     </td>
                                                     <td className="py-4 px-6 align-top">
-                                                        <p className="text-[20px] font-semibold text-[#0F2E4B]">₹{project.budgetAmount?.toLocaleString()}</p>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">Fixed Price</p>
+                                                        <p className="text-[18px] font-bold text-[#317CD7]">₹{project.budgetAmount?.toLocaleString()}</p>
+                                                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tight">Fixed Price</p>
                                                     </td>
                                                     <td className="py-4 px-6 align-top text-right">
                                                         <div className="flex items-center justify-end gap-2">
-                                                            <button className="p-1.5 rounded-lg border border-gray-100 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
-                                                                <X size={16} />
-                                                            </button>
-                                                            <button className="bg-[#317CD7] text-white px-3 py-1.5 rounded-lg font-bold text-[11px] hover:bg-[#00332c] transition-all">
-                                                                Approve
+                                                            <button 
+                                                                onClick={() => {
+                                                                    setSelectedProjectId(project.id);
+                                                                    setIsProjectTerminalOpen(true);
+                                                                }}
+                                                                className="px-4 py-2 bg-[#317CD7] text-white rounded-lg font-bold text-[11px] hover:bg-[#2563b5] transition-all"
+                                                            >
+                                                                View Bids
                                                             </button>
                                                         </div>
                                                     </td>
@@ -572,10 +606,10 @@ const ClientProfile: React.FC = () => {
                                 <table className="w-full text-left border-collapse table-fixed">
                                     <thead>
                                         <tr className="bg-gray-50/50 text-[#0F2E4B] text-[11px] font-bold uppercase tracking-widest border-b border-gray-100">
-                                            <th className="py-4 px-6 w-[40%]">Job Details</th>
-                                            <th className="py-4 px-6 w-[20%]">Enterprise</th>
-                                            <th className="py-4 px-6 w-[20%]">Compensation</th>
-                                            <th className="py-4 px-6 w-[20%] text-right">Location</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-left">Role / Designation</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-left">Organization</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-left">Compensation</th>
+                                            <th className="py-4 px-6 text-[11px] font-bold text-gray-400 uppercase tracking-widest text-right">Operations</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
@@ -585,20 +619,27 @@ const ClientProfile: React.FC = () => {
                                             myJobs.map(job => (
                                                 <tr key={job.id} className="hover:bg-gray-50/50 transition-all group">
                                                     <td className="py-4 px-6 align-top">
-                                                        <p className="text-[16px] font-semibold text-[#0F2E4B] leading-[28px] line-clamp-2">{job.title}</p>
-                                                        <div className="flex items-center gap-2 mt-1">
-                                                            <span className="px-2 py-0.5 bg-[#317CD7]/10 text-[#317CD7] text-[10px] font-bold rounded-lg tracking-widest">{job.type}</span>
-                                                            <span className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] mt-1">Posted 2 days ago</span>
+                                                        <p className="text-[15px] font-bold text-[#0F2E4B] leading-tight line-clamp-2">{job.title}</p>
+                                                        <div className="flex items-center gap-2 mt-2">
+                                                            <span className="px-2 py-0.5 bg-gray-50 border border-gray-100 text-gray-400 text-[10px] font-bold rounded-lg tracking-widest">{job.type}</span>
+                                                            <span className="text-[11px] font-bold text-[#317CD7] uppercase tracking-wider">Posted 2 days ago</span>
                                                         </div>
                                                     </td>
-                                                    <td className="py-4 px-6 align-top text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] truncate">{job.company}</td>
+                                                    <td className="py-4 px-6 align-top text-[14px] font-bold text-gray-600 truncate">{job.company}</td>
                                                     <td className="py-4 px-6 align-top">
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">₹{job.price?.toLocaleString()}</p>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">Per Annum</p>
+                                                        <p className="text-[15px] font-bold text-[#0F2E4B]">₹{job.price?.toLocaleString()}</p>
+                                                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tight">Per Annum</p>
                                                     </td>
                                                     <td className="py-4 px-6 align-top text-right">
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">{job.location}</p>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">Remote Available</p>
+                                                        <button 
+                                                            onClick={() => {
+                                                                setSelectedJobId(Number(job.id));
+                                                                setIsAppManagementOpen(true);
+                                                            }}
+                                                            className="px-4 py-2 bg-[#317CD7] text-white rounded-lg font-bold text-[11px] hover:bg-[#2563b5] transition-all"
+                                                        >
+                                                            View Applications
+                                                        </button>
                                                     </td>
                                                 </tr>
                                             ))
@@ -606,181 +647,45 @@ const ClientProfile: React.FC = () => {
                                     </tbody>
                                 </table>
                             </div>
+                              </div>
+
+                        {/* Quick Overview of Recent Apps (Small Card) */}
+                        <div className="bg-white border border-gray-100 rounded-lg p-6 mb-8 flex justify-between items-center shadow-sm">
+                            <div>
+                                <h3 className="text-[18px] font-bold text-[#0F2E4B]">Application Management</h3>
+                                <p className="text-[13px] text-gray-500 font-medium">Manage all incoming candidates in a dedicated full-screen interface</p>
+                            </div>
+                            <button 
+                                onClick={() => setIsAppManagementOpen(true)}
+                                className="bg-[#0F2E4B] text-white px-6 py-3 rounded-xl font-bold text-[13px] hover:bg-black transition-all flex items-center gap-2 shadow-lg shadow-[#0F2E4B]/20 active:scale-95"
+                            >
+                                <Users size={18} /> Open Management Terminal
+                            </button>
                         </div>
 
-                        <div className="bg-white border border-gray-100 rounded-lg p-8 mb-8 ">
-                            <div className="flex items-center gap-3 mb-8">
-                                <div className="w-12 h-12 bg-gray-50 rounded-lg flex items-center justify-center">
-                                    <Star size={24} className="text-[#317CD7]" />
-                                </div>
-                                <div>
-                                    <h3 className="text-[24px] font-bold text-[#0F2E4B] tracking-tight">Active Proposals</h3>
-                                    <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">Bids received on your active projects</p>
-                                </div>
-                                <span className="bg-[#317CD7] text-white text-[12px] font-bold px-2.5 py-0.5 rounded-lg ml-1">{proposals.length}</span>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 gap-6">
-                                {proposals.length === 0 ? (
-                                    <div className="py-24 text-center bg-white rounded-lg border border-dashed border-gray-100">
-                                        <Star size={48} className="mx-auto text-gray-100 mb-6" />
-                                        <p className="text-[rgb(33,33,33)] font-medium text-[15px] leading-[26px]">No proposals received yet</p>
-                                    </div>
-                                ) : (
-                                    proposals.map(prop => (
-                                        <div key={prop.id} className="bg-white rounded-lg border border-gray-100 p-6  hover: transition-all group relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 w-24 h-24 bg-[#317CD7]/5 rounded-lg translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform duration-700"></div>
-                                            
-                                            <div className="flex flex-col lg:flex-row gap-6 relative z-10">
-                                                <div className="flex-1">
-                                                    <div className="flex items-center gap-4 mb-5">
-                                                        <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#1e2329] to-[#000] text-white flex items-center justify-center font-bold text-lg ">
-                                                            {prop.freelancer?.fullName?.charAt(0) || prop.freelancer?.username?.charAt(0)}
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="text-[18px] font-bold text-[#0F2E4B]">{prop.freelancer?.fullName || prop.freelancer?.username}</h4>
-                                                            <div className="flex items-center gap-2 mt-0.5">
-                                                                <span className="flex items-center gap-1 text-[11px] font-bold text-[#317CD7]">
-                                                                    <Verified size={12} /> Verified Expert
-                                                                </span>
-                                                                <span className="text-gray-300">•</span>
-                                                                <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">Project ID: <span className="text-gray-600 font-bold">#{prop.projectId || 'N/A'}</span></p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div className="grid grid-cols-3 gap-6 py-4 border-y border-gray-50 mb-5">
-                                                        <div>
-                                                            <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] mb-1">Bid Amount</p>
-                                                            <p className="text-[18px] font-bold text-[#317CD7]">₹{prop.bidAmount?.toLocaleString()}</p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] mb-1">Timeline</p>
-                                                            <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] flex items-center gap-2">
-                                                                <Clock size={16} className="text-gray-400" /> {prop.deliveryTime}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] mb-1">Status</p>
-                                                            <span className={`inline-flex px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-tight ${prop.status === 'PENDING' ? 'bg-amber-50 text-amber-600 border border-amber-100' : 'bg-[#317CD7]/5 text-[#317CD7] border border-[#317CD7]'}`}>
-                                                                {prop.status}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    
-                                                    <div>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] mb-2">Proposal Brief</p>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px] italic line-clamp-2 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                                                            "{prop.coverLetter}"
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div className="lg:w-48 flex flex-col justify-center gap-3">
-                                                    <button 
-                                                        onClick={() => window.dispatchEvent(new CustomEvent('open-chat', { 
-                                                            detail: { 
-                                                                 contact: { 
-                                                                      name: prop.freelancer?.fullName || prop.freelancer?.username, 
-                                                                      username: prop.freelancer?.username,
-                                                                      email: prop.freelancer?.email,
-                                                                      img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100"
-                                                                  } 
-                                                             } 
-                                                        }))}
-                                                        className="w-full flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-lg font-bold text-[13px] hover:border-[#317CD7] hover:text-[#317CD7] transition-all group/chat"
-                                                    >
-                                                        <MessageSquare size={18} className="text-gray-400 group-hover/chat:text-[#317CD7]" /> Open Terminal
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleApproveBid(prop.id)}
-                                                        className="w-full bg-[#0F2E4B] text-white px-4 py-3 rounded-lg font-bold text-[13px] hover:bg-black transition-all flex items-center justify-center gap-2 active:scale-95"
-                                                        disabled={prop.status !== 'PENDING'}
-                                                    >
-                                                        <Check size={18} /> {prop.status === 'PENDING' ? 'Approve Bid' : 'Accepted'}
-                                                    </button>
-                                                    <button className="w-full bg-white border border-gray-100 text-gray-400 px-4 py-2 rounded-lg font-bold text-[11px] hover:bg-red-50 hover:text-red-500 transition-all">
-                                                        Decline
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
+                        {/* Full Screen Application Management Modal */}
+                        <RecruiterTerminal 
+                            isOpen={isAppManagementOpen}
+                            onClose={() => setIsAppManagementOpen(false)}
+                            myJobs={myJobs}
+                            applications={applications}
+                            onReviewProfile={(app) => setSelectedApplication(app)}
+                            initialJobId={selectedJobId}
+                        />
 
-                        <div className="bg-white border border-gray-100 rounded-lg p-8">
-                            <h3 className="text-[20px] font-bold text-[#0F2E4B] mb-6">Recent Job Applications</h3>
-                            <div className="space-y-4">
-                                {applications.length === 0 ? (
-                                    <div className="py-24 text-center text-[rgb(33, 33, 33)] font-medium text-[15px] leading-[26px]">No Job Applications Received</div>
-                                ) : (
-                                    applications.map(app => (
-                                        <div key={app.id} className="p-5 border border-gray-50 rounded-lg bg-gray-50/50 flex flex-col md:flex-row justify-between gap-4">
-                                            <div className="flex-1">
-                                                <div className="flex items-center gap-3 mb-2">
-                                                    <div className="w-10 h-10 rounded-lg bg-[#317CD7] text-white flex items-center justify-center font-bold text-sm">
-                                                        {app.fullName?.charAt(0)}
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="text-[16px] font-bold text-[#0F2E4B]">{app.fullName}</h4>
-                                                        <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">Applied for: <span className="font-bold text-gray-700">{app.jobTitle}</span></p>
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-4 mt-4">
-                                                    <div>
-                                                        <p className="text-[13px] font-bold text-gray-700">{app.experience}</p>
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-[10px] font-bold text-gray-400 mb-1">Location</p>
-                                                        <p className="text-[13px] font-bold text-gray-700">{app.location}</p>
-                                                    </div>
-                                                </div>
-                                                <div className="mt-4">
-                                                    <p className="text-[10px] font-bold text-gray-400 mb-1">Skills</p>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {app.skills?.split(',').map((skill: string) => (
-                                                            <span key={skill} className="px-2 py-1 bg-white border border-gray-100 rounded-lg text-[10px] font-bold text-gray-600">
-                                                                {skill.trim()}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="flex flex-col justify-between items-end gap-3">
-                                                <div className="text-right">
-                                                    <span className={`px-3 py-1 rounded-lg text-[10px] font-bold ${app.status === 'PENDING' ? 'bg-amber-50 text-amber-600' : 'bg-[#317CD7]/5 text-[#317CD7]'}`}>
-                                                        {app.status}
-                                                    </span>
-                                                    <p className="text-[10px] text-gray-400 mt-1">{new Date(app.submittedAt).toLocaleDateString()}</p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <button 
-                                                        onClick={() => window.dispatchEvent(new CustomEvent('open-chat', { 
-                                                            detail: { 
-                                                                contact: { 
-                                                                    name: app.fullName, 
-                                                                    username: app.username,
-                                                                    email: app.email,
-                                                                    img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
-                                                                } 
-                                                            } 
-                                                        }))}
-                                                        className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg font-bold text-[12px] hover:border-[#317CD7] hover:text-[#317CD7] transition-all"
-                                                    >
-                                                        <MessageSquare size={16} /> Chat
-                                                    </button>
-                                                    <button className="bg-[#317CD7] text-white px-4 py-2 rounded-lg font-bold text-[12px] active:scale-95 transition-all">
-                                                        View Details
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
-                            </div>
-                        </div>
+                        {/* Full Screen Project Management Modal */}
+                        <ProjectTerminal 
+                            isOpen={isProjectTerminalOpen}
+                            onClose={() => setIsProjectTerminalOpen(false)}
+                            myProjects={myProjects}
+                            proposals={proposals}
+                            onReviewProposal={(prop) => setSelectedApplication({ 
+                                ...prop.freelancer, 
+                                ...prop,
+                                isProposal: true 
+                            })}
+                            initialProjectId={selectedProjectId}
+                        />
                     </motion.div>
                 );
             case 'messages':
@@ -976,14 +881,52 @@ const ClientProfile: React.FC = () => {
                                                             <Briefcase size={20} />
                                                         </div>
                                                         <div>
-                                                            <p className="text-[16px] font-semibold text-[#0F2E4B] leading-[28px]">{project.title}</p>
-                                                            <p className="text-[15px] font-medium text-[rgb(33,33,33)] leading-[26px]">#{project.id} • {project.category || 'Development'}</p>
+                                                            <p className="text-[14px] font-bold text-[#0F2E4B] leading-tight">{project.title}</p>
+                                                            <p className="text-[11px] text-gray-400 font-bold uppercase tracking-tight mt-1">#{project.id} • {project.category || 'Development'}</p>
                                                         </div>
                                                     </div>
                                                     <div className="text-right">
                                                         <p className="text-[20px] font-semibold text-[#0F2E4B]">₹{project.budgetAmount?.toLocaleString()}</p>
                                                         <span className="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-[#317CD7]/5 text-[#317CD7] mt-1">Active</span>
                                                     </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Recent Job Applications */}
+                                <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+                                    <div className="p-5 border-b border-gray-50 flex justify-between items-center">
+                                        <h3 className="text-[16px] font-bold text-[#0F2E4B]">Recent Job Applications</h3>
+                                        <button onClick={() => { setActiveTab('jobs'); setIsAppManagementOpen(true); }} className="text-[#317CD7] font-bold text-[11px] hover:underline flex items-center gap-1">
+                                            Manage All <ChevronRight size={12} />
+                                        </button>
+                                    </div>
+                                    <div className="divide-y divide-gray-50">
+                                        {applications.length === 0 ? (
+                                            <div className="p-10 text-center text-gray-400 italic text-[13px]">No recent applications.</div>
+                                        ) : (
+                                            applications.slice(0, 3).map(app => (
+                                                <div key={app.id} className="p-5 hover:bg-gray-50/50 transition-all flex items-center justify-between group">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 rounded-lg bg-[#0F2E4B]/5 flex items-center justify-center text-[#0F2E4B] group-hover:scale-110 transition-transform">
+                                                            <User size={20} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-[15px] font-semibold text-[#0F2E4B]">{app.fullName}</p>
+                                                            <p className="text-[13px] text-gray-500 font-medium">{app.experience} Experience</p>
+                                                        </div>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => {
+                                                            setSelectedJobId(Number(app.jobId));
+                                                            setIsAppManagementOpen(true);
+                                                        }}
+                                                        className="px-4 py-2 bg-gray-50 text-[#0F2E4B] rounded-lg font-bold text-[11px] hover:bg-[#317CD7] hover:text-white transition-all"
+                                                    >
+                                                        Review Profile
+                                                    </button>
                                                 </div>
                                             ))
                                         )}
@@ -1258,7 +1201,7 @@ const ClientProfile: React.FC = () => {
                                     </button>
                                     <button 
                                         onClick={handleSaveProfile}
-                                        className="px-8 py-2.5 #317CD7 text-white font-bold text-sm hover:#317CD7/90 transition-all "
+                                        className="px-8 py-2.5 bg-[#317CD7] text-white font-bold text-sm hover:bg-[#317CD7]/90 transition-all shadow-lg shadow-[#317CD7]/20"
                                     >
                                         Save Changes
                                     </button>
@@ -1268,6 +1211,12 @@ const ClientProfile: React.FC = () => {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* Application Details Modal */}
+            <ApplicationDetailsModal 
+                application={selectedApplication}
+                onClose={() => setSelectedApplication(null)}
+            />
 
             {/* Photo Modal */}
             <AnimatePresence>
@@ -1316,7 +1265,7 @@ const ClientProfile: React.FC = () => {
                                     <button 
                                         onClick={handleUpdatePhoto}
                                         disabled={!selectedFile}
-                                        className={`flex-1 py-3 font-bold text-[12px] transition-all  ${selectedFile ? '#317CD7 text-white hover:#317CD7/90' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
+                                        className={`flex-1 py-3 font-bold text-[12px] transition-all rounded-lg ${selectedFile ? 'bg-[#317CD7] text-white hover:bg-[#317CD7]/90 shadow-lg shadow-[#317CD7]/20' : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
                                     >
                                         Upload Image
                                     </button>
@@ -1326,6 +1275,13 @@ const ClientProfile: React.FC = () => {
                     </div>
                 )}
             </AnimatePresence>
+            {/* Add Funds Modal */}
+            <AddFundsModal 
+                isOpen={isAddFundsOpen}
+                onClose={() => setIsAddFundsOpen(false)}
+                onConfirm={initiateRazorpayPayment}
+                currentBalance={user?.walletBalance || 0}
+            />
         </div>
     );
 };

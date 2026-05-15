@@ -147,3 +147,46 @@ input[type=number] {
   scrollbar-width: none;
 }
 
+
+/* Form Standardization Classes */
+.form-label {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 22.4px !important;
+  color: rgb(33, 33, 33) !important;
+  letter-spacing: -0.02em !important;
+  text-transform: none !important; /* First letter only as per hardcoded text */
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.form-input-field {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  line-height: 26px !important;
+  color: rgb(33, 33, 33) !important;
+  background-color: #f9fafb !important;
+  border: 1px solid #eee !important;
+  border-radius: 6px !important; /* rounded-md */
+  width: 100%;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.2s ease-in-out;
+  outline: none !important;
+}
+
+.form-input-field:focus {
+  border-color: #317CD7 !important;
+  box-shadow: 0 0 0 2px rgba(49, 124, 215, 0.1) !important;
+}
+
+.form-title {
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  color: rgb(33, 33, 33) !important;
+  letter-spacing: -0.02em !important;
+  text-transform: none !important;
+  margin-bottom: 1.5rem;
+}

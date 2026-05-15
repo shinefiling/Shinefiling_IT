@@ -89,7 +89,7 @@ const JobDetails: React.FC = () => {
                     {skills && (
                         <div className="mb-10">
                             <h4 
-                                className="text-[18px] font-bold mb-6 uppercase tracking-widest border-b border-gray-50 pb-4"
+                                className="text-[18px] font-bold mb-6 uppercase tracking-tight border-b border-gray-50 pb-4"
                                 style={{ color: 'rgb(33, 33, 33)' }}
                             >
                                 Skills Required
@@ -108,7 +108,7 @@ const JobDetails: React.FC = () => {
                     {responsibilities && (
                         <div>
                             <h4 
-                                className="text-[18px] font-bold mb-6 uppercase tracking-widest border-b border-gray-50 pb-4"
+                                className="text-[18px] font-bold mb-6 uppercase tracking-tight border-b border-gray-50 pb-4"
                                 style={{ color: 'rgb(33, 33, 33)' }}
                             >
                                 Responsibilities
@@ -214,7 +214,7 @@ const JobDetails: React.FC = () => {
                     <div className="w-full md:w-auto flex flex-col items-end gap-6 pt-4">
                         {/* Share Section */}
                         <div className="text-right">
-                            <p className="text-[11px] text-white font-bold uppercase tracking-widest mb-3">Share This Job</p>
+                            <p className="text-[11px] text-white font-bold uppercase tracking-tight mb-3">Share This Job</p>
                             <div className="flex items-center gap-2.5">
                                 {[Facebook, Linkedin, Twitter, Mail].map((Icon, i) => (
                                     <button key={i} className="w-8 h-8 rounded bg-white/10 flex items-center justify-center text-white border border-white/5">
@@ -226,12 +226,12 @@ const JobDetails: React.FC = () => {
 
                         {/* Stacked Action Buttons */}
                         <div className="w-full md:w-[240px] space-y-3">
-                            <button className="w-full bg-[#317CD7]/20 text-white py-3 rounded font-bold text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 border border-white/5">
+                            <button className="w-full bg-[#317CD7]/20 text-white py-3 rounded font-bold text-[11px] uppercase tracking-tight flex items-center justify-center gap-2 border border-white/5">
                                 <Plus size={14} /> Add to job basket
                             </button>
                             <button 
                                 onClick={handleApplyJob}
-                                className="w-full bg-[#317CD7] text-white py-3.5 rounded font-bold text-[11px] uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-black/20"
+                                className="w-full bg-[#317CD7] text-white py-3.5 rounded font-bold text-[11px] uppercase tracking-tight flex items-center justify-center gap-2 shadow-lg shadow-black/20"
                             >
                                 <Send size={14} /> Apply for this job
                             </button>
@@ -258,7 +258,7 @@ const JobDetails: React.FC = () => {
                         <div className="bg-white rounded-xl p-8 border border-gray-100">
                             <div className="flex items-center justify-between mb-6 border-b border-gray-50 pb-4">
                                 <h3 
-                                    className="text-[16px] font-bold uppercase tracking-widest"
+                                    className="text-[16px] font-bold uppercase tracking-tight"
                                     style={{ color: 'rgb(33, 33, 33)' }}
                                 >
                                     Project Description
@@ -274,7 +274,7 @@ const JobDetails: React.FC = () => {
                         
                         {/* Similar Jobs */}
                         <div className="bg-white rounded-xl p-6 border border-gray-100">
-                            <h3 className="text-[14px] font-bold text-[#0F2E4B] mb-6 uppercase tracking-widest">Similar Jobs</h3>
+                            <h3 className="text-[14px] font-bold text-[#0F2E4B] mb-6 uppercase tracking-tight">Similar Jobs</h3>
                             <div className="space-y-4">
                                 {similarJobs.map((sj) => (
                                     <div 
@@ -283,7 +283,7 @@ const JobDetails: React.FC = () => {
                                         className="p-4 rounded-xl hover:bg-gray-50 transition-all cursor-pointer border border-transparent hover:border-gray-100 group"
                                     >
                                         <h4 className="font-bold text-[#0F2E4B] group-hover:text-[#317CD7] transition-colors text-[14px] line-clamp-1 capitalize">{sj.title}</h4>
-                                        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400 font-extrabold uppercase tracking-widest">
+                                        <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400 font-extrabold uppercase tracking-tight">
                                             <span className="flex items-center gap-1"><MapPin size={10} /> {sj.location}</span>
                                             <span className="text-[#317CD7]">₹{sj.price?.toLocaleString()}</span>
                                         </div>
@@ -297,7 +297,7 @@ const JobDetails: React.FC = () => {
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
                             <h4 className="text-[18px] font-bold mb-2">Need Help?</h4>
                             <p className="text-[12px] opacity-70 mb-6 leading-relaxed">Our support team is available 24/7 to assist with your application.</p>
-                            <button className="bg-white text-[#0F2E4B] px-6 py-2.5 rounded-lg font-bold text-[11px] uppercase tracking-widest hover:bg-[#f8f9fa] transition-all">
+                            <button className="bg-white text-[#0F2E4B] px-6 py-2.5 rounded-lg font-bold text-[11px] uppercase tracking-tight hover:bg-[#f8f9fa] transition-all">
                                 Contact Support
                             </button>
                         </div>

@@ -107,73 +107,73 @@ ${formData.responsibilities}
                     <p className="text-gray-500" style={{ fontFamily: 'Poppins, sans-serif' }}>Find the best talent for your company by posting a job opening.</p>
                 </div>
 
-                <div className="bg-white rounded-2xl border border-[#eee] p-8 shadow-sm space-y-6">
+                <div className="bg-white rounded-md border border-[#eee] p-8 shadow-sm space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Job Title</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Job Title</label>
                             <input 
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({...formData, title: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                                 placeholder="e.g. Senior Frontend Developer"
                             />
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Company Name</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Company Name</label>
                             <input 
                                 type="text"
                                 value={formData.company}
                                 onChange={(e) => setFormData({...formData, company: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                                 placeholder="e.g. Tech Solutions Inc"
                             />
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Location</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Location</label>
                             <input 
                                 type="text"
                                 value={formData.location}
                                 onChange={(e) => setFormData({...formData, location: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                                 placeholder="e.g. Remote, Bangalore"
                             />
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Salary (₹)</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Salary (₹)</label>
                             <div className="relative">
                                 <IndianRupee size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                                 <input 
                                     type="number"
                                     value={formData.price}
                                     onChange={(e) => setFormData({...formData, price: e.target.value})}
-                                    className="w-full pl-10 pr-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[#0F2E4B]"
-                                    style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                    className="w-full pl-10 pr-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[rgb(33,33,33)]"
+                                    style={{ lineHeight: '26px' }}
                                     placeholder="e.g. 50000"
                                 />
                             </div>
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Job Role</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Job Role</label>
                             <input 
                                 type="text"
                                 value={formData.role}
                                 onChange={(e) => setFormData({...formData, role: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                                 placeholder="e.g. Frontend Developer"
                             />
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Experience Required</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Experience Required</label>
                             <select 
                                 value={formData.experience}
                                 onChange={(e) => setFormData({...formData, experience: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all appearance-none text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all appearance-none text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                             >
                                 <option value="Fresher">Fresher</option>
                                 <option value="1-3 Years">1-3 Years</option>
@@ -183,12 +183,12 @@ ${formData.responsibilities}
                             </select>
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Job Type</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Job Type</label>
                             <select 
                                 value={formData.type}
                                 onChange={(e) => setFormData({...formData, type: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all appearance-none text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all appearance-none text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                             >
                                 <option value="Fixed">Fixed Price</option>
                                 <option value="Hourly">Hourly Rate</option>
@@ -201,39 +201,39 @@ ${formData.responsibilities}
 
                     <div className="space-y-6">
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Job Overview</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Job Overview</label>
                             <textarea 
                                 value={formData.overview}
                                 onChange={(e) => setFormData({...formData, overview: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all min-h-[120px] resize-none text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all min-h-[120px] resize-none text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                                 placeholder="A fantastic opportunity for a highly motivated individual..."
                             />
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[#0F2E4B] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Skills Required</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Skills Required</label>
                             <textarea 
                                 value={formData.skills}
                                 onChange={(e) => setFormData({...formData, skills: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all min-h-[100px] resize-none text-[15px] font-medium text-[#0F2E4B]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all min-h-[100px] resize-none text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                                 placeholder="e.g. 3-5 years experience, HTML/CSS, React..."
                             />
                         </div>
                         <div>
-                            <label className="block text-[15px] font-medium text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}>Responsibilities</label>
+                            <label className="block text-[16px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Responsibilities</label>
                             <textarea 
                                 value={formData.responsibilities}
                                 onChange={(e) => setFormData({...formData, responsibilities: e.target.value})}
-                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-xl focus:border-[#317CD7] outline-none transition-all min-h-[100px] resize-none text-[15px] font-medium text-[rgb(33,33,33)]"
-                                style={{ fontFamily: 'Poppins, sans-serif', lineHeight: '26px' }}
+                                className="w-full px-5 py-3 bg-[#f9fafb] border border-[#eee] rounded-md focus:border-[#317CD7] outline-none transition-all min-h-[100px] resize-none text-[15px] font-medium text-[rgb(33,33,33)]"
+                                style={{ lineHeight: '26px' }}
                                 placeholder="e.g. Developing UI, maintaining code, team collaboration..."
                             />
                         </div>
                     </div>
 
                     {error && (
-                        <div className="p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 text-red-600 text-sm font-medium animate-shake">
+                        <div className="p-4 bg-red-50 border border-red-100 rounded-md flex items-center gap-3 text-red-600 text-sm font-medium animate-shake">
                             <AlertCircle size={18} />
                             {error}
                         </div>
@@ -242,7 +242,7 @@ ${formData.responsibilities}
                     <button 
                         onClick={handlePostJob}
                         disabled={isLoading}
-                        className="w-full py-4 bg-[#317CD7] text-white rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-[#317CD7]/20 transition-all flex items-center justify-center gap-3 disabled:opacity-70"
+                        className="w-full py-4 bg-[#317CD7] text-white rounded-md font-bold text-lg hover:shadow-lg hover:shadow-[#317CD7]/20 transition-all flex items-center justify-center gap-3 disabled:opacity-70"
                     >
                         {isLoading ? <Loader2 className="animate-spin" /> : (isSuccess ? "Job Posted Successfully!" : "Publish Job Opening")}
                         {!isLoading && !isSuccess && <ArrowRight size={20} />}

@@ -283,7 +283,7 @@ const Signup: React.FC = () => {
                             <button 
                                 onClick={() => signupData.userRole && setStep('details')}
                                 disabled={!signupData.userRole}
-                                className={`w-full mt-6 bg-[#317CD7] text-white py-4.5 sm:py-3.5 rounded-md font-extrabold uppercase tracking-widest text-[14px] sm:text-[13px] flex items-center justify-center gap-2 transition-all ${!signupData.userRole ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2563b5] hover:-translate-y-0.5 shadow-lg shadow-[#317CD7]/20'}`}
+                                className={`w-full mt-6 bg-[#317CD7] text-white py-4.5 sm:py-3.5 rounded-md font-extrabold uppercase tracking-tight text-[14px] sm:text-[13px] flex items-center justify-center gap-2 transition-all ${!signupData.userRole ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2563b5] hover:-translate-y-0.5 shadow-lg shadow-[#317CD7]/20'}`}
                             >
                                 Continue to Signup <ArrowRight size={18} />
                             </button>
@@ -294,7 +294,7 @@ const Signup: React.FC = () => {
                         <div className="mb-4">
                             <button 
                                 onClick={() => setStep('role')}
-                                className="text-[13px] sm:text-[11px] font-bold text-[#0F2E4B] uppercase tracking-wider flex items-center gap-1 hover:underline mb-4"
+                                className="text-[13px] sm:text-[11px] font-bold text-[#0F2E4B] uppercase tracking-tight flex items-center gap-1 hover:underline mb-4"
                             >
                                 <ArrowLeft size={12} /> Change Role ({signupData.userRole})
                             </button>
@@ -311,18 +311,7 @@ const Signup: React.FC = () => {
                         <form onSubmit={handleSignup} className="space-y-2.5">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-1">
-                                    <label 
-                                        className="uppercase tracking-wider ml-1"
-                                        style={{ 
-                                            fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '15px',
-                                            fontWeight: 500,
-                                            lineHeight: '26px',
-                                            color: 'rgb(33, 33, 33)'
-                                        }}
-                                    >
-                                        Full Name
-                                    </label>
+                                    <label className="form-label">Full Name</label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                             <User size={16} />
@@ -333,30 +322,12 @@ const Signup: React.FC = () => {
                                             value={signupData.fullName}
                                             onChange={(e) => setSignupData({...signupData, fullName: e.target.value})}
                                             placeholder="John Doe" 
-                                            className="block w-full pl-11 pr-4 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
-                                            style={{ 
-                                                fontFamily: 'Poppins, sans-serif',
-                                                fontSize: '16px',
-                                                fontWeight: 400,
-                                                lineHeight: '22.4px',
-                                                color: 'rgb(15, 46, 75)'
-                                            }}
+                                            className="form-input-field pl-11"
                                         />
                                     </div>
                                 </div>
                                 <div className="space-y-1">
-                                    <label 
-                                        className="uppercase tracking-wider ml-1"
-                                        style={{ 
-                                            fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '15px',
-                                            fontWeight: 500,
-                                            lineHeight: '26px',
-                                            color: 'rgb(33, 33, 33)'
-                                        }}
-                                    >
-                                        Username
-                                    </label>
+                                    <label className="form-label">Username</label>
                                     <div className="relative">
                                         <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                             <User size={16} />
@@ -367,14 +338,7 @@ const Signup: React.FC = () => {
                                             value={signupData.username}
                                             onChange={(e) => setSignupData({...signupData, username: e.target.value})}
                                             placeholder="johndoe" 
-                                            className="block w-full pl-11 pr-4 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
-                                            style={{ 
-                                                fontFamily: 'Poppins, sans-serif',
-                                                fontSize: '16px',
-                                                fontWeight: 400,
-                                                lineHeight: '22.4px',
-                                                color: 'rgb(15, 46, 75)'
-                                            }}
+                                            className="form-input-field pl-11"
                                         />
                                     </div>
                                 </div>
@@ -383,7 +347,7 @@ const Signup: React.FC = () => {
                             {signupData.userRole === 'CLIENT' && (
                                 <div className="space-y-4 pt-2 border-t border-gray-100 mt-2">
                                     <div className="flex items-center justify-between">
-                                        <h3 className="text-[14px] sm:text-[12px] font-extrabold text-[#0F2E4B] uppercase tracking-widest">Client Type</h3>
+                                        <h3 className="text-[14px] sm:text-[12px] font-extrabold text-[#0F2E4B] uppercase tracking-tight">Client Type</h3>
                                         <div className="flex bg-gray-100 p-1 rounded-lg">
                                             <button 
                                                 type="button"
@@ -404,12 +368,12 @@ const Signup: React.FC = () => {
                                     
                                     <div className="space-y-1">
                                         <label 
-                                            className="uppercase tracking-wider ml-1"
+                                            className="uppercase tracking-tight ml-1"
                                             style={{ 
                                                 fontFamily: 'Poppins, sans-serif',
-                                                fontSize: '15px',
-                                                fontWeight: 500,
-                                                lineHeight: '26px',
+                                                fontSize: '16px',
+                                                fontWeight: 700,
+                                                lineHeight: '22.4px',
                                                 color: 'rgb(33, 33, 33)'
                                             }}
                                         >
@@ -428,10 +392,10 @@ const Signup: React.FC = () => {
                                                 className="block w-full pl-11 pr-4 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
                                                 style={{ 
                                                     fontFamily: 'Poppins, sans-serif',
-                                                    fontSize: '16px',
-                                                    fontWeight: 400,
-                                                    lineHeight: '22.4px',
-                                                    color: 'rgb(15, 46, 75)'
+                                                    fontSize: '15px',
+                                                    fontWeight: 500,
+                                                    lineHeight: '26px',
+                                                    color: 'rgb(33, 33, 33)'
                                                 }}
                                             />
                                         </div>
@@ -440,12 +404,12 @@ const Signup: React.FC = () => {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-1">
                                             <label 
-                                                className="uppercase tracking-wider ml-1"
+                                                className="uppercase tracking-tight ml-1"
                                                 style={{ 
                                                     fontFamily: 'Poppins, sans-serif',
-                                                    fontSize: '15px',
-                                                    fontWeight: 500,
-                                                    lineHeight: '26px',
+                                                    fontSize: '16px',
+                                                    fontWeight: 700,
+                                                    lineHeight: '22.4px',
                                                     color: 'rgb(33, 33, 33)'
                                                 }}
                                             >
@@ -458,10 +422,10 @@ const Signup: React.FC = () => {
                                                 className="block w-full px-4 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all appearance-none cursor-pointer"
                                                 style={{ 
                                                     fontFamily: 'Poppins, sans-serif',
-                                                    fontSize: '16px',
-                                                    fontWeight: 400,
-                                                    lineHeight: '22.4px',
-                                                    color: 'rgb(15, 46, 75)'
+                                                    fontSize: '15px',
+                                                    fontWeight: 500,
+                                                    lineHeight: '26px',
+                                                    color: 'rgb(33, 33, 33)'
                                                 }}
                                             >
                                                 <option value="">{signupData.clientType === 'Individual' ? 'Select Category' : 'Select Industry'}</option>
@@ -475,12 +439,12 @@ const Signup: React.FC = () => {
                                         </div>
                                         <div className="space-y-1">
                                             <label 
-                                                className="uppercase tracking-wider ml-1"
+                                                className="uppercase tracking-tight ml-1"
                                                 style={{ 
                                                     fontFamily: 'Poppins, sans-serif',
-                                                    fontSize: '15px',
-                                                    fontWeight: 500,
-                                                    lineHeight: '26px',
+                                                    fontSize: '16px',
+                                                    fontWeight: 700,
+                                                    lineHeight: '22.4px',
                                                     color: 'rgb(33, 33, 33)'
                                                 }}
                                             >
@@ -494,10 +458,10 @@ const Signup: React.FC = () => {
                                                 className="block w-full px-4 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
                                                 style={{ 
                                                     fontFamily: 'Poppins, sans-serif',
-                                                    fontSize: '16px',
-                                                    fontWeight: 400,
-                                                    lineHeight: '22.4px',
-                                                    color: 'rgb(15, 46, 75)'
+                                                    fontSize: '15px',
+                                                    fontWeight: 500,
+                                                    lineHeight: '26px',
+                                                    color: 'rgb(33, 33, 33)'
                                                 }}
                                             />
                                         </div>
@@ -507,12 +471,12 @@ const Signup: React.FC = () => {
 
                             <div className="space-y-1">
                                 <label 
-                                    className="uppercase tracking-wider ml-1"
+                                    className="uppercase tracking-tight ml-1"
                                     style={{ 
                                         fontFamily: 'Poppins, sans-serif',
-                                        fontSize: '15px',
-                                        fontWeight: 500,
-                                        lineHeight: '26px',
+                                        fontSize: '16px',
+                                        fontWeight: 700,
+                                        lineHeight: '22.4px',
                                         color: 'rgb(33, 33, 33)'
                                     }}
                                 >
@@ -531,10 +495,10 @@ const Signup: React.FC = () => {
                                         className="block w-full pl-11 pr-4 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
                                         style={{ 
                                             fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '16px',
-                                            fontWeight: 400,
-                                            lineHeight: '22.4px',
-                                            color: 'rgb(15, 46, 75)'
+                                            fontSize: '15px',
+                                            fontWeight: 500,
+                                            lineHeight: '26px',
+                                            color: 'rgb(33, 33, 33)'
                                         }}
                                     />
                                 </div>
@@ -542,12 +506,12 @@ const Signup: React.FC = () => {
 
                             <div className="space-y-1">
                                 <label 
-                                    className="uppercase tracking-wider ml-1"
+                                    className="uppercase tracking-tight ml-1"
                                     style={{ 
                                         fontFamily: 'Poppins, sans-serif',
-                                        fontSize: '15px',
-                                        fontWeight: 500,
-                                        lineHeight: '26px',
+                                        fontSize: '16px',
+                                        fontWeight: 700,
+                                        lineHeight: '22.4px',
                                         color: 'rgb(33, 33, 33)'
                                     }}
                                 >
@@ -566,10 +530,10 @@ const Signup: React.FC = () => {
                                         className="block w-full pl-11 pr-12 py-3.5 sm:py-2.5 bg-white border border-[#eee] rounded-md focus:outline-none focus:border-[#0F2E4B] transition-all"
                                         style={{ 
                                             fontFamily: 'Poppins, sans-serif',
-                                            fontSize: '16px',
-                                            fontWeight: 400,
-                                            lineHeight: '22.4px',
-                                            color: 'rgb(15, 46, 75)'
+                                            fontSize: '15px',
+                                            fontWeight: 500,
+                                            lineHeight: '26px',
+                                            color: 'rgb(33, 33, 33)'
                                         }}
                                     />
                                     <button 
@@ -583,7 +547,7 @@ const Signup: React.FC = () => {
                             </div>
 
                             <div className="space-y-1">
-                                <label className="text-[11px] font-bold text-[#242424] uppercase tracking-wider ml-1">Confirm Password</label>
+                                <label className="text-[11px] font-bold text-[#242424] uppercase tracking-tight ml-1">Confirm Password</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                         <Lock size={16} />
@@ -608,18 +572,18 @@ const Signup: React.FC = () => {
                                         checked={signupData.agreeTerms}
                                         onChange={(e) => setSignupData({...signupData, agreeTerms: e.target.checked})}
                                     />
-                                    <div className={`mt-0.5 w-5 h-5 border border-[#eee] rounded-md flex items-center justify-center transition-all shrink-0 ${signupData.agreeTerms ? 'bg-[#b5242c] border-[#b5242c]' : 'group-hover:border-[#b5242c]'}`}>
+                                    <div className={`mt-0.5 w-5 h-5 border border-[#eee] rounded-md flex items-center justify-center transition-all shrink-0 ${signupData.agreeTerms ? 'bg-[#317CD7] border-[#317CD7]' : 'group-hover:border-[#317CD7]'}`}>
                                         <div className={`w-2 h-2 bg-white rounded-sm transition-all ${signupData.agreeTerms ? 'scale-100' : 'scale-0'}`}></div>
                                     </div>
                                     <span className="text-[15px] sm:text-[13px] text-[#666] leading-snug select-none">
-                                        I agree to the <a href="#" className="text-[#242424] font-bold hover:text-[#b5242c] underline">Terms of Service</a> and <a href="#" className="text-[#242424] font-bold hover:text-[#b5242c] underline">Privacy Policy</a>
+                                        I agree to the <a href="#" className="text-[#242424] font-bold hover:text-[#317CD7] underline">Terms of Service</a> and <a href="#" className="text-[#242424] font-bold hover:text-[#317CD7] underline">Privacy Policy</a>
                                     </span>
                                 </label>
                             </div>
 
                             <button 
                                 disabled={isLoading}
-                                className={`w-full bg-[#317CD7] text-white py-4.5 sm:py-2.5 rounded-md font-extrabold uppercase tracking-widest text-[16px] sm:text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#317CD7]/10 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#2563b5] hover:-translate-y-0.5 active:translate-y-0'}`}
+                                className={`w-full bg-[#317CD7] text-white py-4.5 sm:py-2.5 rounded-md font-extrabold uppercase tracking-tight text-[16px] sm:text-[13px] flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#317CD7]/10 ${isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#2563b5] hover:-translate-y-0.5 active:translate-y-0'}`}
                             >
                                 {isLoading ? (
                                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -635,7 +599,7 @@ const Signup: React.FC = () => {
                     {step === 'otp' && (
                         <form onSubmit={handleVerifyOtp} className="space-y-6">
                             <div className="space-y-1">
-                                <label className="text-[11px] font-bold text-[#242424] uppercase tracking-wider ml-1 text-center block">Verification Code</label>
+                                <label className="text-[11px] font-bold text-[#242424] uppercase tracking-tight ml-1 text-center block">Verification Code</label>
                                 <div className="relative">
                                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#ccc]">
                                         <ShieldCheck size={18} />
@@ -647,7 +611,7 @@ const Signup: React.FC = () => {
                                         value={otp}
                                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
                                         placeholder="000000" 
-                                        className="block w-full pl-12 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-2xl tracking-[0.5em] font-mono text-center focus:outline-none focus:border-[#b5242c] transition-all"
+                                        className="block w-full pl-12 pr-4 py-2.5 bg-[#f9fafb] border border-[#eee] rounded-md text-2xl tracking-[0.5em] font-mono text-center focus:outline-none focus:border-[#317CD7] transition-all"
                                     />
                                 </div>
                             </div>
@@ -671,7 +635,7 @@ const Signup: React.FC = () => {
                                     <button 
                                         type="button" 
                                         onClick={handleResendOtp}
-                                        className="text-[#b5242c] font-bold hover:underline"
+                                        className="text-[#317CD7] font-bold hover:underline"
                                     >
                                         Resend Code
                                     </button>

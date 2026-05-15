@@ -63,6 +63,26 @@ const AppContent: React.FC = () => {
     }, [location.pathname]);
 
     useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'user' && !e.newValue) {
+                // Logout detected in another tab
+                const publicPaths = ['/', '/login', '/signup', '/forgot-password', '/projects', '/jobs', '/freelancers', '/pricing'];
+                const isPublicPath = publicPaths.some(path => {
+                    if (path === '/') return location.pathname === '/';
+                    return location.pathname.startsWith(path);
+                });
+
+                if (!isPublicPath) {
+                    window.location.href = '/ITfreelancers/login';
+                }
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, [location.pathname]);
+
+    useEffect(() => {
         const fetchGlobalData = async () => {
             const stored = localStorage.getItem('user');
             if (stored) {

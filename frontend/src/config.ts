@@ -6,3 +6,4 @@ export const API_BASE_URL = isProduction
     : 'http://localhost:8081';
 
 export const GOOGLE_CLIENT_ID = "585286115884-q9mk9rmifguakqtrv51mqtpq3703l0da.apps.googleusercontent.com";
+export const RAZORPAY_KEY_ID = "rzp_live_SQJW4OPyfqhWwH";

@@ -63,7 +63,7 @@ const HireMe: React.FC = () => {
                 
                 <button 
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-slate-400 hover:text-[#b5242c] font-bold text-sm mb-8 transition-colors"
+                    className="flex items-center gap-2 text-slate-400 hover:text-[#317CD7] font-bold text-sm mb-8 transition-colors"
                 >
                     <ArrowLeft size={18} /> Back to Search
                 </button>
@@ -72,14 +72,14 @@ const HireMe: React.FC = () => {
                     
                     <div className="space-y-6">
                         {/* Freelancer Header */}
-                        <div className="bg-white border border-[#eee] p-8 rounded-sm shadow-sm flex items-center gap-6">
+                        <div className="bg-white border border-[#eee] p-8 rounded-md shadow-sm flex items-center gap-6">
                             <img 
                                 src={freelancer?.profilePicture || `https://ui-avatars.com/api/?name=${freelancer?.fullName}&background=random`} 
                                 className="w-20 h-20 rounded-full border border-[#eee]"
                             />
                             <div>
-                                <h1 className="text-2xl font-extrabold text-[#261817]">Hiring {freelancer?.fullName}</h1>
-                                <p className="text-[#b5242c] font-bold">{freelancer?.professionalHeadline || 'Elite Freelancer'}</p>
+                                <h1 className="text-2xl font-bold text-[rgb(33,33,33)]">Hiring {freelancer?.fullName}</h1>
+                                <p className="text-[#317CD7] font-bold">{freelancer?.professionalHeadline || 'Elite Freelancer'}</p>
                                 <div className="flex items-center gap-4 mt-2 text-xs text-slate-400 font-bold uppercase tracking-widest">
                                     <span className="flex items-center gap-1"><Clock size={12}/> {freelancer?.location}</span>
                                     <span className="flex items-center gap-1"><ShieldCheck size={12}/> Verified Identity</span>
@@ -88,28 +88,28 @@ const HireMe: React.FC = () => {
                         </div>
 
                         {/* Project Selection */}
-                        <div className="bg-white border border-[#eee] p-8 rounded-sm shadow-sm">
-                            <h2 className="text-sm font-extrabold uppercase tracking-widest mb-6 flex items-center gap-2">
-                                <Briefcase size={16} className="text-[#b5242c]"/> 1. Select Project
+                        <div className="bg-white border border-[#eee] p-8 rounded-md shadow-sm">
+                            <h2 className="text-[16px] font-bold text-[rgb(33,33,33)] mb-6 flex items-center gap-2" style={{ lineHeight: '22.4px' }}>
+                                <Briefcase size={16} className="text-[#317CD7]"/> 1. Select Project
                             </h2>
                             <div className="space-y-3">
                                 {clientJobs.length === 0 ? (
-                                    <div className="p-10 text-center border-2 border-dashed border-[#eee] rounded-sm">
-                                        <p className="text-slate-400 text-sm italic">You don't have any active job posts.</p>
-                                        <button onClick={() => navigate('/post-job')} className="text-[#b5242c] font-bold mt-2 hover:underline">Create a Project First</button>
+                                    <div className="p-10 text-center border-2 border-dashed border-[#eee] rounded-md">
+                                        <p className="text-slate-400 text-[15px] italic">You don't have any active job posts.</p>
+                                        <button onClick={() => navigate('/post-job')} className="text-[#317CD7] font-bold mt-2 hover:underline">Create a Project First</button>
                                     </div>
                                 ) : (
                                     clientJobs.map(job => (
                                         <div 
                                             key={job.id}
                                             onClick={() => setSelectedJob(job)}
-                                            className={`p-4 border cursor-pointer transition-all flex justify-between items-center ${selectedJob?.id === job.id ? 'border-[#b5242c] bg-[#fff0ef]/30' : 'border-[#eee] hover:border-[#b5242c]'}`}
+                                            className={`p-4 border rounded-md cursor-pointer transition-all flex justify-between items-center ${selectedJob?.id === job.id ? 'border-[#317CD7] bg-[#317CD7]/5' : 'border-[#eee] hover:border-[#317CD7]'}`}
                                         >
                                             <div>
-                                                <p className="font-bold text-slate-800">{job.title}</p>
-                                                <p className="text-[11px] text-slate-400 font-bold uppercase mt-1">Budget: ₹{job.salary}</p>
+                                                <p className="text-[15px] font-bold text-[rgb(33,33,33)]">{job.title}</p>
+                                                <p className="text-[13px] text-slate-400 font-bold uppercase mt-1">Budget: ₹{job.salary}</p>
                                             </div>
-                                            {selectedJob?.id === job.id && <Check size={18} className="text-[#b5242c]" />}
+                                            {selectedJob?.id === job.id && <Check size={18} className="text-[#317CD7]" />}
                                         </div>
                                     ))
                                 )}
@@ -117,15 +117,16 @@ const HireMe: React.FC = () => {
                         </div>
 
                         {/* Terms */}
-                        <div className="bg-white border border-[#eee] p-8 rounded-sm shadow-sm">
-                            <h2 className="text-sm font-extrabold uppercase tracking-widest mb-6 flex items-center gap-2">
-                                <Calendar size={16} className="text-[#b5242c]"/> 2. Contract Terms
+                        <div className="bg-white border border-[#eee] p-8 rounded-md shadow-sm">
+                            <h2 className="text-[16px] font-bold text-[rgb(33,33,33)] mb-6 flex items-center gap-2" style={{ lineHeight: '22.4px' }}>
+                                <Calendar size={16} className="text-[#317CD7]"/> 2. Contract Terms
                             </h2>
                             <div className="grid grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-extrabold text-slate-400 uppercase mb-2">Duration</label>
+                                    <label className="block text-[15px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Duration</label>
                                     <select 
-                                        className="w-full p-3 bg-slate-50 border border-[#eee] rounded-sm outline-none focus:border-[#b5242c] font-bold text-sm"
+                                        className="w-full p-3 bg-slate-50 border border-[#eee] rounded-md outline-none focus:border-[#317CD7] text-[15px] font-medium text-[rgb(33,33,33)]"
+                                        style={{ lineHeight: '26px' }}
                                         value={orderData.duration}
                                         onChange={(e) => setOrderData({...orderData, duration: e.target.value})}
                                     >
@@ -136,8 +137,8 @@ const HireMe: React.FC = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-extrabold text-slate-400 uppercase mb-2">Payment Method</label>
-                                    <div className="p-3 bg-slate-50 border border-[#eee] rounded-sm font-bold text-sm flex items-center gap-2">
+                                    <label className="block text-[15px] font-bold text-[rgb(33,33,33)] mb-2 tracking-tight" style={{ lineHeight: '22.4px' }}>Payment Method</label>
+                                    <div className="p-3 bg-slate-50 border border-[#eee] rounded-md text-[15px] font-medium text-[rgb(33,33,33)] flex items-center gap-2" style={{ lineHeight: '26px' }}>
                                         <Lock size={14} className="text-green-500" /> Secure Milestone
                                     </div>
                                 </div>
@@ -147,8 +148,8 @@ const HireMe: React.FC = () => {
 
                     {/* Sidebar Summary */}
                     <div className="space-y-6">
-                        <div className="bg-[#261817] p-8 text-white rounded-sm shadow-xl sticky top-[120px]">
-                            <h3 className="text-center font-extrabold uppercase tracking-[3px] text-xs mb-8 border-b border-white/10 pb-4">Hiring Summary</h3>
+                        <div className="bg-[#0F2E4B] p-8 text-white rounded-md shadow-xl sticky top-[120px]">
+                            <h3 className="text-center font-bold uppercase tracking-[3px] text-xs mb-8 border-b border-white/10 pb-4">Hiring Summary</h3>
                             
                             <div className="space-y-4 mb-8">
                                 <div className="flex justify-between items-center">
@@ -161,14 +162,14 @@ const HireMe: React.FC = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-white/5 p-4 rounded-sm mb-8">
+                            <div className="bg-white/5 p-4 rounded-md mb-8">
                                 <p className="text-[10px] font-bold text-white/30 uppercase mb-2">Estimated Total</p>
-                                <p className="text-3xl font-extrabold">₹{(selectedJob?.salary || 0).toLocaleString()}</p>
+                                <p className="text-3xl font-bold">₹{(selectedJob?.salary || 0).toLocaleString()}</p>
                             </div>
 
                             <button 
                                 disabled={!selectedJob}
-                                className={`w-full py-4 rounded-sm font-extrabold uppercase tracking-widest text-xs shadow-lg transition-all ${selectedJob ? 'bg-[#b5242c] hover:bg-[#920218] text-white shadow-[#b5242c]/20' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
+                                className={`w-full py-4 rounded-md font-bold uppercase tracking-widest text-xs shadow-lg transition-all ${selectedJob ? 'bg-[#317CD7] hover:bg-[#2563b5] text-white shadow-[#317CD7]/20' : 'bg-white/10 text-white/30 cursor-not-allowed'}`}
                             >
                                 Confirm & Hire
                             </button>
@@ -178,7 +179,7 @@ const HireMe: React.FC = () => {
                             </p>
                         </div>
 
-                        <div className="bg-white border border-[#eee] p-6 rounded-sm text-center">
+                        <div className="bg-white border border-[#eee] p-6 rounded-md text-center">
                             <ShieldCheck className="mx-auto text-green-500 mb-2" size={24} />
                             <h4 className="text-[11px] font-extrabold uppercase tracking-widest">Escrow Protected</h4>
                             <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">Payment is held securely and only released when you approve the work.</p>

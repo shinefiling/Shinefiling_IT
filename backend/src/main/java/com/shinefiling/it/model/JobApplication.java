@@ -31,6 +31,7 @@ public class JobApplication {
     private String coverLetter;
     
     private String resumeFileName;
+    private String resumeUrl;
     private String clientEmail;
     private Long clientId;
     private Long freelancerId;
